@@ -1,14 +1,23 @@
-# call this as source("C:/research/neatStats.R")
+# call this as source("C:/research/proj_neatstats/neatStats/R/neatStats.R")
 
 # libs ----
-
-for (package in c("data.table", "plyr", "pROC","MBESS", "ez", "psychReport","BayesFactor","TOSTER","ggplot2")) {
-  if (!require(package, character.only=T, quietly=T)) {
-    install.packages(package)
-    library(package, character.only=T)
-  }
+.onLoad = function(libname, pkgname){
+    for (package in c("data.table", "plyr", "pROC","MBESS", "ez", "psychReport","BayesFactor","TOSTER","ggplot2")) {
+      if (!require(package, character.only=T, quietly=T)) {
+        install.packages(package)
+        library(package, character.only=T)
+      }
+    }
 }
 
+
+#' Neat path
+#'
+#' This function gives the path to current script's path in RStudio.
+#' @keywords path
+#' @export
+#' @examples
+#' script_path()
 script_path = function() {
     return( dirname(rstudioapi::getActiveDocumentContext()$path) )
 }
@@ -51,7 +60,7 @@ bf_neat = function( bf ) {
     return( paste0( bf_dir, ". (BFplain = ", ro(bf, 4), ")" ) )
 }
 
-#' Neat t_neat
+#' Neat t-test
 #'
 #' This function gives thorough t-test results including CIs and BFs.
 #' @keywords ttest

@@ -2,7 +2,7 @@
 % Please edit documentation in R/neatStats.R
 \name{t_neat}
 \alias{t_neat}
-\title{Neat t_neat}
+\title{Neat t-test}
 \usage{
 t_neat(var1, var2, pair = F, greater = "", ci = 0.95,
   for_table = F)
