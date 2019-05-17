@@ -40,7 +40,7 @@ ro = function(value, round_to = 2) {
 }
 
 to_exp = function( the_num ) {
-    if ( ro( the_num, 2 ) > 9999.99 ) {
+    if ( as.numeric( ro( the_num, 2 ) ) > 9999.99 ) {
         the_num = formatC( the_num, format = "e", digits = 2)
         return( the_num )
     } else {
@@ -190,7 +190,7 @@ anova_apa = function( ezANOVA_out, bf_added = NULL ) {
         f_name = ezANOVA_out$ANOVA$Effect[indx]
         f_name = sort( strsplit( f_name, ":" )[[1]] )
         f_name = paste( f_name, collapse = " \u00d7 " )
-        if ( is.null( bf_added ) | !( f_name %in% names( bf ) ) ) {
+        if ( is.null( bf_added ) | !( f_name %in% names( bf_added ) ) ) {
             bf_out = "."
         } else {
             bf_val = bf_added[ f_name ]
