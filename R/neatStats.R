@@ -51,6 +51,14 @@ bf_neat = function( bf ) {
     return( paste0( bf_dir, ". (BFplain = ", ro(bf, 4), ")" ) )
 }
 
+#' Neat t_neat
+#'
+#' This function gives thorough t-test results including CIs and BFs.
+#' @keywords ttest
+#' @export
+#' @examples
+#' t_neat()
+
 t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, for_table = F ) {
     # var1 (M+-SD= ) vs. var2 (M+-SD= )
     if ( greater == "1" ) {
@@ -114,6 +122,14 @@ bf_names = function( the_names ) {
     }
     return( new_names )
 }
+
+#' Neat ANOVA
+#'
+#' This function gives thorough ANOVA results including CIs and BFs.
+#' @keywords anova
+#' @export
+#' @examples
+#' anova_neat()
 
 anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL ) {
     if ( is.null( between_vars ) ) {
