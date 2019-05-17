@@ -28,9 +28,15 @@ quiet <- function(x) {
     invisible(force(x)) 
 }
 prnt = function( ..., mysep = "\n") {
-    to_print = gsub('-', '\u2013', paste0( ... ) )
-    to_print = sub("e\\+0*", " \u00d7 10^", to_print )
-    cat( gsub("p = 0.000", "p < 0.001", to_print ), sep = mysep )
+    to_print = gsub('-', 'CHAR_MINUS', paste0( ... ) )
+    to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
+    to_print = gsub("p = 0.000", "p < 0.001", to_print )
+    
+    to_print = gsub("CHAR_MINUS", "\u2013", to_print )
+    to_print = gsub("CHAR_PLUSMIN", "\u00b1", to_print )
+    to_print = gsub("CHAR_X", "\u00d7", to_print )
+    Encoding(to_print) = "UTF-8"
+    cat( to_print, sep = mysep )
 }
 cit_d = function(probe_rts, irr_rts){
     return( (mean(probe_rts) - mean(irr_rts)) / sd(irr_rts) )
@@ -126,7 +132,7 @@ bf_names = function( the_names ) {
     for ( a_name in the_names) {
         a_name = gsub( " .*","", a_name )
         a_name = sort( strsplit( a_name, ":" )[[1]] )
-        a_name = paste( a_name, collapse = " \u00d7 " )
+        a_name = paste( a_name, collapse = " CHAR_X " )
         new_names = c(new_names, a_name)
     }
     return( new_names )
@@ -189,7 +195,7 @@ anova_apa = function( ezANOVA_out, bf_added = NULL ) {
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
         f_name = ezANOVA_out$ANOVA$Effect[indx]
         f_name = sort( strsplit( f_name, ":" )[[1]] )
-        f_name = paste( f_name, collapse = " \u00d7 " )
+        f_name = paste( f_name, collapse = " CHAR_X " )
         if ( is.null( bf_added ) | !( f_name %in% names( bf_added ) ) ) {
             bf_out = "."
         } else {
@@ -232,7 +238,7 @@ age_gender_per_cond = function( all_data ) {
 
     for(i in 1:nrow(age_gend)) {
         row <- age_gend[i,]
-        prnt( 'condition ', row[[1]], ': count ', round(row[2],1), ', age = ', format(round(row[3],1), nsmall = 1), '\u00b1', format(round(row[4],1), nsmall = 1), ', male ', format(round(row[6]*100,1), nsmall = 1), "%", sep = "")
+        prnt( 'condition ', row[[1]], ': count ', round(row[2],1), ', age = ', format(round(row[3],1), nsmall = 1), 'CHAR_PLUSMIN', format(round(row[4],1), nsmall = 1), ', male ', format(round(row[6]*100,1), nsmall = 1), "%", sep = "")
     }
 }
 
@@ -246,7 +252,7 @@ val_per_cond = function(values, percent = F, digits = 0){
     } else {
         per_cond <- do.call(data.frame, aggregate( values, by = list(bylist), function(x) c(mean = ro(mean(x), digits), sd = ro(sd(x), digits ) )) )
     }
-    per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep="\u00b1")
+    per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep="CHAR_PLUSMIN")
     per_cond = subset(per_cond, select=-c(x.mean,x.sd))
     return(per_cond)
 }
