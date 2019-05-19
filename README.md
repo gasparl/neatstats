@@ -30,15 +30,15 @@ value_col: value_col
 
 id_col: unique identifier, e.g. participant ID
 
-between_vars: all columns for between-subject factors to be included
+between_vars: all columns for between-subject factors to be included, separated by commas
 
-within_vars: all columns for within-subject factors to be included
+within_vars: all columns for within-subject factors to be included, separated by commas
 
 For anova_neat, all parameters have to be given as strings (i.e., in quotes).
 
 Example:
 
-anova_neat(data_long = "my_data", value_col = "rts", id_col = "subject_id", between_vars = "task_version", within_vars = "item_types" )
+anova_neat(data_long = "my_data", value_col = "rts", id_col = "subject_id", between_vars = "task_version", within_vars = "item_types, session" )
 
 
 **To be continued...**
