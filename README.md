@@ -22,7 +22,7 @@ greater: "1" for one-sided test with _first_ data assumed to be greater, "2" for
 
 **For ANOVAs, use anova_neat:**
 
-anova_neat( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL ) {
+anova_neat( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL, bf_added = T ) {
 
 data_long: dataset name
 
@@ -33,6 +33,8 @@ id_col: unique identifier, e.g. participant ID
 between_vars: all columns for between-subject factors to be included, separated by commas
 
 within_vars: all columns for within-subject factors to be included, separated by commas
+
+bf_added: True to include Bayes factors, False to omit them (which makes the test run faster)
 
 For anova_neat, all parameters have to be given as strings (i.e., in quotes).
 
