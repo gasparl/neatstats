@@ -5,7 +5,8 @@
 \title{Neat ANOVA}
 \usage{
 anova_neat(data_long, value_col, id_col, between_vars = NULL,
-  within_vars = NULL)
+  within_vars = NULL, ci = 0.9, bf_added = T,
+  test_title = "--- neat ANOVA ---")
 }
 \description{
 This function gives thorough ANOVA results including CIs and BFs.

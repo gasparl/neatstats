@@ -4,8 +4,8 @@
 \alias{t_neat}
 \title{Neat t-test}
 \usage{
-t_neat(var1, var2, pair = F, greater = "", ci = 0.95,
-  for_table = F)
+t_neat(var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T,
+  for_table = F, test_title = "Descriptives:", round_descr = 2)
 }
 \description{
 This function gives thorough t-test results including CIs and BFs.

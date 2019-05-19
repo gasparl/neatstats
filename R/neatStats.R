@@ -30,13 +30,15 @@ quiet <- function(x) {
 prnt = function( ..., mysep = "\n") {
     to_print = gsub('-', 'CHAR_MINUS', paste0( ... ) )
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
-    to_print = gsub("p = 0.000", "p < 0.001", to_print )
+    to_print = gsub("p = 0.", "p = .", to_print )
+    to_print = gsub("p = .000", "p < .001", to_print )
     
     to_print = gsub("CHAR_MINUS", "\u2013", to_print )
     to_print = gsub("CHAR_PLUSMIN", "\u00b1", to_print )
     to_print = gsub("CHAR_X", "\u00d7", to_print )
     Encoding(to_print) = "UTF-8"
     cat( to_print, sep = mysep )
+    # TODO: to clipboard
 }
 cit_d = function(probe_rts, irr_rts){
     return( (mean(probe_rts) - mean(irr_rts)) / sd(irr_rts) )
@@ -74,21 +76,33 @@ bf_neat = function( bf ) {
 #' @examples
 #' t_neat()
 
-t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, for_table = F ) {
-    # var1 (M+-SD= ) vs. var2 (M+-SD= )
+t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, for_table = F, test_title = "Descriptives:", round_descr = 2 ) {
+    descr_1 = paste0( ro( mean(var1), round_descr ), "CHAR_PLUSMIN", ro( sd(var1), round_descr ) )
+    descr_2 = paste0( ro( mean(var2), round_descr ), "CHAR_PLUSMIN", ro( sd(var2), round_descr ) )
+    prnt( test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2 )
     if ( greater == "1" ) {
         message("One-sided test! H1: first is greater than second.")
         ttest = t.test( var1, var2, paired = pair, alternative = "greater" )
-        bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
+        if ( bf_added == T ) {
+            bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
+        }
     } else if ( greater == "2" ) {
         message("One-sided test! H1: second is greater than first.")
         ttest = t.test( var1, var2, paired = pair, alternative = "less" )
-        bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
+        if ( bf_added == T ) {
+            bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
+        }
     } else {
         ttest = t.test( var1, var2, paired = pair )
-        bf = as.vector( ttestBF( var1, var2, paired = pair ) )
+        if ( bf_added == T ) {
+            bf = as.vector( ttestBF( var1, var2, paired = pair ) )
+        }
     }
-    bf_out = bf_neat( bf )
+    if ( bf_added == T ) {
+        bf_out = bf_neat( bf )
+    } else {
+        bf_out = "."
+    }
     t = as.vector(ttest$statistic)
     df = as.vector(ttest$parameter)
     pvalue = ttest$p.value
@@ -97,7 +111,7 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, for_table = F 
     if ( pair == T ) {
         sm = quiet( ci.sm( ncp = ttest$statistic, N = n1, conf.level = ci ) )
         d = paste0( "dwithin = ", ro( sm$Standardized.Mean, 2 ) )
-        df = ro( df )
+        df = ro( df, 0 )
         lower = ro( sm$Lower.Conf.Limit.Standardized.Mean, 2 )
         upper = ro( sm$Upper.Conf.Limit.Standardized.Mean, 2 )
     } else {
@@ -110,7 +124,7 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, for_table = F 
     if (for_table == T) {
         ci_disp = ""
     } else {
-        ci_disp = ", 95% CI"
+        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
     }    
     out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
     prnt(out)
@@ -146,7 +160,8 @@ bf_names = function( the_names ) {
 #' @examples
 #' anova_neat()
 
-anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL ) {
+
+anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
     if ( is.null( between_vars ) ) {
         between_vars_ez = 'NULL'
         between_vars_bf = ''
@@ -174,24 +189,28 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
                                          between =', between_vars_ez,',
                                          within =', within_vars_ez,',
                                          type = 2, detailed = TRUE )')
-    ))
-    indep_vars = gsub( ',', ' *', paste0( between_vars_bf, within_vars_bf ) )
-    bf = eval(parse(text=
-        paste0(
-            'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = ', data_long, ', whichRandom = "', id_col, '", whichModels = "bottom") )'
-        )
-    ))
-    cat( "---Bayes factor---\n" )
-    print( bf )
-    names( bf ) = bf_names( names( bf ) )
-    anova_apa( ez_anova_out, bf )
+    ))    
+    if ( bf_added == T ) {
+        indep_vars = gsub( ',', ' *', paste0( between_vars_bf, within_vars_bf ) )
+        bf = eval(parse(text=
+            paste0(
+                'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = ', data_long, ', whichRandom = "', id_col, '", whichModels = "bottom") )'
+            )
+        ))
+        cat( "---Bayes factor---\n" )
+        print( bf ) # to remove
+        names( bf ) = bf_names( names( bf ) )
+    } else {
+        bf = NULL
+    }
+    anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title )
 }
 
-anova_apa = function( ezANOVA_out, bf_added = NULL ) {
+anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---" ) {
     ezANOVA_out = aovEffectSize(ezANOVA_out, "pes")
     cat( "---ezANOVA---\n" )
     print(ezANOVA_out) # to remove
-    cat( "---Proper APA---\n" )
+    cat( test_title, "\n" )
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
         f_name = ezANOVA_out$ANOVA$Effect[indx]
         f_name = sort( strsplit( f_name, ":" )[[1]] )
@@ -205,25 +224,26 @@ anova_apa = function( ezANOVA_out, bf_added = NULL ) {
         F_val = ezANOVA_out$ANOVA$F[indx]
         df_n = ezANOVA_out$ANOVA$DFn[indx]
         df_d = ezANOVA_out$ANOVA$DFd[indx]
-        pvalue = ezANOVA_out$ANOVA$p[indx]
-        
-        if ( ro(pvalue,3) == "0.000" ) {
-            p_display = "p < 0.001"
-        } else {
-            p_display = paste( "p = ", ro( pvalue, 3 ), sep = "")
-        }
-        
+        pvalue = ezANOVA_out$ANOVA$p[indx]   
         petas = ezANOVA_out$ANOVA$pes[indx]
         
-        limits = conf.limits.ncf(F.value = F_val, conf.level = .90, df.1 = df_n, df.2 = df_d )
+        limits = conf.limits.ncf(F.value = F_val, conf.level = ci, df.1 = df_n, df.2 = df_d )
         lower = limits$Lower.Limit / (limits$Lower.Limit + df_n + df_d + 1)
         upper = limits$Upper.Limit / (limits$Upper.Limit + df_n + df_d + 1)
-        lower[is.na(lower)] = 0
-        upper[is.na(upper)] = 0
-        
-        out = paste( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", ", p_display, ", np2 = ", ro(petas, 3), ", 90% CI [", ro(lower, 3), ", ", ro(upper, 3), "]", bf_out, " (", f_name, ")", sep="")
-        prnt(out, sep = "")
-        
+        if ( is.na(lower) ) {
+            lower = "0"
+        } else {
+            lower = sub('.', '', ro(lower, 3) )
+        }        
+        if ( is.na(upper) ) {
+            upper = "< .001"
+        } else {
+            upper = sub('.', '', ro(upper, 3) )
+        }
+        np2 = sub('.', '', ro(petas, 3) )
+        the_ci = paste0(", ", ro(ci*100, 0), "% CI [")
+        out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", np2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
+        prnt(out, sep = "")        
     }
 }
 
