@@ -35,6 +35,7 @@ cit_d = function(probe_rts, irr_rts){
     return( (mean(probe_rts) - mean(irr_rts)) / sd(irr_rts) )
 }
 ro = function(value, round_to = 2) {
+    value = as.numeric( value )
     return(format(round(value, round_to), nsmall = round_to))
 }
 
@@ -67,18 +68,18 @@ bf_neat = function( bf ) {
 #' @examples
 #' t_neat()
 
-t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, for_table = F, test_title = "Descriptives:", round_descr = 2 ) {
+t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, auc_added = F, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
     descr_1 = paste0( ro( mean(var1), round_descr ), "CHAR_PLUSMIN", ro( sd(var1), round_descr ) )
     descr_2 = paste0( ro( mean(var2), round_descr ), "CHAR_PLUSMIN", ro( sd(var2), round_descr ) )
     prnt( test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2 )
     if ( greater == "1" ) {
-        message("One-sided test! H1: first is greater than second.")
+        message("One-sided t-test and BF! H1: first is greater than second.")
         ttest = t.test( var1, var2, paired = pair, alternative = "greater" )
         if ( bf_added == T ) {
             bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
         }
     } else if ( greater == "2" ) {
-        message("One-sided test! H1: second is greater than first.")
+        message("One-sided t-test and BF! H1: second is greater than first.")
         ttest = t.test( var1, var2, paired = pair, alternative = "less" )
         if ( bf_added == T ) {
             bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
@@ -119,16 +120,18 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
     }    
     out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
     prnt(out)
-}
-
-
-show_auc = function(theroc, for_table = T, round_to = 3) {
-    if (for_table == T) {
-       prnt("AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), " [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
-    } else {
-        prnt(" AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), ", 95% CI [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
+    if ( auc_added == T ) {
+        if ( auc_greater == "2" ) {
+            auc_dir = ">" # v2 expected larger
+        } else {
+            auc_dir = "<" # v1 expected larger
+        }        
+        the_roc = roc( response = c( rep( 0, length(v2) ), rep( 1, length(v1) ) ), predictor = c(v2, v1), direction =  auc_dir ) # v1 larger
+        show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
+        invisible( the_roc )
     }
 }
+
 
 bf_names = function( the_names ) {
     new_names = c()
@@ -139,6 +142,28 @@ bf_names = function( the_names ) {
         new_names = c(new_names, a_name)
     }
     return( new_names )
+}
+
+show_auc = function(theroc, ci = 0.95, round_to = 3, for_table = F) {
+    if (for_table == T) {
+        ci_disp = ""
+    } else {
+        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
+    }   
+    auc_num = edges( auc(theroc), round_to )
+    auc_ci = as.numeric( ci.auc( theroc, conf.level = ci ) )
+    lower = edges( auc_ci[1], round_to )
+    upper = edges( auc_ci[3], round_to )
+    prnt( "AUC = ", auc_num, ci_disp, " [", lower, ", ", upper, "]" )
+}
+edges = function( the_num, round_to ) {
+    if ( the_num == 1 ) {
+        return( "1" )
+    } else if ( the_num == 0 ) {
+        return( "0" )
+    } else {
+        return( sub('.', '', ro(  the_num, round_to ) ) )
+    }
 }
 
 #' Neat ANOVA
