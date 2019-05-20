@@ -8,6 +8,8 @@ library(devtools)
 
 install_github("gasparl/neatstats")
 
+Then load with: library("neatStats")
+
 **For t-tests, use t_neat:**
 
 t_neat( var1, var2, pair = F, greater = "" )
