@@ -1,6 +1,5 @@
 # call this as source("C:/research/proj_neatstats/neatStats/R/neatStats.R")
 
-
 #' Neat path
 #'
 #' This function gives the path to current script's path in RStudio.
@@ -266,10 +265,3 @@ val_per_cond = function(values, percent = F, digits = 0){
     per_cond = subset(per_cond, select=-c(x.mean,x.sd))
     return(per_cond)
 }
-
-
-#'
-#' @export
-#' @import data.table plyr pROC MBESS ez psychReport BayesFactor TOSTER ggplot2
-#'
-
