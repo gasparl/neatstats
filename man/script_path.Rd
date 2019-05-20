@@ -2,8 +2,7 @@
 % Please edit documentation in R/neatStats.R
 \name{script_path}
 \alias{script_path}
-\title{import data.table plyr pROC MBESS ez psychReport BayesFactor TOSTER ggplot2
-Neat path}
+\title{Neat path}
 \usage{
 script_path()
 }

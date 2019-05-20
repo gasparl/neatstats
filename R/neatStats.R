@@ -1,6 +1,5 @@
 # call this as source("C:/research/proj_neatstats/neatStats/R/neatStats.R")
 
-#' import data.table plyr pROC MBESS ez psychReport BayesFactor TOSTER ggplot2
 
 #' Neat path
 #'
@@ -268,4 +267,9 @@ val_per_cond = function(values, percent = F, digits = 0){
     return(per_cond)
 }
 
+
+#'
+#' @export
+#' @import data.table plyr pROC MBESS ez psychReport BayesFactor TOSTER ggplot2
+#'
 
