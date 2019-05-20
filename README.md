@@ -10,7 +10,7 @@ install_github("gasparl/neatstats")
 
 **For t-tests, use t_neat:**
 
-tneat( var1, var2, pair = F, greater = "" )
+t_neat( var1, var2, pair = F, greater = "" )
 
 var1: first data vector
 
