@@ -20,10 +20,12 @@ prnt = function( ..., mysep = "\n") {
     to_print = gsub('-', 'CHAR_MINUS', paste0( ... ) )
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
     to_print = gsub("p = 0.", "p = .", to_print )
-    to_print = gsub("p = .000", "p < .001", to_print )
-    
+    to_print = gsub("p = .000", "p < .001", to_print )    
+    Encoding(to_print) = "UTF-8"
     to_print = gsub("CHAR_MINUS", "\u2013", to_print )
+    Encoding(to_print) = "UTF-8"
     to_print = gsub("CHAR_PLUSMIN", "\u00b1", to_print )
+    Encoding(to_print) = "UTF-8"
     to_print = gsub("CHAR_X", "\u00d7", to_print )
     Encoding(to_print) = "UTF-8"
     cat( to_print, sep = mysep )
@@ -119,14 +121,12 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
     prnt(out)
 }
 
-show = function(title, value, round_to = 2) {
-    prnt( title, "=", format(round(value, round_to), nsmall = round_to) )
-}
-show_auc = function(title, theroc, for_table = T, round_to = 3) {
+
+show_auc = function(theroc, for_table = T, round_to = 3) {
     if (for_table == T) {
-       prnt(title, " AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), " [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
+       prnt("AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), " [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
     } else {
-        prnt(title, " AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), ", 95% CI [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
+        prnt(" AUC = ", format(round(as.numeric(auc(theroc)), round_to), nsmall = round_to), ", 95% CI [", format(round(as.numeric(ci(theroc))[1], round_to), nsmall = round_to), ", ", format(round(as.numeric(ci(theroc))[3], round_to), nsmall = round_to), "]", sep = "")
     }
 }
 
