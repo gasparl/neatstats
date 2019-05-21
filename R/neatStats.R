@@ -16,7 +16,7 @@ quiet <- function(x) {
     on.exit(sink()) 
     invisible(force(x)) 
 }
-prnt = function( ..., mysep = "\n") {
+prnt = function( ... ) {
     to_print = gsub('-', 'CHAR_MINUS', paste0( ... ) )
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
     to_print = gsub("p = 0.", "p = .", to_print )
@@ -28,9 +28,44 @@ prnt = function( ..., mysep = "\n") {
     Encoding(to_print) = "UTF-8"
     to_print = gsub("CHAR_X", "\u00d7", to_print )
     Encoding(to_print) = "UTF-8"
-    cat( to_print, sep = mysep )
     # TODO: to clipboard
+    pkg.globals$printing( to_print )
 }
+
+
+pkg.globals = new.env()
+
+pkg.globals$printing = function( to_print ) {
+    cat( to_print, fill = T)
+}
+
+
+#' Printing ON
+#'
+#' This function switches on printing.
+#' @keywords print on
+#' @export
+#' @examples
+#' print_on()
+print_on = function() {
+    pkg.globals$printing = function( to_print ) {
+        cat( to_print, fill = T)
+    }
+}
+
+#' Printing OFF
+#'
+#' This function switches off printing.
+#' @keywords print off
+#' @export
+#' @examples
+#' print_off()
+print_off = function() {
+    pkg.globals$printing = function( to_print ) {
+        invisible()
+    }
+}
+
 cit_d = function(probe_rts, irr_rts){
     return( (mean(probe_rts) - mean(irr_rts)) / sd(irr_rts) )
 }
@@ -94,6 +129,7 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         bf_out = bf_neat( bf )
     } else {
         bf_out = "."
+        bf = NA
     }
     t = as.vector(ttest$statistic)
     df = as.vector(ttest$parameter)
@@ -102,13 +138,15 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
     n2 = length(var2)
     if ( pair == T ) {
         sm = quiet( ci.sm( ncp = ttest$statistic, N = n1, conf.level = ci ) )
-        d = paste0( "dwithin = ", ro( sm$Standardized.Mean, 2 ) )
+        d_orig = sm$Standardized.Mean
+        d = paste0( "dwithin = ", ro( d_orig, 2 ) )
         df = ro( df, 0 )
         lower = ro( sm$Lower.Conf.Limit.Standardized.Mean, 2 )
         upper = ro( sm$Upper.Conf.Limit.Standardized.Mean, 2 )
     } else {
         the_smd = ci.smd( ncp = t, n.1 = n1, n.2 = n2, conf.level = ci )
-        d = paste0( "dbetween = ", ro( the_smd$smd, 2 ) )
+        d_orig = the_smd$smd
+        d = paste0( "dbetween = ", ro( d_orig, 2 ) )
         df = ro( df, 1 )
         lower = ro( the_smd$Lower.Conf.Limit.smd, 2 )
         upper = ro( the_smd$Upper.Conf.Limit.smd, 2 )
@@ -128,7 +166,9 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         }        
         the_roc = roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), direction =  auc_dir ) # v1 larger
         show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
-        invisible( the_roc )
+        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = auc(the_roc) ), roc_obj = the_roc ) )
+    } else {
+        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = NULL ), roc_obj = NULL ) )
     }
 }
 
@@ -166,6 +206,28 @@ edges = function( the_num, round_to ) {
     }
 }
 
+#' Neat ROC test
+#'
+#' This function gives the result of comparing two ROCs (AUCs).
+#' @keywords roc
+#' @export
+#' @examples
+#' roc_neat()
+
+roc_neat = function( roc1, roc2, pair = F ) {
+    roc_test = roc.test(roc1, roc2, paired = pair)
+    roc_stat = roc_test$statistic
+    df = roc_test$parameter
+    p_value = roc_test$p.value
+    if ( pair == F ) {
+        out = paste0( "D(", ro(df, 2), ") = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
+    } else {
+        out = paste0( "Z = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
+    }
+    prnt(out)
+    invisible( c(stat = as.numeric(roc_stat), p = p_value) )
+}
+
 #' Neat ANOVA
 #'
 #' This function gives thorough ANOVA results including CIs and BFs.
@@ -173,7 +235,6 @@ edges = function( the_num, round_to ) {
 #' @export
 #' @examples
 #' anova_neat()
-
 
 anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
     if ( is.null( between_vars ) ) {
@@ -257,7 +318,7 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         np2 = sub('.', '', ro(petas, 3) )
         the_ci = paste0(", ", ro(ci*100, 0), "% CI [")
         out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", np2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
-        prnt(out, sep = "")        
+        prnt(out)        
     }
 }
 
