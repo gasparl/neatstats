@@ -272,7 +272,7 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
                 'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = ', data_long, ', whichRandom = "', id_col, '", whichModels = "bottom") )'
             )
         ))
-        cat( "---Bayes factor---\n" )
+        prnt( "---Bayes factor---" )
         print( bf ) # to remove
         names( bf ) = bf_names( names( bf ) )
     } else {
@@ -283,9 +283,9 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
 
 anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---" ) {
     ezANOVA_out = aovEffectSize(ezANOVA_out, "pes")
-    cat( "---ezANOVA---\n" )
+    prnt( "---ezANOVA---" )
     print(ezANOVA_out) # to remove
-    cat( test_title, "\n" )
+    prnt( test_title )
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
         f_name = ezANOVA_out$ANOVA$Effect[indx]
         f_name = sort( strsplit( f_name, ":" )[[1]] )
