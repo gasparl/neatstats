@@ -126,7 +126,7 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         } else {
             auc_dir = "<" # v1 expected larger
         }        
-        the_roc = roc( response = c( rep( 0, length(v2) ), rep( 1, length(v1) ) ), predictor = c(v2, v1), direction =  auc_dir ) # v1 larger
+        the_roc = roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), direction =  auc_dir ) # v1 larger
         show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
         invisible( the_roc )
     }
