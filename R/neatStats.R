@@ -69,6 +69,14 @@ print_off = function() {
 cit_d = function(probe_rts, irr_rts){
     return( (mean(probe_rts) - mean(irr_rts)) / sd(irr_rts) )
 }
+
+#' Neat rounding
+#'
+#' This function neatly rounds any number to given number of digits after the decimal point.
+#' @keywords round
+#' @export
+#' @examples
+#' ro()
 ro = function(value, round_to = 2) {
     value = as.numeric( value )
     return(format(round(value, round_to), nsmall = round_to))
@@ -166,9 +174,11 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         }        
         the_roc = roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), direction =  auc_dir ) # v1 larger
         show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
-        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = auc(the_roc) ), roc_obj = the_roc ) )
+        max_acc = as.numeric( coords(the_roc, x = "best", ret = "accuracy" ) )[1]
+        best_coords = coords(the_roc, x = "best" ) 
+        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = auc(the_roc), accuracy = max_acc ), roc_obj = the_roc, best_thresholds = best_coords ) )
     } else {
-        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = NULL ), roc_obj = NULL ) )
+        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = NULL, accuracy = NULL ), roc_obj = NULL, best_thresholds = NULL ) )
     }
 }
 
@@ -214,8 +224,15 @@ edges = function( the_num, round_to ) {
 #' @examples
 #' roc_neat()
 
-roc_neat = function( roc1, roc2, pair = F ) {
-    roc_test = roc.test(roc1, roc2, paired = pair)
+roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
+    if ( greater == "1" ) {
+        alt = "greater"
+    } else if ( greater == "2" ) {
+        alt = "less"
+    } else {
+        alt = "two.sided"    
+    }    
+    roc_test = roc.test(roc1, roc2, paired = pair, alternative = alt)
     roc_stat = roc_test$statistic
     df = roc_test$parameter
     p_value = roc_test$p.value
@@ -237,12 +254,17 @@ roc_neat = function( roc1, roc2, pair = F ) {
 #' anova_neat()
 
 anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
+    this_data = eval(parse(text=data_long))
+    this_data[,id_col] = to_fact(this_data[[id_col]])
     if ( is.null( between_vars ) ) {
         between_vars_ez = 'NULL'
         between_vars_bf = ''
     } else {
         between_vars_ez = paste0( 'c(', between_vars ,')' )
         between_vars_bf = between_vars
+        for ( this_col in to_c(between_vars) ) {
+            this_data[,this_col] = to_fact(this_data[[this_col]])
+        }
     }
     if ( is.null( within_vars ) ) {
         within_vars_ez = 'NULL'
@@ -256,9 +278,12 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
             within_vars_bf = paste0( ' * ', within_vars )
         }
         id_part = paste0( ' + ', id_col )
+        for ( this_col in to_c(within_vars) ) {
+            this_data[,this_col] = to_fact(this_data[[this_col]])
+        }
     }
     ez_anova_out = eval(parse(text=
-                                  paste0('ezANOVA(data=,', data_long, ',
+                                  paste0('ezANOVA(data= this_data,
                                          dv=', value_col,',
                                          wid=', id_col,',
                                          between =', between_vars_ez,',
@@ -269,7 +294,7 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
         indep_vars = gsub( ',', ' *', paste0( between_vars_bf, within_vars_bf ) )
         bf = eval(parse(text=
             paste0(
-                'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = ', data_long, ', whichRandom = "', id_col, '", whichModels = "bottom") )'
+                'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = this_data, whichRandom = "', id_col, '", whichModels = "bottom") )'
             )
         ))
         prnt( "---Bayes factor---" )
@@ -321,8 +346,16 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         prnt(out)        
     }
 }
+to_fact = function( var ) {
+    return( as.factor( tolower( as.character( var ) ) ))
+}
+to_c = function( var ) {
+    var = gsub("\\s", "", var) 
+    return( strsplit(var, ",")[[1]] )
+}
 
-age_gender_per_cond = function( all_data ) {
+age_gender = function( all_data ) {
+    # if no condition column: create it
     for_gender = all_data[,c("condition","gender")]
     gender = data.frame(prop.table(table(for_gender), 1))
     gender = head(gender, nrow(gender)/2 )
@@ -333,7 +366,7 @@ age_gender_per_cond = function( all_data ) {
 
     for(i in 1:nrow(age_gend)) {
         row <- age_gend[i,]
-        prnt( 'condition ', row[[1]], ': count ', round(row[2],1), ', age = ', format(round(row[3],1), nsmall = 1), 'CHAR_PLUSMIN', format(round(row[4],1), nsmall = 1), ', male ', format(round(row[6]*100,1), nsmall = 1), "%", sep = "")
+        prnt( 'condition ', row[[1]], ': count ', ro(row[2],1), ', age = ', ro(row[3],1), 'CHAR_PLUSMIN', ro(row[4],1), ', male ', ro(row[6]*100,1), "%", sep = "")
     }
 }
 
