@@ -92,15 +92,20 @@ to_exp = function( the_num ) {
 }
 
 bf_neat = function( bf ) {
-    if ( bf < 1 ) {
-        bf2 = 1/bf
-        bf2 = to_exp( bf2 )
-        bf_dir = paste0( ", BF01 = ", bf2 ) 
+    if ( is.na(bf) ) {
+        message("BF = NA")
+        return(".")
     } else {
-        bf2 = to_exp( bf )
-        bf_dir = paste0( ", BF10 = ", bf2 ) 
+        if ( bf < 1 ) {
+            bf2 = 1/bf
+            bf2 = to_exp( bf2 )
+            bf_dir = paste0( ", BF01 = ", bf2 ) 
+        } else {
+            bf2 = to_exp( bf )
+            bf_dir = paste0( ", BF10 = ", bf2 ) 
+        }
+        return( paste0( bf_dir, ". (BFplain = ", ro(bf, 4), ")" ) )
     }
-    return( paste0( bf_dir, ". (BFplain = ", ro(bf, 4), ")" ) )
 }
 
 #' Neat t-test
@@ -111,18 +116,18 @@ bf_neat = function( bf ) {
 #' @examples
 #' t_neat()
 
-t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, auc_added = F, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
+t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, auc_added = F, r_added = T, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
     descr_1 = paste0( ro( mean(var1), round_descr ), "CHAR_PLUSMIN", ro( sd(var1), round_descr ) )
     descr_2 = paste0( ro( mean(var2), round_descr ), "CHAR_PLUSMIN", ro( sd(var2), round_descr ) )
     prnt( test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2 )
     if ( greater == "1" ) {
-        message("One-sided t-test and BF! H1: first is greater than second.")
+        message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
         ttest = t.test( var1, var2, paired = pair, alternative = "greater" )
         if ( bf_added == T ) {
             bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
         }
     } else if ( greater == "2" ) {
-        message("One-sided t-test and BF! H1: second is greater than first.")
+        message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
         ttest = t.test( var1, var2, paired = pair, alternative = "less" )
         if ( bf_added == T ) {
             bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
@@ -132,6 +137,12 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         if ( bf_added == T ) {
             bf = as.vector( ttestBF( var1, var2, paired = pair ) )
         }
+        if ( is.null(ci) ) {
+            ci = 0.95
+        }
+    }    
+    if ( is.null(ci) ) {
+        ci = 0.90
     }
     if ( bf_added == T ) {
         bf_out = bf_neat( bf )
@@ -165,7 +176,11 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = 0.95, bf_added = T, 
         ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
     }    
     out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
-    prnt(out)
+    prnt(out)    
+    if ( pair == T & r_added == T ) {
+        cat( "Pearson's correlation: " )
+        corr_neat( var1, var2, bf_added = F )
+    }
     if ( auc_added == T ) {
         if ( auc_greater == "2" ) {
             auc_dir = ">" # v2 expected larger
@@ -206,15 +221,18 @@ show_auc = function(theroc, ci = 0.95, round_to = 3, for_table = F) {
     upper = edges( auc_ci[3], round_to )
     prnt( "AUC = ", auc_num, ci_disp, " [", lower, ", ", upper, "]" )
 }
-edges = function( the_num, round_to ) {
-    if ( the_num == 1 ) {
+edges = function( the_num, round_to, no_null = F ) {
+    if ( round(the_num, round_to) == 1 ) {
         return( "1" )
-    } else if ( the_num == 0 ) {
+    } else if ( round(the_num, round_to) == -1 ) {
+        return( "-1" )
+    } else if ( round(the_num, round_to) == 0 & no_null == F ) {
         return( "0" )
     } else {
-        return( sub('.', '', ro(  the_num, round_to ) ) )
+        return( sub("0\\.", "\\.", ro(  the_num, round_to ) ) )
     }
 }
+
 
 #' Neat ROC test
 #'
@@ -244,6 +262,55 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     prnt(out)
     invisible( c(stat = as.numeric(roc_stat), p = p_value) )
 }
+
+
+#' Neat correlation
+#'
+#' This function gives Pearson correlation results including CIs and BFs.
+#' @keywords correlation
+#' @export
+#' @examples
+#' corr_neat()
+
+corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_r = 3, for_table = F ) {
+    if ( direction != "" & substr("negative", 1, nchar(direction) ) == direction ) {
+        message("One-sided test! Negative correlation expected.")
+        the_cor = cor.test( var1, var2, alternative = "l", conf.level = ci )
+        if ( bf_added == T ) {
+            bf = as.vector( BayesFactor::correlationBF( var1, var2, nullInterval = c(-1, 0) )[1] )
+        }
+    } else if ( direction != "" & substr("positive", 1, nchar(direction) ) == direction ) {
+        message("One-sided test! Positive correlation expected.")
+        the_cor = cor.test( var1, var2, alternative = "g", conf.level = ci )
+        if ( bf_added == T ) {
+            bf = as.vector( BayesFactor::correlationBF( var1, var2, nullInterval = c(0, 1) )[1] )
+        }
+    } else {
+        the_cor = cor.test( var1, var2, conf.level = ci )
+        if ( bf_added == T ) {
+            bf = as.vector( BayesFactor::correlationBF( var1, var2 ) )
+        }
+    }
+    if ( bf_added == T ) {
+        bf_out = bf_neat( bf )
+    } else {
+        bf_out = "."
+        bf = NA
+    }
+    if (for_table == T) {
+        ci_disp = ""
+    } else {
+        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
+    }    
+    r = edges( the_cor$estimate, round_r, no_null = T )
+    lower = edges( the_cor$conf.int[1], round_r, no_null = T )
+    upper = edges( the_cor$conf.int[2], round_r, no_null = T )
+    p_value = the_cor$p.value
+    out = paste0( "r(", df, ") = ", r, ci_disp, " [", lower, ", ", upper, "]", ", p = ", ro(p_value,3), bf_out )
+    prnt(out)
+    invisible( c( r = as.numeric( the_cor$estimate ), p = p_value, bf = as.numeric(bf) ) ) 
+}
+
 
 #' Neat ANOVA
 #'
