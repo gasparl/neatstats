@@ -1,2 +1,2 @@
-#' @import data.table plyr pROC MBESS ez BayesFactor TOSTER ggplot2
+#' @import data.table plyr pROC MBESS ez BayesFactor ggplot2
 NULL

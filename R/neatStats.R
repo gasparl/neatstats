@@ -1,5 +1,3 @@
-# call this as source("C:/research/proj_neatstats/neatStats/R/neatStats.R")
-
 #' Neat path
 #'
 #' This function gives the path to current script's path in RStudio.
@@ -16,19 +14,24 @@ quiet <- function(x) {
     on.exit(sink()) 
     invisible(force(x)) 
 }
+
 prnt = function( ... ) {
     to_print = gsub('-', 'CHAR_MINUS', paste0( ... ) )
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
     to_print = gsub("p = 0.", "p = .", to_print )
-    to_print = gsub("p = .000", "p < .001", to_print )    
+    to_print = gsub("p = .000", "p < .001", to_print ) 
+    
+    change_pairs = list( c('CHAR_MINUS', '\u2013'), 
+                        c('CHAR_PLUSMIN', '\u00b1'),
+                        c('CHAR_X', '\u00d7'),
+                        c('CHAR_ETA', '\u03b7') )
+     
     Encoding(to_print) = "UTF-8"
-    to_print = gsub("CHAR_MINUS", "\u2013", to_print )
-    Encoding(to_print) = "UTF-8"
-    to_print = gsub("CHAR_PLUSMIN", "\u00b1", to_print )
-    Encoding(to_print) = "UTF-8"
-    to_print = gsub("CHAR_X", "\u00d7", to_print )
-    Encoding(to_print) = "UTF-8"
-    # TODO: to clipboard
+    for ( pair in change_pairs ) {
+        to_print = gsub( pair[1], pair[2], to_print )
+        Encoding(to_print) = "UTF-8"    
+    }
+    
     pkg.globals$printing( to_print )
 }
 
@@ -370,21 +373,23 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
     } else {
         bf = NULL
     }
-    anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title )
+    to_return = anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title )
+    invisible( to_return )
 }
 
 anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---" ) {
     ezANOVA_out$ANOVA$pes <- ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
-    ezANOVA_out = aovEffectSize(ezANOVA_out, "pes")
     prnt( "--- ezANOVA ---" )
     print(ezANOVA_out) # to remove
     prnt( test_title )
+    stat_list = list()
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
         f_name = ezANOVA_out$ANOVA$Effect[indx]
         f_name = sort( strsplit( f_name, ":" )[[1]] )
         f_name = paste( f_name, collapse = " CHAR_X " )
         if ( is.null( bf_added ) | !( f_name %in% names( bf_added ) ) ) {
             bf_out = "."
+            bf_val = NULL
         } else {
             bf_val = bf_added[ f_name ]
             bf_out = bf_neat( bf_val )
@@ -410,9 +415,12 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         }
         np2 = sub('.', '', ro(petas, 3) )
         the_ci = paste0(", ", ro(ci*100, 0), "% CI [")
-        out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", np2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
-        prnt(out)        
+        out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
+        prnt(out)
+        s_name = gsub( " CHAR_X ", "_", f_name )
+        stat_list[[ s_name ]] = stats = c( F = as.numeric(F_val), p = pvalue, petas = as.numeric(petas), bf = as.numeric(bf_val) )
     }
+    invisible( stat_list )
 }
 to_fact = function( var ) {
     return( as.factor( tolower( as.character( var ) ) ))
