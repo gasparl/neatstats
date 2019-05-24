@@ -364,7 +364,7 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
                 'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = this_data, whichRandom = "', id_col, '", whichModels = "bottom") )'
             )
         ))
-        prnt( "---Bayes factor---" )
+        prnt( "--- Bayes factor ---" )
         print( bf ) # to remove
         names( bf ) = bf_names( names( bf ) )
     } else {
@@ -374,8 +374,9 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
 }
 
 anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---" ) {
+    ezANOVA_out$ANOVA$pes <- ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
     ezANOVA_out = aovEffectSize(ezANOVA_out, "pes")
-    prnt( "---ezANOVA---" )
+    prnt( "--- ezANOVA ---" )
     print(ezANOVA_out) # to remove
     prnt( test_title )
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
@@ -450,4 +451,13 @@ val_per_cond = function(values, percent = F, digits = 0){
     per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep="CHAR_PLUSMIN")
     per_cond = subset(per_cond, select=-c(x.mean,x.sd))
     return(per_cond)
+}
+
+cohens_h = function( prop_1, prop_2, n1, n2, ci = 0.95 ){
+    x1 = asin(sign(prop_1) * sqrt(abs(prop_1)))
+    x2 = asin(sign(prop_2) * sqrt(abs(prop_2)))
+    es = x1 - x2
+    se = sqrt(0.25 * (1 / n1 + 1 / n2 ))
+    ci_diff = qnorm(1 - (1-ci) / 2) * se
+    return( c( h = es*2, h_low = (es-ci_diff)*2, h_upp = (es+ci_diff)*2 ) )
 }
