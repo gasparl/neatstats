@@ -114,18 +114,18 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, 
         message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
         ttest = t.test( var1, var2, paired = pair, alternative = "greater" )
         if ( bf_added == T ) {
-            bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
+            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
         }
     } else if ( greater == "2" ) {
         message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
         ttest = t.test( var1, var2, paired = pair, alternative = "less" )
         if ( bf_added == T ) {
-            bf = as.vector( ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
+            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
         }
     } else {
         ttest = t.test( var1, var2, paired = pair )
         if ( bf_added == T ) {
-            bf = as.vector( ttestBF( var1, var2, paired = pair ) )
+            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair ) )
         }
         if ( is.null(ci) ) {
             ci = 0.95
@@ -146,14 +146,14 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, 
     n1 = length(var1)
     n2 = length(var2)
     if ( pair == T ) {
-        sm = quiet( ci.sm( ncp = ttest$statistic, N = n1, conf.level = ci ) )
+        sm = quiet( MBESS::ci.sm( ncp = ttest$statistic, N = n1, conf.level = ci ) )
         d_orig = sm$Standardized.Mean
         d = paste0( "dwithin = ", ro( d_orig, 2 ) )
         df = ro( df, 0 )
         lower = ro( sm$Lower.Conf.Limit.Standardized.Mean, 2 )
         upper = ro( sm$Upper.Conf.Limit.Standardized.Mean, 2 )
     } else {
-        the_smd = ci.smd( ncp = t, n.1 = n1, n.2 = n2, conf.level = ci )
+        the_smd = MBESS::ci.smd( ncp = t, n.1 = n1, n.2 = n2, conf.level = ci )
         d_orig = the_smd$smd
         d = paste0( "dbetween = ", ro( d_orig, 2 ) )
         df = ro( df, 1 )
@@ -177,11 +177,11 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, 
         } else {
             auc_dir = "<" # v1 expected larger
         }        
-        the_roc = roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), direction =  auc_dir ) # v1 larger
+        the_roc = pROC::roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), direction =  auc_dir ) # v1 larger
         show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
-        max_acc = as.numeric( coords(the_roc, x = "best", ret = "accuracy" ) )[1]
-        best_coords = coords(the_roc, x = "best" ) 
-        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = auc(the_roc), accuracy = max_acc ), roc_obj = the_roc, best_thresholds = best_coords ) )
+        max_acc = as.numeric( pROC::coords(the_roc, x = "best", ret = "accuracy" ) )[1]
+        best_coords = pROC::coords(the_roc, x = "best" ) 
+        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = pROC::auc(the_roc), accuracy = max_acc ), roc_obj = the_roc, best_thresholds = best_coords ) )
     } else {
         invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = NULL, accuracy = NULL ), roc_obj = NULL, best_thresholds = NULL ) )
     }
@@ -205,8 +205,8 @@ show_auc = function(theroc, ci = 0.95, round_to = 3, for_table = F) {
     } else {
         ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
     }   
-    auc_num = edges( auc(theroc), round_to )
-    auc_ci = as.numeric( ci.auc( theroc, conf.level = ci ) )
+    auc_num = edges( pROC::auc(theroc), round_to )
+    auc_ci = as.numeric( pROC::ci.auc( theroc, conf.level = ci ) )
     lower = edges( auc_ci[1], round_to )
     upper = edges( auc_ci[3], round_to )
     prnt( "AUC = ", auc_num, ci_disp, " [", lower, ", ", upper, "]" )
@@ -240,7 +240,7 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     } else {
         alt = "two.sided"    
     }    
-    roc_test = roc.test(roc1, roc2, paired = pair, alternative = alt)
+    roc_test = pROC::roc.test(roc1, roc2, paired = pair, alternative = alt)
     roc_stat = roc_test$statistic
     df = roc_test$parameter
     p_value = roc_test$p.value
@@ -311,8 +311,42 @@ corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_
 #' @examples
 #' anova_neat()
 
-anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within_vars = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
-    this_data = eval(parse(text=data_long))
+anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, within_ids = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
+    data_wide = eval(parse(text=data_per_subject))    
+    if ('within_factor' %in%  names( data_wide ) ) {
+        stop('Sorry, the name "within_factor" is reserved for this function. Remove or rename that column.')
+    }
+    if ('neat_unique_values' %in%  names( data_wide ) ) {
+        stop('Sorry, the name "neat_unique_values" is reserved for this function. Remove or rename that column.')
+    }    
+    values = to_c( values )    
+    if ( length( values ) > 1 ) {        
+        data_reshaped = stats::reshape( data_wide, direction='long', varying= values, idvar = id_col, timevar = "within_factor", v.names = "neat_unique_values", times = values  )    
+        if ( length( within_ids ) > 1 ) {
+        
+            for ( fact_name in names( within_ids ) ) {
+                data_reshaped[[ fact_name ]] = fact_name
+                for ( fact_x in within_ids[[fact_name]] ) {
+                    new_type = paste0( fact_name, fact_x )
+                    data_reshaped[[ fact_name ]][ grepl( fact_x, data_reshaped$within_factor ) ] = new_type
+                }
+                data_reshaped[[ fact_name ]] = as.factor( data_reshaped[[ fact_name ]] )
+            }
+            within_vars = paste( names(within_ids), collapse = ', ' )
+        } else if ( is.character( within_ids ) ) {
+            within_vars = within_ids            
+            names(data_reshaped)[names(data_reshaped) == 'within_factor'] = within_ids
+        } else {
+            within_vars = 'within_factor'
+        }
+        value_col = "neat_unique_values"
+        this_data = data_reshaped
+    } else {
+        value_col = values
+        this_data = data_wide
+        within_vars = NULL
+    }    
+    
     this_data[,id_col] = to_fact(this_data[[id_col]])
     if ( is.null( between_vars ) ) {
         between_vars_ez = 'NULL'
@@ -340,8 +374,9 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
             this_data[,this_col] = to_fact(this_data[[this_col]])
         }
     }
+    
     ez_anova_out = eval(parse(text=
-                                  paste0('ezANOVA(data= this_data,
+                                  paste0('ez::ezANOVA(data= this_data,
                                          dv=', value_col,',
                                          wid=', id_col,',
                                          between =', between_vars_ez,',
@@ -352,7 +387,7 @@ anova_neat = function( data_long, value_col, id_col, between_vars = NULL, within
         indep_vars = gsub( ',', ' *', paste0( between_vars_bf, within_vars_bf ) )
         bf = eval(parse(text=
             paste0(
-                'as.vector( anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = this_data, whichRandom = "', id_col, '", whichModels = "bottom") )'
+                'as.vector( BayesFactor::anovaBF(', value_col,' ~ ', indep_vars, id_part, ', data = this_data, whichRandom = "', id_col, '", whichModels = "bottom") )'
             )
         ))
         prnt( "--- Bayes factor ---" )
@@ -388,7 +423,7 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         pvalue = ezANOVA_out$ANOVA$p[indx]   
         petas = ezANOVA_out$ANOVA$pes[indx]
         
-        limits = conf.limits.ncf(F.value = F_val, conf.level = ci, df.1 = df_n, df.2 = df_d )
+        limits = MBESS::conf.limits.ncf(F.value = F_val, conf.level = ci, df.1 = df_n, df.2 = df_d )
         lower = limits$Lower.Limit / (limits$Lower.Limit + df_n + df_d + 1)
         upper = limits$Upper.Limit / (limits$Upper.Limit + df_n + df_d + 1)
         if ( is.na(lower) ) {

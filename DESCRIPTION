@@ -1,9 +1,9 @@
 Package: neatStats
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("Gaspar", "Lukacs", email = "lkcsgaspar@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.4.4), data.table, plyr, pROC, MBESS, ez, BayesFactor, ggplot2
+Depends: R (>= 3.4.4), pROC, MBESS, ez, BayesFactor
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
