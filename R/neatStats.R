@@ -37,32 +37,19 @@ prnt = function( ... ) {
 
 
 pkg.globals = new.env()
+pkg.globals$my_unique_grouping_var = NULL
+pkg.globals$my_unique_median = NULL
 
 pkg.globals$printing = function( to_print ) {
     cat( to_print, fill = T)
 }
 
-
-#' Printing ON
-#'
-#' This function switches on printing.
-#' @keywords print on
-#' @export
-#' @examples
-#' print_on()
 print_on = function() {
     pkg.globals$printing = function( to_print ) {
         cat( to_print, fill = T)
     }
 }
 
-#' Printing OFF
-#'
-#' This function switches off printing.
-#' @keywords print off
-#' @export
-#' @examples
-#' print_off()
 print_off = function() {
     pkg.globals$printing = function( to_print ) {
         invisible()
@@ -119,7 +106,7 @@ bf_neat = function( bf ) {
 #' @examples
 #' t_neat()
 
-t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, auc_added = F, r_added = T, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
+t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, auc_added = F, r_added = F, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
     descr_1 = paste0( ro( mean(var1), round_descr ), "CHAR_PLUSMIN", ro( sd(var1), round_descr ) )
     descr_2 = paste0( ro( mean(var2), round_descr ), "CHAR_PLUSMIN", ro( sd(var2), round_descr ) )
     prnt( test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2 )
@@ -178,12 +165,12 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, 
     } else {
         ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
     }    
-    out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
-    prnt(out)    
     if ( pair == T & r_added == T ) {
         cat( "Pearson's correlation: " )
         corr_neat( var1, var2, bf_added = F )
     }
+    out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
+    prnt(out)    
     if ( auc_added == T ) {
         if ( auc_greater == "2" ) {
             auc_dir = ">" # v2 expected larger
@@ -276,7 +263,7 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
 #' corr_neat()
 
 corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_r = 3, for_table = F ) {
-    if ( direction != "" & substr("negative", 1, nchar(direction) ) == direction ) {
+    if ( direction != "" && substr("negative", 1, nchar(direction) ) == direction ) {
         message("One-sided test! Negative correlation expected.")
         the_cor = cor.test( var1, var2, alternative = "l", conf.level = ci )
         if ( bf_added == T ) {
@@ -309,6 +296,7 @@ corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_
     lower = edges( the_cor$conf.int[1], round_r, no_null = T )
     upper = edges( the_cor$conf.int[2], round_r, no_null = T )
     p_value = the_cor$p.value
+    df = the_cor$parameter
     out = paste0( "r(", df, ") = ", r, ci_disp, " [", lower, ", ", upper, "]", ", p = ", ro(p_value,3), bf_out )
     prnt(out)
     invisible( c( r = as.numeric( the_cor$estimate ), p = p_value, bf = as.numeric(bf) ) ) 
@@ -447,18 +435,89 @@ age_gender = function( all_data ) {
 }
 
 
-val_per_cond = function(values, percent = F, digits = 0){
-    val_name = unlist(strsplit(deparse( substitute( values )), "\\$") )[2]
-    full_data$zero = "0"
-    bylist = full_data$condition # full_data$condition or full_data$zero
-    if ( percent == T ) {
-        per_cond <- do.call(data.frame, aggregate( values, by = list(bylist), function(x) c(mean = ro(mean(x*100),digits+1), sd = ro(sd(x*100),digits+1))) )
-    } else {
-        per_cond <- do.call(data.frame, aggregate( values, by = list(bylist), function(x) c(mean = ro(mean(x), digits), sd = ro(sd(x), digits ) )) )
+
+#' Neat Table
+#'
+#' This function gives a neat M and SD table using m_neat() function(s) as input.
+#' @keywords table
+#' @export
+#' @examples
+#' table_neat()
+
+table_neat = function( values_list, group_by = NULL, group_per = 'rows', to_clipboard = F, medians = NULL ){
+    print_off()
+    tryCatch(
+        {
+            pkg.globals$my_unique_grouping_var = group_by
+            pkg.globals$my_unique_median = medians
+            the_table = Reduce(function(x, y) merge(x, y, by = "group", all=TRUE), values_list )
+        },
+        error=function(error_message) {
+            message(error_message)
+            pkg.globals$my_unique_grouping_var = NULL
+            pkg.globals$my_unique_median = NULL
+            print_on()
+            return(NA)
+        }
+    )
+    pkg.globals$my_unique_grouping_var = NULL
+    pkg.globals$my_unique_median = NULL
+    print_on()
+    if ( group_per != "" && substr("columns", 1, nchar(group_per) ) == group_per ) {
+        the_table = t( data.frame(the_table, row.names =  1 ) )
+        the_table = data.frame( variables = row.names(the_table), the_table)
+        row.names(the_table) = 1:nrow(the_table)
     }
-    per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep="CHAR_PLUSMIN")
-    per_cond = subset(per_cond, select=-c(x.mean,x.sd))
-    return(per_cond)
+    if ( to_clipboard == T ) {
+        write.table( the_table, "clipboard", sep="\t", quote = F, row.names = F )
+    }
+    return( the_table )
+}
+
+
+#' Neat M and SD
+#'
+#' This function gives means (or medians) and SDs per group for given variable. Mainly for use in the table_neat() function.
+#' @keywords table
+#' @export
+#' @examples
+#' m_neat()
+
+m_neat = function( values, round_to = 0, new_name = NULL, group_by = NULL, medians = F ){    
+    if ( is.null( new_name ) ) {
+        val_name = deparse( substitute( values ) )
+        if ( grepl('\\$', val_name) ) {
+            val_name = unlist(strsplit( val_name, "\\$") )[2]
+        }
+        val_name = unlist(strsplit( val_name, "\\*") )[1]
+        val_name = unlist(strsplit( val_name, "/") )[1]
+    } else {
+        val_name = new_name
+    }    
+    if ( ! is.null( pkg.globals$my_unique_median ) ) {
+        medians = pkg.globals$my_unique_median
+    }
+    if ( ! is.null( pkg.globals$my_unique_grouping_var ) ) {
+        group_by = pkg.globals$my_unique_grouping_var
+    }
+    if ( is.null( group_by ) ) {
+        group_by = rep( 0, length(values) )
+    } 
+    if ( medians == T ) {
+        per_cond = do.call(data.frame, aggregate( values, by = list(group_by), function(x) c(median = ro(median(x), round_to ), sd = ro(sd(x), round_to ) )) )
+        per_cond[val_name] = paste(per_cond$x.median, per_cond$x.sd, sep="\u00b1")
+        per_cond = subset(per_cond, select=-c(x.median,x.sd))
+    } else {
+        per_cond = do.call(data.frame, aggregate( values, by = list(group_by), function(x) c(mean = ro(mean(x), round_to ), sd = ro(sd(x), round_to ) )) )
+        per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep="\u00b1")
+        per_cond = subset(per_cond, select=-c(x.mean,x.sd))
+    }        
+    colnames(per_cond)[colnames(per_cond) == 'Group.1'] <- 'group'
+    for(i in 1:nrow(per_cond)) {
+        row = per_cond[i,]
+        prnt( row[[1]], ': MCHAR_PLUSMINSD = ', row[[2]] )
+    }    
+    invisible( per_cond )
 }
 
 cohens_h = function( prop_1, prop_2, n1, n2, ci = 0.95 ){

@@ -5,7 +5,7 @@
 \title{Neat t-test}
 \usage{
 t_neat(var1, var2, pair = F, greater = "", ci = NULL, bf_added = T,
-  auc_added = F, r_added = T, for_table = F,
+  auc_added = F, r_added = F, for_table = F,
   test_title = "Descriptives:", round_descr = 2, round_auc = 3,
   auc_greater = "")
 }
