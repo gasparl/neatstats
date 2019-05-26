@@ -6,7 +6,7 @@
 \usage{
 anova_neat(data_per_subject, values, id_col, between_vars = NULL,
   within_ids = NULL, ci = 0.9, bf_added = T,
-  test_title = "--- neat ANOVA ---", welch = T, white = NULL)
+  test_title = "--- neat ANOVA ---", welch = T, e_correction = "")
 }
 \description{
 This function gives thorough ANOVA results including CIs and BFs.

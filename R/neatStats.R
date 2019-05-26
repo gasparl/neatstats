@@ -20,11 +20,12 @@ prnt = function( ... ) {
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print )
     to_print = gsub("p = 0.", "p = .", to_print )
     to_print = gsub("p = .000", "p < .001", to_print ) 
-    
+
     change_pairs = list( c('CHAR_MINUS', '\u2013'), 
                         c('CHAR_PLUSMIN', '\u00b1'),
                         c('CHAR_X', '\u00d7'),
-                        c('CHAR_ETA', '\u03b7') )
+                        c('CHAR_ETA', '\u03b7'),
+                        c('CHAR_EPS', '\u03b5') )
      
     Encoding(to_print) = "UTF-8"
     for ( pair in change_pairs ) {
@@ -311,7 +312,7 @@ corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_
 #' @examples
 #' anova_neat()
 
-anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, within_ids = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---", welch = T, white = NULL ) {
+anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, within_ids = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---", welch = T, e_correction = '' ) {
     data_wide = eval(parse(text=data_per_subject))    
     if ('within_factor' %in%  names( data_wide ) ) {
         stop('Sorry, the name "within_factor" is reserved for this function. Remove or rename that column.')
@@ -381,19 +382,8 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
             this_data[,this_col] = to_fact(this_data[[this_col]])
         }
     }        
-    a_text = paste0('ez::ezANOVA(data= this_data, dv=', value_col,', wid=', id_col,', between =', between_vars_ez,', within =', within_vars_ez,', type = 2, detailed = TRUE, white.adjust = F )' )
-    ez_anova_out = eval(parse(text= a_text))    
-    if ( is.null( white ) || white !=  F ) {            
-        b_text = paste0('ez::ezANOVA(data= this_data, dv=', value_col,', wid=', id_col,', between =', between_vars_ez,', within =', within_vars_ez,', type = 2, detailed = TRUE, white.adjust = T )' )
-        ez_anova_out_wh = eval(parse(text=b_text)) 
-        ez_anova_out_wh$ANOVA$'p<.05' = NULL
-        #SSn%%%%
-        #inbetw = subset(ez_anova_out$ANOVA, select= c(SSn,SSd))
-        #ez_anova_out_wh$ANOVA = data.frame( ez_anova_out_wh$ANOVA[1:3],inbetw, ez_anova_out_wh$ANOVA[4:ncol(ez_anova_out_wh$ANOVA)])
-    } else {
-        ez_anova_out_wh = NULL
-    }
-    
+    a_text = paste0('ez::ezANOVA(data= this_data, dv=', value_col,', wid=', id_col,', between =', between_vars_ez,', within =', within_vars_ez,', type = 2, detailed = TRUE )' )
+    ez_anova_out = eval(parse(text= a_text))
     # suppressWarnings
     # suppressMessages
     
@@ -410,46 +400,41 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
     } else {
         bf = NULL
     }
-    to_return = anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title, white = white, ez_wh = ez_anova_out_wh, welch = w_anova )
+    to_return = anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title, welch = w_anova, e_correction = e_correction )
     invisible( to_return )
 }
 
-anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---", white = NULL, ez_wh = NULL, welch = NULL ) {
-    if ('Levene' %in%  ezANOVA_out$ANOVA$Effect ) {
-        stop('Sorry, the name "Levene" is reserved for this function. Remove or rename this factor.')
-    }             
+anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---", welch = NULL, e_correction = '' ) {
     levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
     ezANOVA_out$ANOVA$'p<.05' = NULL
+    ezANOVA_out$ANOVA$ges = NULL
     if ( ( ! is.null( levene ) ) && ( is.null( welch ) ) ) {    
+        if ('Levene' %in%  ezANOVA_out$ANOVA$Effect ) {
+            stop('Sorry, the name "Levene" is reserved for this function. Remove or rename this factor.')
+        }             
         levene_post = ''
         levene$'p<.05' = NULL
         levene = data.frame( Effect = "Levene", levene )
         if ( round( levene$p, 3 ) < 0.05 ) {
             levene_pre = "Levene's test indicates unequal variances (p < 0.05): "
-            if ( is.null( white ) || white !=  F ) { 
-                ezANOVA_out = ez_wh
-                levene_post = " The ANOVA below is White-corrected."
-            }            
         } else {
             levene_pre = "Levene's test does not indicate unequal variances (p >= 0.05): "
-            if ( is.null( white ) || white !=  F ) { 
-                ezANOVA_out = ez_wh
-                levene_post = " Nonetheless, the ANOVA below is White-corrected."
-            }
         }
-        ezANOVA_out$ANOVA$ges = NULL
-        print(levene)
-        print("")
-        print(ezANOVA_out$ANOVA)
-        print("")
         ezANOVA_out$ANOVA = rbind( levene, ezANOVA_out$ANOVA )
     }
     ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd) 
-    ezANOVA_out$ANOVA$Effect = as.character( ezANOVA_out$ANOVA$Effect )
-    
+    ezANOVA_out$ANOVA$Effect = as.character( ezANOVA_out$ANOVA$Effect )    
     prnt( "--- ezANOVA ---" )
     print(ezANOVA_out) # to remove
     prnt( test_title )
+    mauchly = ezANOVA_out$"Mauchly's Test for Sphericity"
+    if ( ! is.null( mauchly ) ) {
+        prnt("- Mauchly's sphericity test:")
+        eps_p_corrs = get_e_corrs( mauchly, ezANOVA_out$"Sphericity Corrections", e_correction )
+        prnt("- ANOVA:")
+    } else {
+        eps_p_corrs = NULL
+    }
     stat_list = list()
     for (indx in 1:length( ezANOVA_out$ANOVA$Effect )){
         f_name = ezANOVA_out$ANOVA$Effect[indx]
@@ -461,23 +446,28 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         } else {
             bf_val = bf_added[ f_name ]
             bf_out = bf_neat( bf_val )
-        }
-        if ( is.null( welch ) ) {
-            F_val = ezANOVA_out$ANOVA$F[indx]
-            df_n = ezANOVA_out$ANOVA$DFn[indx]
-            df_d = ezANOVA_out$ANOVA$DFd[indx]
-            pvalue = ezANOVA_out$ANOVA$p[indx]  
-        } else {        
-            F_val = as.numeric( welch$statistic )
-            df_n = round( as.numeric( welch$parameter['num df'] ), 1 )
-            df_d = round( as.numeric( welch$parameter['denom df'] ), 1 )
-            pvalue = as.numeric( welch$p.value )        
-        } 
-        petas = ezANOVA_out$ANOVA$pes[indx]
-        
+        }        
+        F_val = ezANOVA_out$ANOVA$F[indx]
+        df_n = ezANOVA_out$ANOVA$DFn[indx]
+        df_d = ezANOVA_out$ANOVA$DFd[indx]
+        pvalue = ezANOVA_out$ANOVA$p[indx]          
         limits = MBESS::conf.limits.ncf(F.value = F_val, conf.level = ci, df.1 = df_n, df.2 = df_d )
         lower = limits$Lower.Limit / (limits$Lower.Limit + df_n + df_d + 1)
-        upper = limits$Upper.Limit / (limits$Upper.Limit + df_n + df_d + 1)
+        upper = limits$Upper.Limit / (limits$Upper.Limit + df_n + df_d + 1)        
+        if ( ! is.null( welch ) ) {
+            F_val = as.numeric( welch$statistic )
+            df_n = as.numeric( welch$parameter['num df'] )
+            df_d = ro( as.numeric( welch$parameter['denom df'] ), 1 )
+            pvalue = as.numeric( welch$p.value )
+        } 
+        if ( ! is.null( eps_p_corrs[[f_name]] ) ) {
+            pvalue = as.numeric( eps_p_corrs[[f_name]]['pval'] )
+            eps_num = ro( as.numeric( eps_p_corrs[[f_name]]['eps'] ), 3 )
+            eps_added = paste0( ', CHAR_EPS = ', eps_num )
+        } else {
+            eps_added = NULL
+        }
+        petas = ezANOVA_out$ANOVA$pes[indx]        
         if ( is.na(lower) ) {
             lower = "0"
         } else {
@@ -494,15 +484,67 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         if ( f_name == 'Levene' ) {
             out = paste0( levene_pre, "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, levene_post)
         } else {
-            out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
+            out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), epsilon = eps_added, ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
         }
         prnt(out)
         s_name = gsub( " CHAR_X ", "_", f_name )
-        stat_list[[ s_name ]] = c( F = as.numeric(F_val), p = pvalue, petas = as.numeric(petas), bf = as.numeric(bf_val) )
+        stat_list[[ s_name ]] = c( F = as.numeric(F_val), p = pvalue, epsilon = eps_added, petas = as.numeric(petas), bf = as.numeric(bf_val) )
     }
     invisible( stat_list )
 }
 
+get_e_corrs = function( mauchly, e_corrects, e_correction ) {
+    e_corrs_list = list()
+    for (indx in 1:length( e_corrects$Effect )){
+        s_name = e_corrects$Effect[indx]
+        s_name = sort( strsplit( s_name, ":" )[[1]] )
+        s_name = paste( s_name, collapse = " CHAR_X " )
+        e_corrs_list[[ s_name ]] = c( gge = e_corrects$GGe[indx],
+                                      ggp = e_corrects$'p[GG]'[indx],
+                                      hfe = e_corrects$HFe[indx],
+                                      hfp = e_corrects$'p[HF]'[indx] )
+        
+    }
+    spher_real_corrs = list()
+    for (indx in 1:length( mauchly$Effect )){
+        m_name = mauchly$Effect[indx]
+        m_name = sort( strsplit( m_name, ":" )[[1]] )
+        m_name = paste( m_name, collapse = " CHAR_X " )
+        m_w = mauchly$W[indx]
+        m_pval = mauchly$p[indx]
+        
+        if ( e_correction == 'none' ) {
+            m_corr = '.'
+        } else if ( e_correction == 'gg' ) {
+            m_corr = '. Correction: Greenhouse-Geisser.'
+            spher_real_corrs[[ m_name ]] = c( eps = as.numeric( e_corrs_list[[m_name]]['gge'] ),
+                                              pval = as.numeric( e_corrs_list[[m_name]]['ggp'] ) )
+                
+        } else if ( e_correction == 'hf' ) {
+            m_corr = '. Correction: Huynh-Feldt.'
+            spher_real_corrs[[ m_name ]] = c( eps = as.numeric( e_corrs_list[[m_name]]['hfe'] ),
+                                              pval = as.numeric( e_corrs_list[[m_name]]['hfp'] ) )
+        } else if ( round(m_pval, 3) < 0.05 ) {
+            this_gge = as.numeric( e_corrs_list[[m_name]]['gge'] )
+            if ( round( this_gge, 3 ) > 0.75 ) {
+                m_corr = '. Correction: Huynh-Feldt (Greenhouse-Geisser CHAR_EPS > 0.75).'
+                spher_real_corrs[[ m_name ]] = c( eps = as.numeric( e_corrs_list[[m_name]]['hfe'] ),
+                                                 pval = as.numeric( e_corrs_list[[m_name]]['hfp'] ) )
+                
+            } else {
+                m_corr = '. Correction: Greenhouse-Geisser (CHAR_EPS <= 0.75).'
+                spher_real_corrs[[ m_name ]] = c( eps = as.numeric( e_corrs_list[[m_name]]['gge'] ),
+                                                 pval = as.numeric( e_corrs_list[[m_name]]['ggp'] ) )
+            }
+        } else {
+            m_corr = '.'
+        }
+        
+        prnt( m_name, ': W = ', ro(m_w, 3), ', p = ',  ro(m_pval, 3), m_corr )
+    
+    }
+    return(spher_real_corrs)
+}
 
 to_fact = function( var ) {
     return( as.factor( tolower( as.character( var ) ) ))
