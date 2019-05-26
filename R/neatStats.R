@@ -311,7 +311,7 @@ corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_
 #' @examples
 #' anova_neat()
 
-anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, within_ids = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---" ) {
+anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, within_ids = NULL, ci = 0.90, bf_added = T, test_title = "--- neat ANOVA ---", welch = T, white = NULL ) {
     data_wide = eval(parse(text=data_per_subject))    
     if ('within_factor' %in%  names( data_wide ) ) {
         stop('Sorry, the name "within_factor" is reserved for this function. Remove or rename that column.')
@@ -320,6 +320,7 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
         stop('Sorry, the name "neat_unique_values" is reserved for this function. Remove or rename that column.')
     }    
     values = to_c( values )    
+    w_anova = NULL
     if ( length( values ) > 1 ) {        
         data_reshaped = stats::reshape( data_wide, direction='long', varying= values, idvar = id_col, timevar = "within_factor", v.names = "neat_unique_values", times = values  )    
         if ( length( within_ids ) > 1 ) {
@@ -345,6 +346,12 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
         value_col = values
         this_data = data_wide
         within_vars = NULL
+        if ( length( to_c(between_vars) ) == 1 && welch != F ) {
+            w_anova = eval(parse(text= paste0( 
+                                            'stats::oneway.test(', value_col,' ~ ', between_vars, ', data = this_data, var.equal = F  )'
+                                                    )
+            ))   
+        }
     }    
     
     this_data[,id_col] = to_fact(this_data[[id_col]])
@@ -373,16 +380,23 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
         for ( this_col in to_c(within_vars) ) {
             this_data[,this_col] = to_fact(this_data[[this_col]])
         }
+    }        
+    a_text = paste0('ez::ezANOVA(data= this_data, dv=', value_col,', wid=', id_col,', between =', between_vars_ez,', within =', within_vars_ez,', type = 2, detailed = TRUE, white.adjust = F )' )
+    ez_anova_out = eval(parse(text= a_text))    
+    if ( is.null( white ) || white !=  F ) {            
+        b_text = paste0('ez::ezANOVA(data= this_data, dv=', value_col,', wid=', id_col,', between =', between_vars_ez,', within =', within_vars_ez,', type = 2, detailed = TRUE, white.adjust = T )' )
+        ez_anova_out_wh = eval(parse(text=b_text)) 
+        ez_anova_out_wh$ANOVA$'p<.05' = NULL
+        #SSn%%%%
+        #inbetw = subset(ez_anova_out$ANOVA, select= c(SSn,SSd))
+        #ez_anova_out_wh$ANOVA = data.frame( ez_anova_out_wh$ANOVA[1:3],inbetw, ez_anova_out_wh$ANOVA[4:ncol(ez_anova_out_wh$ANOVA)])
+    } else {
+        ez_anova_out_wh = NULL
     }
     
-    ez_anova_out = eval(parse(text=
-                                  paste0('ez::ezANOVA(data= this_data,
-                                         dv=', value_col,',
-                                         wid=', id_col,',
-                                         between =', between_vars_ez,',
-                                         within =', within_vars_ez,',
-                                         type = 2, detailed = TRUE )')
-    ))    
+    # suppressWarnings
+    # suppressMessages
+    
     if ( bf_added == T ) {
         indep_vars = gsub( ',', ' *', paste0( between_vars_bf, within_vars_bf ) )
         bf = eval(parse(text=
@@ -396,12 +410,43 @@ anova_neat = function( data_per_subject, values, id_col, between_vars = NULL, wi
     } else {
         bf = NULL
     }
-    to_return = anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title )
+    to_return = anova_apa( ezANOVA_out = ez_anova_out, ci = ci, bf_added = bf, test_title = test_title, white = white, ez_wh = ez_anova_out_wh, welch = w_anova )
     invisible( to_return )
 }
 
-anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---" ) {
-    ezANOVA_out$ANOVA$pes <- ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
+anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "--- neat ANOVA ---", white = NULL, ez_wh = NULL, welch = NULL ) {
+    if ('Levene' %in%  ezANOVA_out$ANOVA$Effect ) {
+        stop('Sorry, the name "Levene" is reserved for this function. Remove or rename this factor.')
+    }             
+    levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
+    ezANOVA_out$ANOVA$'p<.05' = NULL
+    if ( ( ! is.null( levene ) ) && ( is.null( welch ) ) ) {    
+        levene_post = ''
+        levene$'p<.05' = NULL
+        levene = data.frame( Effect = "Levene", levene )
+        if ( round( levene$p, 3 ) < 0.05 ) {
+            levene_pre = "Levene's test indicates unequal variances (p < 0.05): "
+            if ( is.null( white ) || white !=  F ) { 
+                ezANOVA_out = ez_wh
+                levene_post = " The ANOVA below is White-corrected."
+            }            
+        } else {
+            levene_pre = "Levene's test does not indicate unequal variances (p >= 0.05): "
+            if ( is.null( white ) || white !=  F ) { 
+                ezANOVA_out = ez_wh
+                levene_post = " Nonetheless, the ANOVA below is White-corrected."
+            }
+        }
+        ezANOVA_out$ANOVA$ges = NULL
+        print(levene)
+        print("")
+        print(ezANOVA_out$ANOVA)
+        print("")
+        ezANOVA_out$ANOVA = rbind( levene, ezANOVA_out$ANOVA )
+    }
+    ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd) 
+    ezANOVA_out$ANOVA$Effect = as.character( ezANOVA_out$ANOVA$Effect )
+    
     prnt( "--- ezANOVA ---" )
     print(ezANOVA_out) # to remove
     prnt( test_title )
@@ -417,10 +462,17 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
             bf_val = bf_added[ f_name ]
             bf_out = bf_neat( bf_val )
         }
-        F_val = ezANOVA_out$ANOVA$F[indx]
-        df_n = ezANOVA_out$ANOVA$DFn[indx]
-        df_d = ezANOVA_out$ANOVA$DFd[indx]
-        pvalue = ezANOVA_out$ANOVA$p[indx]   
+        if ( is.null( welch ) ) {
+            F_val = ezANOVA_out$ANOVA$F[indx]
+            df_n = ezANOVA_out$ANOVA$DFn[indx]
+            df_d = ezANOVA_out$ANOVA$DFd[indx]
+            pvalue = ezANOVA_out$ANOVA$p[indx]  
+        } else {        
+            F_val = as.numeric( welch$statistic )
+            df_n = round( as.numeric( welch$parameter['num df'] ), 1 )
+            df_d = round( as.numeric( welch$parameter['denom df'] ), 1 )
+            pvalue = as.numeric( welch$p.value )        
+        } 
         petas = ezANOVA_out$ANOVA$pes[indx]
         
         limits = MBESS::conf.limits.ncf(F.value = F_val, conf.level = ci, df.1 = df_n, df.2 = df_d )
@@ -438,13 +490,20 @@ anova_apa = function( ezANOVA_out, ci = 0.90, bf_added = NULL, test_title = "---
         }
         np2 = sub('.', '', ro(petas, 3) )
         the_ci = paste0(", ", ro(ci*100, 0), "% CI [")
-        out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
+        
+        if ( f_name == 'Levene' ) {
+            out = paste0( levene_pre, "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, levene_post)
+        } else {
+            out = paste0( "F(", df_n, ",", df_d, ")", " = ", ro(F_val, 2), ", p = ", ro(pvalue,3), ", CHAR_ETAp2 = ", np2, the_ci, lower, ", ", upper, "]", bf_out, " (", f_name, ")")
+        }
         prnt(out)
         s_name = gsub( " CHAR_X ", "_", f_name )
-        stat_list[[ s_name ]] = stats = c( F = as.numeric(F_val), p = pvalue, petas = as.numeric(petas), bf = as.numeric(bf_val) )
+        stat_list[[ s_name ]] = c( F = as.numeric(F_val), p = pvalue, petas = as.numeric(petas), bf = as.numeric(bf_val) )
     }
     invisible( stat_list )
 }
+
+
 to_fact = function( var ) {
     return( as.factor( tolower( as.character( var ) ) ))
 }
