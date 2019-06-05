@@ -3,6 +3,7 @@
 export(anova_neat)
 export(corr_neat)
 export(m_neat)
+export(props_neat)
 export(ro)
 export(roc_neat)
 export(script_path)
