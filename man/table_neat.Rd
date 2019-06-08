@@ -7,10 +7,52 @@
 table_neat(values_list, group_by = NULL, group_per = "rows",
   to_clipboard = F, medians = NULL)
 }
+\arguments{
+\item{values_list}{Values returned (as dataframes) from the
+\code{\link{m_neat}} function: variables from which the statistics for the
+table are to be calculated. The \code{group_by} and \code{medians}
+parameters are ignored when they are given in the \code{\link{table_neat}}
+function; see Details.}
+
+\item{group_by}{}
+}
 \description{
-This function gives a neat M and SD table using m_neat() function(s) as input.
+Creates a neat means (or medians) and standard deviations table, using m_neat() function(s) as arguments.
+}
+\details{
+The \code{values}, \code{round_to}, and \code{new_name} arguments given in
+the \code{\link{m_neat}} function are always applied. However, the
+\code{group_by} or \code{medians} given in the \code{\link{m_neat}} function
+are only applied when no arguments are given in the \code{\link{table_neat}}
+function for the identical parameters (\code{group_by} or \code{medians}). If
+either parameter is given in the \code{\link{table_neat}} function, all
+separately given respective argument(s) in the \code{\link{m_neat}}
+function(s) are ignored.
 }
 \examples{
-table_neat()
+data("mtcars")
+
+# overall means and SDs table for disp (Displacement) and hp (Gross horsepower)
+Ms_SDs = table_neat(list(m_neat(mtcars$disp),
+                         m_neat(mtcars$hp)))
+
+# means and SDs table for wt (Weight), mpg (Miles/(US) gallon), and hp (Gross horsepower)
+# groupped by cyl (Number of cylinders)
+# each measure rounded to respective optimal number of digits
+# wt renamed to weight (for the column title)
+Ms_SDs2 = table_neat(list(m_neat(mtcars$mpg, 1),
+                          m_neat(mtcars$wt, 2, new_name = 'weight'),
+                          m_neat(mtcars$hp)),
+                     group_by = mtcars$cyl)
+
+# same as above, but with medians, and with groups per columns
+Ms_SDs3 = table_neat(list(m_neat(mtcars$mpg, 1),
+                          m_neat(mtcars$wt, 2, new_name = 'weight'),
+                          m_neat(mtcars$hp)),
+                     group_by = mtcars$cyl,
+                     medians = T,
+                     group_per = 'columns')
 }
-\keyword{table}
+\seealso{
+\code{\link{m_neat}} for more details
+}

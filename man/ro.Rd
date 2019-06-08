@@ -4,11 +4,23 @@
 \alias{ro}
 \title{Neat rounding}
 \usage{
-ro(value, round_to = 2)
+ro(num, round_to = 2)
+}
+\arguments{
+\item{num}{Number to be rounded.}
+
+\item{round_to}{Number of fractional digits (i.e., digits after the decimal point), to round to.}
+}
+\value{
+Number as string: \code{num} rounded to \code{round_to} digits, with trailing zeros when applicable.
 }
 \description{
-This function neatly rounds any number to given number of digits after the decimal point.
+Rounds a given number to given number of digits after the decimal point, returning it as string, with trailing zeros when applicable.
 }
 \examples{
-ro()
+ro( 1.2345 ) # returns "1.23"
+
+ro( 0.12345, 1 ) # returns "0.1"
+
+ro( 12.3, 4 ) # returns "12.3000"
 }

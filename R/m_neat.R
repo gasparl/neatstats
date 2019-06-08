@@ -1,10 +1,27 @@
-#' Neat M and SD
+#' @title Neat descriptives
 #'
-#' This function gives means (or medians) and SDs per group for given variable. Mainly for use in the table_neat() function.
-#' @keywords table
-#' @export
+#' @description Returns means (or medians) and SDs per group for given variable.
+#'     Primarily for use in the \code{\link{table_neat}} function.
+#' @param values A vector of numbers from which the statistics are to be calculated.
+#' @param round_to Number of fractional digits after the decimal point to round to.
+#' @param new_name String. A new name for the variable to be used as column title.
+#' @param group_by A vector of factors by which the statistics are groupped.
+#' @param medians Logical. If TRUE, medians are calculated, otherwise means.
+#' @return Returns a data frame with the statistics per group. Furthermore,
+#'   prints statistics per group, unless used within the
+#'   \code{\link{table_neat}} function, in which case nothing is printed.
 #' @examples
-#' m_neat()
+#' data("mtcars") # load base R example dataset
+#' 
+#' res1 = m_neat(mtcars$wt ) # overall means and SDs for wt (Weight)
+#' 
+#' res2 = m_neat(mtcars$wt, 2, new_name = 'weight') # rounded to 2 and renamed
+#' 
+#' res3 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl) # grouped by cyl (Number of cylinders)
+#' 
+#' res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = T) # medians
+#' @seealso \code{\link{table_neat}} to create full tables using multiple variables
+#' @export
 
 m_neat = function( values, round_to = 0, new_name = NULL, group_by = NULL, medians = F ){    
     if ( is.null( new_name ) ) {
