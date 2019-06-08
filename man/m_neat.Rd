@@ -2,15 +2,42 @@
 % Please edit documentation in R/m_neat.R
 \name{m_neat}
 \alias{m_neat}
-\title{Neat M and SD}
+\title{Neat descriptives}
 \usage{
 m_neat(values, round_to = 0, new_name = NULL, group_by = NULL,
   medians = F)
 }
+\arguments{
+\item{values}{A vector of numbers from which the statistics are to be calculated.}
+
+\item{round_to}{Number of fractional digits after the decimal point to round to.}
+
+\item{new_name}{String. A new name for the variable to be used as column title.}
+
+\item{group_by}{A vector of factors by which the statistics are groupped.}
+
+\item{medians}{Logical. If TRUE, medians are calculated, otherwise means.}
+}
+\value{
+Returns a data frame with the statistics per group. Furthermore,
+  prints statistics per group, unless used within the
+  \code{\link{table_neat}} function, in which case nothing is printed.
+}
 \description{
-This function gives means (or medians) and SDs per group for given variable. Mainly for use in the table_neat() function.
+Returns means (or medians) and SDs per group for given variable.
+    Primarily for use in the \code{\link{table_neat}} function.
 }
 \examples{
-m_neat()
+data("mtcars") # load base R example dataset
+
+res1 = m_neat(mtcars$wt ) # overall means and SDs for wt (Weight)
+
+res2 = m_neat(mtcars$wt, 2, new_name = 'weight') # rounded to 2 and renamed
+
+res3 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl) # grouped by cyl (Number of cylinders)
+
+res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = T) # medians
 }
-\keyword{table}
+\seealso{
+\code{\link{table_neat}} to create full tables using multiple variables
+}
