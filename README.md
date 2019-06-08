@@ -1,6 +1,8 @@
 ## R package in testing
 
-### To install in R, just run:
+### Installation in R
+
+Just run:
 
 ```
 install.packages("devtools") # if "devtools" package is not yet installed
@@ -12,4 +14,4 @@ Then load with: `library("neatStats")`
 
 ### Manual
 
-coming soon
+For usage, see manual - coming soon
