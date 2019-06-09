@@ -11,7 +11,7 @@ dems_neat(data_per_subject, group_by = NULL, percent = T,
 \item{data_per_subject}{Data frame from which demographics are to be
 calculated. Must contain columns named precisely as "age" and as "gender".
 The "age" column must contain numbers, while "gender" column must contain 1
-(= male) or 2 (= female) only (either as numbers or as strings).}
+(= male) and 2 (= female) only (either as numbers or as strings).}
 
 \item{group_by}{A vector of factors by which the statistics are grouped,
 typically a column from the data frame provided as \code{data_per_subject}.}

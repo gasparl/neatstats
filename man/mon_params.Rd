@@ -6,9 +6,16 @@
 \usage{
 mon_params(mon_obj)
 }
+\value{
+Returns nothing, just prints all parameters.
+}
 \description{
 Prints the parameters of a given monitor object.
 }
 \examples{
-mon_params()
+# assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
+my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
+
+# print the above given parameters
+mon_params( my_mon )
 }

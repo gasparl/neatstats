@@ -6,9 +6,26 @@
 \usage{
 mon_pix2deg(mon_obj, pixels)
 }
+\arguments{
+\item{mon_obj}{Monitor object, as assigned with \code{\link{mon_neat}}.}
+
+\item{pixels}{Number of pixels.}
+}
+\value{
+Number of degrees for the given number of pixels.
+}
 \description{
-Given a specific monitor object, converts pixels to degrees.
+Given a specific monitor object, converts pixels to visual angle
+  degrees.
 }
 \examples{
-mon_pix2deg()
+# assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
+my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
+
+# convert 30.4 pixels to degrees of visual angle, for the specified monitor
+mon_pix2deg( my_mon, 30.4 ) # returns 0.8275913 (degrees)
+}
+\seealso{
+\code{\link{mon_neat}}, \code{\link{mon_deg2pix}},
+  \code{\link{mon_params}}
 }
