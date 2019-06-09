@@ -1,8 +1,29 @@
-#' Demographics
+#' @title Demographics
 #'
-#' Prints participant count, age, gender, from given dataset.
+#' @description Prints participant count, age mean and SD, and gender ratio,
+#'   from given dataset.
+#' @param data_per_subject Data frame from which demographics are to be
+#'   calculated. Must contain columns named precisely as "age" and as "gender".
+#'   The "age" column must contain numbers, while "gender" column must contain 1
+#'   (= male) and 2 (= female) only (either as numbers or as strings).
+#' @param group_by A vector of factors by which the statistics are grouped,
+#'   typically a column from the data frame provided as \code{data_per_subject}.
+#' @param percent Logical. If FALSE, gender ratio is presented as count of
+#'   males. Otherwise (default), presented as percent of males.
+#' @param round_perc Number \code{\link[=ro]{to round}} to, when using percents.
 #' @examples
-#' dems_neat()
+#' # below is an illustrative example dataset
+#' # (the "subject" and "measure_x" columns are not used in the function)
+#' dat = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
+#'     gender = c(2, 2, 1, 2, 1, 2, 2, 2, 1, 1),
+#'     age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
+#'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+#' )
+#' 
+#' # print demographics (age and gender) per "conditions":
+#' dems_neat(dat, group_by = dat$conditions)
 #' @export
 dems_neat = function( data_per_subject, group_by = NULL, percent = T, round_perc = 0 ) {
     if ( class( data_per_subject ) == "character") {
@@ -14,7 +35,7 @@ dems_neat = function( data_per_subject, group_by = NULL, percent = T, round_perc
         stop('The "gender" column must only contain the values 1 (male) or 2 (female).')
     }
     if ( is.null( group_by ) ) {
-        s_dat$neat_cond = 99
+        s_dat$neat_cond = 0
     } else if ( class(group_by) == "character") {
         s_dat$neat_cond = s_dat[[ group_by ]]
     } else {
@@ -33,7 +54,7 @@ dems_neat = function( data_per_subject, group_by = NULL, percent = T, round_perc
     names(age)[names(age) == "Group.1"] <- "neat_cond"    
     age_gend = merge( age, gender, by = 'neat_cond' )
     
-    if ( percent == T ) {
+    if ( percent != F ) {
         for(i in 1:nrow(age_gend)) {
             row <- age_gend[i,]
             prnt( 'Group < ', row[[1]], ' >: ', row[2], ' subjects (age = ', ro(row[3],1), 'CHAR_PLUSMIN', ro(row[4],1), ', ', ro(row[7], round_perc), "% male)" )

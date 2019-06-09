@@ -8,13 +8,13 @@ table_neat(values_list, group_by = NULL, group_per = "rows",
   to_clipboard = F, medians = NULL)
 }
 \arguments{
-\item{values_list}{Values returned (as dataframes) from the
+\item{values_list}{Values returned (as data frames) from the
 \code{\link{m_neat}} function: variables from which the statistics for the
 table are to be calculated. The \code{group_by} and \code{medians}
 parameters are ignored when they are given in the \code{\link{table_neat}}
 function; see Details.}
 
-\item{group_by}{A vector of factors by which the statistics are groupped.
+\item{group_by}{A vector of factors by which the statistics are grouped.
 (Overwrites \code{group_by} in \code{\link{m_neat}}; see Details.)}
 
 \item{group_per}{String, "rows" or "columns". If set to "columns" (or just
@@ -27,7 +27,7 @@ Otherwise (default), each row contains statistics for one group.}
 (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)}
 }
 \value{
-Returns a data.frame with means or medians and SDs per variable and
+Returns a data frame with means or medians and SDs per variable and
   per group.
 }
 \description{
@@ -52,7 +52,7 @@ Ms_SDs = table_neat(list(m_neat(mtcars$disp),
                          m_neat(mtcars$hp)))
 
 # means and SDs table for mpg (Miles/(US) gallon), wt (Weight), and hp (Gross horsepower)
-# groupped by cyl (Number of cylinders)
+# grouped by cyl (Number of cylinders)
 # each measure rounded to respective optimal number of digits
 # wt renamed to weight (for the column title)
 Ms_SDs2 = table_neat(list(m_neat(mtcars$mpg, 1),

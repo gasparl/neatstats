@@ -14,19 +14,19 @@ mon_neat = function( distance, mon_width_cm, mon_width_pixel ) {
 #'
 #' Given a specific monitor object, converts pixels to degrees.
 #' @examples
-#' pix2deg()
+#' mon_pix2deg()
 #' @export
-pix2deg = function( mon_obj, pixels ) {
-    UseMethod('pix2deg')
+mon_pix2deg = function( mon_obj, pixels ) {
+    UseMethod('mon_pix2deg')
 }
 
 #' @export
-pix2deg.default = function( mon_obj = NULL, pixels = NULL ) {
+mon_pix2deg.default = function( mon_obj = NULL, pixels = NULL ) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
 #' @export 
-pix2deg.mon_neat = function( mon_obj, pixels ) {
+mon_pix2deg.mon_neat = function( mon_obj, pixels ) {
     size_cm = pixels * mon_obj$mon_width_cm / mon_obj$mon_width_pixel
     deg_res = ( atan((size_cm / 2) / mon_obj$distance ) * (180 / pi ) * 2 )
     return( deg_res )
@@ -36,20 +36,20 @@ pix2deg.mon_neat = function( mon_obj, pixels ) {
 #'
 #' Given a specific monitor object, converts degrees to pixels.
 #' @examples
-#' deg2pix()
-#' @rdname deg2pix
-#' @export deg2pix
-deg2pix = function( mon_obj, pixels ) {
-    UseMethod('deg2pix')
+#' mon_deg2pix()
+#' @rdname mon_deg2pix
+#' @export mon_deg2pix
+mon_deg2pix = function( mon_obj, pixels ) {
+    UseMethod('mon_deg2pix')
 }
 
 #' @export
-deg2pix.default = function( mon_obj = NULL, pixels = NULL ) {
+mon_deg2pix.default = function( mon_obj = NULL, pixels = NULL ) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
 #' @export
-deg2pix.mon_neat = function( mon_obj, degrees ) {
+mon_deg2pix.mon_neat = function( mon_obj, degrees ) {
     size_cm = mon_obj$distance * tan( degrees * ( pi / 180) / 2 ) * 2
     pix_res = ( size_cm / mon_obj$mon_width_cm * mon_obj$mon_width_pixel )
     return( pix_res )
@@ -59,19 +59,19 @@ deg2pix.mon_neat = function( mon_obj, degrees ) {
 #'
 #' Prints the parameters of a given monitor object.
 #' @examples
-#' params()
+#' mon_params()
 #' @export
-params = function( mon_obj ) {
-    UseMethod('params')
+mon_params = function( mon_obj ) {
+    UseMethod('mon_params')
 }
 
 #' @export
-params.default = function( mon_obj = NULL ) {
+mon_params.default = function( mon_obj = NULL ) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
 #' @export
-params.mon_neat = function( mon_obj ) {
+mon_params.mon_neat = function( mon_obj ) {
     cat( 'distance: ', mon_obj$distance, 
          '\nmon_width_cm: ', mon_obj$mon_width_cm, 
          '\nmon_width_pixel: ', mon_obj$mon_width_pixel, sep = '', fill = T )

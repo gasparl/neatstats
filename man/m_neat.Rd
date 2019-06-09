@@ -2,7 +2,7 @@
 % Please edit documentation in R/m_neat.R
 \name{m_neat}
 \alias{m_neat}
-\title{Neat descriptives}
+\title{Neat Descriptives}
 \usage{
 m_neat(values, round_to = 0, new_name = NULL, group_by = NULL,
   medians = F)
@@ -10,16 +10,16 @@ m_neat(values, round_to = 0, new_name = NULL, group_by = NULL,
 \arguments{
 \item{values}{A vector of numbers from which the statistics are to be calculated.}
 
-\item{round_to}{Number of fractional digits after the decimal point to round to.}
+\item{round_to}{Number of digits after the decimal point to round to.}
 
 \item{new_name}{String. A new name for the variable to be used as column title.}
 
-\item{group_by}{A vector of factors by which the statistics are groupped.}
+\item{group_by}{A vector of factors by which the statistics are grouped.}
 
 \item{medians}{Logical. If TRUE, medians are calculated, otherwise means.}
 }
 \value{
-Returns a data frame with the statistics per group. Furthermore,
+A data frame with the statistics per group. Furthermore,
   prints statistics per group, unless used within the
   \code{\link{table_neat}} function, in which case nothing is printed.
 }

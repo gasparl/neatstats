@@ -1,13 +1,13 @@
-#' @title Neat descriptives
+#' @title Neat Descriptives
 #'
 #' @description Returns means (or medians) and SDs per group for given variable.
 #'     Primarily for use in the \code{\link{table_neat}} function.
 #' @param values A vector of numbers from which the statistics are to be calculated.
-#' @param round_to Number of fractional digits after the decimal point to round to.
+#' @param round_to Number of digits after the decimal point to round to.
 #' @param new_name String. A new name for the variable to be used as column title.
-#' @param group_by A vector of factors by which the statistics are groupped.
+#' @param group_by A vector of factors by which the statistics are grouped.
 #' @param medians Logical. If TRUE, medians are calculated, otherwise means.
-#' @return Returns a data frame with the statistics per group. Furthermore,
+#' @return A data frame with the statistics per group. Furthermore,
 #'   prints statistics per group, unless used within the
 #'   \code{\link{table_neat}} function, in which case nothing is printed.
 #' @examples

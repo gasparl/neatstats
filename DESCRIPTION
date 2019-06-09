@@ -1,7 +1,7 @@
 Package: neatStats
 Title: An R Package for Neat and Painless Statistical Reporting
 Version: 0.1.0
-Authors@R: person("Gaspar", "Lukacs", email = "lkcsgaspar@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830"))
+Authors@R: person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830"))
 Description: This package focuses on user-friendly, clear and simple statistics, primarily
     for publication in psychological science. The main functions are wrappers for other
     packages, but there are various additions as well.

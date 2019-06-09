@@ -2,12 +2,12 @@
 #'
 #' @description Creates a neat means (or medians) and standard deviations table, using
 #' m_neat() function(s) as arguments.
-#' @param values_list Values returned (as dataframes) from the
+#' @param values_list Values returned (as data frames) from the
 #'   \code{\link{m_neat}} function: variables from which the statistics for the
 #'   table are to be calculated. The \code{group_by} and \code{medians}
 #'   parameters are ignored when they are given in the \code{\link{table_neat}}
 #'   function; see Details.
-#' @param group_by A vector of factors by which the statistics are groupped.
+#' @param group_by A vector of factors by which the statistics are grouped.
 #'   (Overwrites \code{group_by} in \code{\link{m_neat}}; see Details.)
 #' @param group_per String, "rows" or "columns". If set to "columns" (or just
 #'   "c" or "col", etc.), each column contains statistics for one group.
@@ -15,7 +15,7 @@
 #' @param to_clipboard Logical. If TRUE, the table is copied to the clipboard.
 #' @param medians Logical. If TRUE, medians are calculated, otherwise means.
 #'    (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)
-#' @return Returns a data.frame with means or medians and SDs per variable and
+#' @return Returns a data frame with means or medians and SDs per variable and
 #'   per group.
 #' @examples
 #' data("mtcars") # load base R example dataset
@@ -25,7 +25,7 @@
 #'                          m_neat(mtcars$hp)))
 #' 
 #' # means and SDs table for mpg (Miles/(US) gallon), wt (Weight), and hp (Gross horsepower)
-#' # groupped by cyl (Number of cylinders)
+#' # grouped by cyl (Number of cylinders)
 #' # each measure rounded to respective optimal number of digits
 #' # wt renamed to weight (for the column title)
 #' Ms_SDs2 = table_neat(list(m_neat(mtcars$mpg, 1),

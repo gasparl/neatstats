@@ -10,7 +10,7 @@ This package focuses on user-friendly, simple functions to produce clear but com
 Most functions are wrappers for other packages, but there are various additions as well.
 }
 \author{
-\strong{Maintainer}: Gaspar Lukacs \email{lkcsgaspar@gmail.com} (0000-0001-9401-4830)
+\strong{Maintainer}: Gáspár Lukács \email{lkcsgaspar@gmail.com} (0000-0001-9401-4830)
 
 }
 \keyword{internal}

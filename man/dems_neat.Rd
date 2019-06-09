@@ -7,9 +7,35 @@
 dems_neat(data_per_subject, group_by = NULL, percent = T,
   round_perc = 0)
 }
+\arguments{
+\item{data_per_subject}{Data frame from which demographics are to be
+calculated. Must contain columns named precisely as "age" and as "gender".
+The "age" column must contain numbers, while "gender" column must contain 1
+(= male) or 2 (= female) only (either as numbers or as strings).}
+
+\item{group_by}{A vector of factors by which the statistics are grouped,
+typically a column from the data frame provided as \code{data_per_subject}.}
+
+\item{percent}{Logical. If FALSE, gender ratio is presented as count of
+males. Otherwise (default), presented as percent of males.}
+
+\item{round_perc}{Number \code{\link[=ro]{to round}} to, when using percents.}
+}
 \description{
-Prints participant count, age, gender, from given dataset.
+Prints participant count, age mean and SD, and gender ratio,
+  from given dataset.
 }
 \examples{
-dems_neat()
+# below is an illustrative example dataset
+# (the "subject" and "measure_x" columns are not used in the function)
+dat = data.frame(
+    subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+    conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
+    gender = c(2, 2, 1, 2, 1, 2, 2, 2, 1, 1),
+    age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
+    measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+)
+
+# print demographics (age and gender) per "conditions":
+dems_neat(dat, group_by = dat$conditions)
 }

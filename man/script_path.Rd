@@ -2,14 +2,22 @@
 % Please edit documentation in R/script_path.R
 \name{script_path}
 \alias{script_path}
-\title{Neat path}
+\title{Script Path}
 \usage{
-script_path()
+script_path(subdir = "")
+}
+\arguments{
+\item{subdir}{String, optional. Subdirectory relative to the script's path.}
+}
+\value{
+Script file's path as string. If \code{subdir} is given, it is
+  appended to the original path.
 }
 \description{
-This function gives the path to current script's path in RStudio.
+Gives, in RStudio, the path to the script file in which it is executed.
 }
 \examples{
-script_path()
+setwd( script_path() ) # sets working directory to the script's path, e.g. "C:/script_folder/"
+
+script_path('my_subdir/misc/') # returns "C:/script_folder/my_subdir/misc/"
 }
-\keyword{path}
