@@ -1,90 +1,106 @@
-#' @title Monitor
+#' @title Monitor Object
 #'
-#' @description Assigns a monitor object, storing distance and width
-#'   parameters.
+#' @description Assigns a monitor object, storing distance and width parameters.
 #' @param distance Viewing distance in cm (from eyes to screen).
 #' @param mon_width_cm Monitor screen width in cm.
 #' @param mon_width_pixel Monitor screen width in pixels.
-#' @return A monitor object with the specified parameters, to be used in the \code{\link{mon_pix2deg}}, \code{\link{mon_deg2pix}}, and \code{\link{mon_params}} functions.
+#' @return A monitor object with the specified parameters, to be used in the
+#'   \code{\link{mon_conv}} function.
 #' @examples
 #' # assign monitor with 57 cm viewing distance, and screen width 52 cm and 1920 pixels
 #' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
-#' @seealso \code{\link{mon_pix2deg}}, \code{\link{mon_deg2pix}}, \code{\link{mon_params}}
+#' @seealso \code{\link{mon_conv}}, \code{\link{mon_params}}
 #' @export
-mon_neat = function( distance, mon_width_cm, mon_width_pixel ) {
-    mon_obj = list( distance = distance, mon_width_cm = mon_width_cm, mon_width_pixel = mon_width_pixel )
-    attr( mon_obj, 'class' ) = 'mon_neat'
-    return( mon_obj )
+mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
+    mon_obj = list(
+        distance = distance,
+        mon_width_cm = mon_width_cm,
+        mon_width_pixel = mon_width_pixel
+    )
+    attr(mon_obj, 'class') = 'mon_neat'
+    return(mon_obj)
 }
 
-#' @title Pixels to degrees
+#' @title Monitor Screen Unit Conversion
 #'
-#' @description Given a specific monitor object, converts pixels to visual angle
-#'   degrees.
+#' @description Given a specific monitor object, converts specified screen units to
+#'   other specified units. The possible units to convert from and to: "cm"
+#'   (centimeters), "pix" (pixels), or "deg" (degrees of visual angle).
 #' @param mon_obj Monitor object, as assigned with \code{\link{mon_neat}}.
-#' @param pixels Number of pixels.
-#' @return Number of degrees for the given number of pixels.
+#' @param value Number; value (magnitude) of the given unit to convert from.
+#' @param from String; unit ("cm", "pix", or "deg") to convert from.
+#' @param to String; unit ("cm", "pix", or "deg") to convert to.
+#' @return Number (magnitude) in the given output (\code{to}) unit.
 #' @examples
-#' # assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
-#' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
+#' # assign monitor with 50 cm distance, screen width 52 cm and 1920 pixels
+#' my_mon = mon_neat(distance = 50, mon_width_cm = 52, mon_width_pixel = 1920)
 #'
 #' # convert 30.4 pixels to degrees of visual angle, for the specified monitor
-#' mon_pix2deg( my_mon, 30.4 ) # returns 0.8275913 (degrees)
-#' @seealso \code{\link{mon_neat}}, \code{\link{mon_deg2pix}},
-#'   \code{\link{mon_params}}
+#' mon_conv(my_mon, 30.4, 'pix', 'deg') # returns 0.9434492 (degrees)
+#'
+#' # convert 0.94 degrees of visual angle to pixels
+#' mon_conv(my_mon, 0.94, 'deg', 'pix') # returns 30.28885 (pixels)
+#'
+#' # convert 10 degrees of visual angle to cm
+#' mon_conv(my_mon, 10, from = 'deg', to = 'cm')
+#'
+#' # convert 8.748866 cm to pixels
+#' mon_conv(my_mon, 8.748866, from = 'cm', to = 'pix')
+#' @seealso \code{\link{mon_neat}}, \code{\link{mon_params}}
 #' @export
-mon_pix2deg = function( mon_obj, pixels ) {
-    UseMethod('mon_pix2deg')
+mon_conv = function(mon_obj, value, from, to) {
+    UseMethod('mon_conv')
 }
 
 #' @export
-mon_pix2deg.default = function( mon_obj = NULL, pixels = NULL ) {
+mon_conv.default = function( ... ) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
 #' @export
-mon_pix2deg.mon_neat = function( mon_obj, pixels ) {
-    size_cm = pixels * mon_obj$mon_width_cm / mon_obj$mon_width_pixel
-    deg_res = ( atan((size_cm / 2) / mon_obj$distance ) * (180 / pi ) * 2 )
-    return( deg_res )
+mon_conv.mon_neat = function(mon_obj, value, from, to) {
+    if (!all(c(from, to) %in% c('cm', 'pix', 'deg'))) {
+        stop('Only the following units can be used: "cm", "pix", or "deg".')
+    } else if (from == to) {
+        return(value)
+    }
+    if (from == 'pix') {
+        pixels = value
+        if (to == 'deg') {
+            size_cm = mon_obj$mon_width_cm * (pixels / mon_obj$mon_width_pixel)
+            deg_res = (atan((size_cm / 2) / mon_obj$distance) * (180 / pi) * 2)
+            return(deg_res)
+        } else if (to == 'cm') {
+            size_cm = mon_obj$mon_width_cm * (pixels / mon_obj$mon_width_pixel)
+            return(size_cm)
+        }
+    } else if (from == 'deg') {
+        degrees = value
+        if (to == 'pix') {
+            size_cm = mon_obj$distance * tan(degrees * (pi / 180) / 2) * 2
+            pix_res = mon_obj$mon_width_pixel * (size_cm / mon_obj$mon_width_cm)
+            return(pix_res)
+        } else if (to == 'cm') {
+            size_cm = mon_obj$distance * tan(degrees * (pi / 180) / 2) * 2
+            return(size_cm)
+        }
+    } else if (from == 'cm') {
+        size_cm = value
+        if (to == 'pix') {
+            pix_res = mon_obj$mon_width_pixel * (size_cm / mon_obj$mon_width_cm)
+            return(pix_res)
+        } else if (to == 'deg') {
+            deg_res = (atan((size_cm / 2) / mon_obj$distance) * (180 / pi) * 2)
+            return(deg_res)
+        }
+    }
 }
 
-
-#' @title Degrees to pixels
-#'
-#' @description Given a specific monitor object, converts visual angle degrees
-#'   to pixels.
-#' @param mon_obj Monitor object, as assigned with \code{\link{mon_neat}}.
-#' @param pixels Number of degrees.
-#' @return Number of pixels for the given number of degrees.
-#' @examples
-#' # assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
-#' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
-#'
-#' # convert 0.8 degrees of visual angle to pixels, for the specified monitor
-#' mon_deg2pix( my_mon, 0.8 ) # returns 29.38645 (pixels)
-#' @seealso \code{\link{mon_neat}}, \code{\link{mon_deg2pix}},
-#'   \code{\link{mon_params}}
-#' @export
-mon_deg2pix = function( mon_obj, degrees ) {
-    UseMethod('mon_deg2pix')
-}
-
-#' @export
-mon_deg2pix.default = function( ... ) {
-    cat('This function is to be used with "mon_neat" objects.\n')
-}
-
-#' @export
-mon_deg2pix.mon_neat = function( mon_obj, degrees ) {
-    size_cm = mon_obj$distance * tan( degrees * ( pi / 180) / 2 ) * 2
-    pix_res = ( size_cm / mon_obj$mon_width_cm * mon_obj$mon_width_pixel )
-    return( pix_res )
-}
 
 #' @title Monitor parameters
 #'
 #' @description Prints the parameters of a given monitor object.
+#' @param mon_obj Monitor object, as assigned with \code{\link{mon_neat}}.
 #' @return Returns nothing, just prints all parameters.
 #' @examples
 #' # assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
@@ -92,6 +108,7 @@ mon_deg2pix.mon_neat = function( mon_obj, degrees ) {
 #'
 #' # print the above given parameters
 #' mon_params( my_mon )
+#' @seealso \code{\link{mon_neat}}, \code{\link{mon_conv}}
 #' @export
 mon_params = function( mon_obj ) {
     UseMethod('mon_params')

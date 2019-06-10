@@ -2,7 +2,7 @@
 % Please edit documentation in R/mon_neat.R
 \name{mon_neat}
 \alias{mon_neat}
-\title{Monitor}
+\title{Monitor Object}
 \usage{
 mon_neat(distance, mon_width_cm, mon_width_pixel)
 }
@@ -14,16 +14,16 @@ mon_neat(distance, mon_width_cm, mon_width_pixel)
 \item{mon_width_pixel}{Monitor screen width in pixels.}
 }
 \value{
-A monitor object with the specified parameters, to be used in the \code{\link{mon_pix2deg}}, \code{\link{mon_deg2pix}}, and \code{\link{mon_params}} functions.
+A monitor object with the specified parameters, to be used in the
+  \code{\link{mon_conv}} function.
 }
 \description{
-Assigns a monitor object, storing distance and width
-  parameters.
+Assigns a monitor object, storing distance and width parameters.
 }
 \examples{
 # assign monitor with 57 cm viewing distance, and screen width 52 cm and 1920 pixels
 my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 }
 \seealso{
-\code{\link{mon_pix2deg}}, \code{\link{mon_deg2pix}}, \code{\link{mon_params}}
+\code{\link{mon_conv}}, \code{\link{mon_params}}
 }

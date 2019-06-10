@@ -6,6 +6,9 @@
 \usage{
 mon_params(mon_obj)
 }
+\arguments{
+\item{mon_obj}{Monitor object, as assigned with \code{\link{mon_neat}}.}
+}
 \value{
 Returns nothing, just prints all parameters.
 }
@@ -18,4 +21,7 @@ my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 
 # print the above given parameters
 mon_params( my_mon )
+}
+\seealso{
+\code{\link{mon_neat}}, \code{\link{mon_conv}}
 }
