@@ -1,10 +1,43 @@
-#' Neat ROC test
+#'@title Difference of Two Areas Under the Curves
 #'
-#' This function gives the result of comparing two ROCs (AUCs).
-#' @keywords roc
-#' @export
+#'@description Comparison of two \code{\link[=t_neat]{areas under the receiver operating characteristic curves}} (AUCs).
+#'
+#'@param roc1 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
+#'  object}}.
+#'@param roc2 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
+#'  object}}.
+#'@param pair Logical. If TRUE, the test is conducted for paired
+#'  samples. Otherwise (default) for independent samples.
+#'@param greater String (or number); optionally specifies one-sided test: either "1" (\code{roc1} AUC expected to be greater than \code{roc2}
+#'  AUC) or "2" (\code{roc2} AUC expected to be greater than \code{roc2}
+#'  AUC). If left empty, the test is two-sided.
+#'
+#'@return Prints correlation statistics (including CI and BF) in APA style.
+#'Furthermore, when assigned, returns a named vector with the following
+#'elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf} (Bayes
+#'factor).
+#' @note
+#'The test statistics are calculated via \code{\link[pROC]{roc.test}} as
+#'DeLong's test (for both paired and unpaired). The \code{roc_neat} function
+#'merely prints it in APA style.
+#'
+#'The ROC object may be calculated via \code{\link{t_neat}}, or directly with \code{\link[pROC]{roc}}.
+#'
+#'@references
+#'DeLong, E. R., DeLong, D. M., & Clarke-Pearson, D. L. (1988). Comparing the
+#'areas under two or more correlated receiver operating characteristic curves: a
+#'nonparametric approach. Biometrics, 44(3), 837-845.
+#'\doi{https://doi.org/10.2307/2531595}
+#'
+#'Robin, X., Turck, N., Hainard, A., Tiberti, N., Lisacek, F., Sanchez, J. C., &
+#'Muller, M. (2011). pROC: an open-source package for R and S+ to analyze and
+#'compare ROC curves. BMC bioinformatics, 12(1), 77.
+#'\doi{https://doi.org/10.1186/1471-2105-12-77}
+#'
+#' @seealso \code{\link{t_neat}}
 #' @examples
-#' roc_neat()
+#'
+#' @export
 
 roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     if ( greater == "1" ) {
@@ -12,8 +45,8 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     } else if ( greater == "2" ) {
         alt = "less"
     } else {
-        alt = "two.sided"    
-    }    
+        alt = "two.sided"
+    }
     roc_test = pROC::roc.test(roc1, roc2, paired = pair, alternative = alt)
     roc_stat = roc_test$statistic
     df = roc_test$parameter
@@ -21,7 +54,7 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     if ( pair == F ) {
         out = paste0( "D(", ro(df, 2), ") = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
     } else {
-        out = paste0( "Z = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
+        out = paste0( "D = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
     }
     prnt(out)
     invisible( c(stat = as.numeric(roc_stat), p = p_value) )

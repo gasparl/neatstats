@@ -10,6 +10,7 @@
 #' @return A data frame with the statistics per group. Furthermore,
 #'   prints statistics per group, unless used within the
 #'   \code{\link{table_neat}} function, in which case nothing is printed.
+#' @seealso \code{\link{table_neat}} to create full tables using multiple variables
 #' @examples
 #' data("mtcars") # load base R example dataset
 #' 
@@ -20,7 +21,6 @@
 #' res3 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl) # grouped by cyl (Number of cylinders)
 #' 
 #' res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = T) # medians
-#' @seealso \code{\link{table_neat}} to create full tables using multiple variables
 #' @export
 
 m_neat = function( values, round_to = 0, new_name = NULL, group_by = NULL, medians = F ){    

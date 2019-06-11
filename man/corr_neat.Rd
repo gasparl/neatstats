@@ -2,15 +2,73 @@
 % Please edit documentation in R/corr_neat.R
 \name{corr_neat}
 \alias{corr_neat}
-\title{Neat correlation}
+\title{Correlation Statistics}
 \usage{
 corr_neat(var1, var2, ci = 0.95, bf_added = T, direction = "",
   round_r = 3, for_table = F)
 }
+\arguments{
+\item{var1}{Numeric vector; numbers of the first variable.}
+
+\item{var2}{Numeric vector; numbers of the second variable.}
+
+\item{ci}{Numeric; confidence level for the returned CI, as implemented in
+\code{\link[stats]{cor.test}}.}
+
+\item{bf_added}{Logical. If TRUE (default), Bayes factor is calculated and
+displayed.}
+
+\item{direction}{String; optionally specifies one-sided test: either
+"negative" (negative correlation expected) or "positive" (positive
+correlation expected). (Short forms also work, e.g. "p", "pos", "neg", etc.)
+If left empty, the test is two-sided.}
+
+\item{round_r}{Number \code{\link[=ro]{to round}} to the correlation and its
+CI.}
+
+\item{for_table}{Logical. If TRUE, omits the confidence level display from the
+printed text.}
+}
+\value{
+Prints correlation statistics (including CI and BF) in APA style.
+Furthermore, when assigned, returns a named vector with the following
+elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf} (Bayes
+factor).
+}
 \description{
-This function gives Pearson correlation results including CIs and BFs.
+\code{\link[stats:cor.test]{Pearson correlation}} results
+ including confidence interval (CI) and correlation
+ \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF).
+}
+\details{
+The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
+BF supporting null hypothesis is denoted as BF01, while that supporting
+alternative hypothesis is denoted as BF10. When the BF is smaller than 1
+(i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
+BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
+exponential form is reported for readability. (The original full BF number is
+available in the returned named vector as \code{bf}.)
+}
+\note{
+The correlation and CI is calculated via \code{\link[stats]{cor.test}}.
+
+The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
 }
 \examples{
-corr_neat()
+# assign two variables
+v1 = c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 )
+v2 = c(4, -2, 23, 13, 32, 16, 3, 29, 37, -4, 65 )
+
+corr_neat(v1, v2) # prints statistics
+
+# one-sided, and omitting the "95\% CI" part
+corr_neat(v1, v2, direction = 'pos', for_table = T)
+
+# print statistics and assign main results
+results = corr_neat(v1, v2, direction = 'pos')
+
+results['p'] # get precise p value
 }
-\keyword{correlation}
+\seealso{
+\code{\link{t_neat}}
+}

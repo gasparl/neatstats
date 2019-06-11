@@ -15,8 +15,18 @@
 #' @param to_clipboard Logical. If TRUE, the table is copied to the clipboard.
 #' @param medians Logical. If TRUE, medians are calculated, otherwise means.
 #'    (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)
+#' @details
+#' The \code{values}, \code{round_to}, and \code{new_name} arguments given in
+#' the \code{\link{m_neat}} function are always applied. However, the
+#' \code{group_by} or \code{medians} given in the \code{\link{m_neat}} function
+#' are only applied when no arguments are given in the \code{\link{table_neat}}
+#' function for the identical parameters (\code{group_by} or \code{medians}). If
+#' either parameter is given in the \code{\link{table_neat}} function, all
+#' separately given respective argument(s) in the \code{\link{m_neat}}
+#' function(s) are ignored.
 #' @return Returns a data frame with means or medians and SDs per variable and
 #'   per group.
+#' @seealso \code{\link{m_neat}} for more related details
 #' @examples
 #' data("mtcars") # load base R example dataset
 #' 
@@ -40,16 +50,6 @@
 #'                      group_by = mtcars$cyl,
 #'                      medians = T,
 #'                      group_per = 'columns')
-#' @details
-#' The \code{values}, \code{round_to}, and \code{new_name} arguments given in
-#' the \code{\link{m_neat}} function are always applied. However, the
-#' \code{group_by} or \code{medians} given in the \code{\link{m_neat}} function
-#' are only applied when no arguments are given in the \code{\link{table_neat}}
-#' function for the identical parameters (\code{group_by} or \code{medians}). If
-#' either parameter is given in the \code{\link{table_neat}} function, all
-#' separately given respective argument(s) in the \code{\link{m_neat}}
-#' function(s) are ignored.
-#' @seealso \code{\link{m_neat}} for more related details
 #' @export
 
 table_neat = function( values_list, group_by = NULL, group_per = 'rows', to_clipboard = F, medians = NULL ){

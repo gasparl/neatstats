@@ -3,6 +3,12 @@ pkg.globals = new.env()
 pkg.globals$my_unique_grouping_var = NULL
 pkg.globals$my_unique_median = NULL
 
+# the function below is to be added later
+# to_clipboard = function( printing_function ) {
+#    text_for_cb = capture.output( printing_function )
+#    write.table( text_for_cb, "clipboard", quote = F, row.names = F, col.names = F )
+# }
+
 # misc local functions below
 
 quiet <- function(x) { 
@@ -51,7 +57,7 @@ cit_d = function(probe_rts, irr_rts){
 }
 
 to_exp = function( the_num ) {
-    if ( as.numeric( ro( the_num, 2 ) ) > 9999.99 ) {
+    if ( as.numeric( ro( the_num, 2 ) ) >= 10000 ) {
         the_num = formatC( the_num, format = "e", digits = 2)
         return( the_num )
     } else {
