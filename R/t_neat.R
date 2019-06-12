@@ -88,7 +88,7 @@
 #'The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
 #'
 #'The correlation and its CI are calculated via \code{\link[stats]{cor.test}},
-#'and is always two-sided, always with 95% CI. For more, use
+#'and is always two-sided, always with 95 percent CI. For more, use
 #'\code{\link{corr_neat}}.
 #'
 #'The AUC and its CI are calculated via \code{\link[pROC]{auc}}, and the

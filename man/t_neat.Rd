@@ -64,10 +64,10 @@ Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
  (accuracy using the most optimal classification threshold). The latter two
  is \code{NULL} when \code{auc_added} is \code{FALSE}. When \code{auc_added}
  is \code{TRUE}, there are also two additional elements of the list. One is
- '\code{roc_obj}', which is a \code{\link[pROC]{roc}} object, to be used with
- the \code{\link{roc_neat}} function. The other is '\code{best_thresholds}',
- which contains the best threshold value(s) for classification, along with
- corresponding specificity and sensitivity.
+ '\code{roc_obj}', which is a \code{\link[pROC]{roc}} object, to be used e.g.
+ with the \code{\link{roc_neat}} function. The other is
+ '\code{best_thresholds}', which contains the best threshold value(s) for
+ classification, along with corresponding specificity and sensitivity.
 }
 \description{
 Welch's \code{\link[stats:t.test]{t-test}} results
@@ -115,7 +115,7 @@ standardized mean).
 The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
 
 The correlation and its CI are calculated via \code{\link[stats]{cor.test}},
-and is always two-sided, always with 95% CI. For more, use
+and is always two-sided, always with 95 percent CI. For more, use
 \code{\link{corr_neat}}.
 
 The AUC and its CI are calculated via \code{\link[pROC]{auc}}, and the
@@ -123,26 +123,19 @@ accuracy at most optimal threshold via \code{\link[pROC]{coords}} (\code{x =
 "best"}); both using the object \code{\link[pROC]{roc}}.
 }
 \examples{
-v1 = c(191, 115, 129, 43, 523, -4, 34, 28, 33, -1, 54 )
-v2 = c(4, -2, 23, 13, 32, 16, 3, 29, 37, -4, 65 )
+# assign two variables (numeric vectors)
+v1 = c(191, 115, 129, 43, 523,-4, 34, 28, 33,-1, 54)
+v2 = c(4,-2, 23, 13, 32, 16, 3, 29, 37,-4, 65)
 
 t_neat(v1, v2) # prints results as independent samples
-t_neat(v1, v2, pair = T) # as paired samples (correlation added)
+t_neat(v1, v2, pair = T) # as paired samples (r added by default)
 t_neat(v1, v2, pair = T, greater = "1") # one-sided
-t_neat(v1, v2, pair = T, auc_added = T) # AUC included
-
+t_neat(v1, v2, pair = T, auc_added = T ) # AUC included
 
 # print results and assign returned list
-results1 = t_neat(v1, v2, pair = T)
+results = t_neat(v1, v2, pair = T)
 
 results$stats['bf'] # get precise BF value
-
-# assign two other variables
-v3 = c(169, 175, 167, 164)
-v4 = c(176, 182, 179, 165)
-results2 = t_neat(v1, v2, pair = T) # get list
-
-roc_neat(results1$r, results2)
 
 }
 \references{
