@@ -15,7 +15,7 @@ corr_neat(var1, var2, ci = 0.95, bf_added = T, direction = "",
 \item{ci}{Numeric; confidence level for the returned CI, as implemented in
 \code{\link[stats]{cor.test}}.}
 
-\item{bf_added}{Logical. If TRUE (default), Bayes factor is calculated and
+\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated and
 displayed.}
 
 \item{direction}{String; optionally specifies one-sided test: either
@@ -26,7 +26,7 @@ If left empty, the test is two-sided.}
 \item{round_r}{Number \code{\link[=ro]{to round}} to the correlation and its
 CI.}
 
-\item{for_table}{Logical. If TRUE, omits the confidence level display from the
+\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display from the
 printed text.}
 }
 \value{

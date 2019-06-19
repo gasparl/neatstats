@@ -6,7 +6,7 @@
 #'  object}}.
 #'@param roc2 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
 #'  object}}.
-#'@param pair Logical. If TRUE, the test is conducted for paired
+#'@param pair Logical. If \code{TRUE}, the test is conducted for paired
 #'  samples. Otherwise (default) for independent samples.
 #'@param greater String (or number); optionally specifies one-sided test: either "1" (\code{roc1} AUC expected to be greater than \code{roc2}
 #'  AUC) or "2" (\code{roc2} AUC expected to be greater than \code{roc2}

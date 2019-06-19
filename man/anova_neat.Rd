@@ -4,7 +4,7 @@
 \alias{anova_neat}
 \title{Neat ANOVA}
 \usage{
-anova_neat(data_per_subject, values, id_col, between_vars = NULL,
+anova_neat(data_per_subject, values, between_vars = NULL,
   within_ids = NULL, ci = 0.9, bf_added = T,
   test_title = "--- neat ANOVA ---", welch = T, e_correction = "")
 }

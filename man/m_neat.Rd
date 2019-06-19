@@ -16,7 +16,7 @@ m_neat(values, round_to = 0, new_name = NULL, group_by = NULL,
 
 \item{group_by}{A vector of factors by which the statistics are grouped.}
 
-\item{medians}{Logical. If TRUE, medians are calculated, otherwise means.}
+\item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise means.}
 }
 \value{
 A data frame with the statistics per group. Furthermore,

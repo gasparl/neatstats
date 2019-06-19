@@ -7,7 +7,7 @@
 #'@param var2 Numeric vector; numbers of the second variable.
 #'@param ci Numeric; confidence level for the returned CI, as implemented in
 #'  \code{\link[stats]{cor.test}}.
-#'@param bf_added Logical. If TRUE (default), Bayes factor is calculated and
+#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated and
 #'  displayed.
 #'@param direction String; optionally specifies one-sided test: either
 #'  "negative" (negative correlation expected) or "positive" (positive
@@ -15,7 +15,7 @@
 #'  If left empty, the test is two-sided.
 #'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
 #'  CI.
-#'@param for_table Logical. If TRUE, omits the confidence level display from the
+#'@param for_table Logical. If \code{TRUE}, omits the confidence level display from the
 #'  printed text.
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of 0.707.

@@ -8,7 +8,7 @@
 #'   (= male) and 2 (= female) only (either as numbers or as strings).
 #' @param group_by A vector of factors by which the statistics are grouped,
 #'   typically a column from the data frame provided as \code{data_per_subject}.
-#' @param percent Logical. If FALSE, gender ratio is presented as count of
+#' @param percent Logical. If \code{FALSE}, gender ratio is presented as count of
 #'   males. Otherwise (default), presented as percent of males.
 #' @param round_perc Number \code{\link[=ro]{to round}} to, when using percents.
 #' @examples
@@ -21,7 +21,7 @@
 #'     age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
 #'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
 #' )
-#' 
+#'
 #' # print demographics (age and gender) per "conditions":
 #' dems_neat(dat, group_by = dat$conditions)
 #' @export
@@ -30,7 +30,7 @@ dems_neat = function( data_per_subject, group_by = NULL, percent = T, round_perc
         s_dat = eval(parse(text=data_per_subject))
     } else {
         s_dat = data_per_subject
-    }       
+    }
     if ( all( data_per_subject$gender == '1' | data_per_subject$gender == '2' ) == F ) {
         stop('The "gender" column must only contain the values 1 (male) or 2 (female).')
     }
@@ -49,11 +49,11 @@ dems_neat = function( data_per_subject, group_by = NULL, percent = T, round_perc
     }
     gender$ratio = gender[[1]]/(gender[[1]]+gender[[2]])*100
     gender$neat_cond = row.names(gender)
-    
+
     age = do.call(data.frame, aggregate( s_dat$age, by = list( s_dat$neat_cond ), function(x) c(count = length(x), mean = mean(x), sd = sd(x))) )
-    names(age)[names(age) == "Group.1"] <- "neat_cond"    
+    names(age)[names(age) == "Group.1"] <- "neat_cond"
     age_gend = merge( age, gender, by = 'neat_cond' )
-    
+
     if ( percent != F ) {
         for(i in 1:nrow(age_gend)) {
             row <- age_gend[i,]

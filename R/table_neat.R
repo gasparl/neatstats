@@ -12,8 +12,8 @@
 #' @param group_per String, "rows" or "columns". If set to "columns" (or just
 #'   "c" or "col", etc.), each column contains statistics for one group.
 #'   Otherwise (default), each row contains statistics for one group.
-#' @param to_clipboard Logical. If TRUE, the table is copied to the clipboard.
-#' @param medians Logical. If TRUE, medians are calculated, otherwise means.
+#' @param to_clipboard Logical. If \code{TRUE}, the table is copied to the clipboard.
+#' @param medians Logical. If \code{TRUE}, medians are calculated, otherwise means.
 #'    (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)
 #' @details
 #' The \code{values}, \code{round_to}, and \code{new_name} arguments given in
@@ -29,11 +29,11 @@
 #' @seealso \code{\link{m_neat}} for more related details
 #' @examples
 #' data("mtcars") # load base R example dataset
-#' 
+#'
 #' # overall means and SDs table for disp (Displacement) and hp (Gross horsepower)
 #' Ms_SDs = table_neat(list(m_neat(mtcars$disp),
 #'                          m_neat(mtcars$hp)))
-#' 
+#'
 #' # means and SDs table for mpg (Miles/(US) gallon), wt (Weight), and hp (Gross horsepower)
 #' # grouped by cyl (Number of cylinders)
 #' # each measure rounded to respective optimal number of digits
@@ -42,7 +42,7 @@
 #'                           m_neat(mtcars$wt, 2, new_name = 'weight'),
 #'                           m_neat(mtcars$hp)),
 #'                      group_by = mtcars$cyl)
-#' 
+#'
 #' # same as above, but with medians, and with groups per columns
 #' Ms_SDs3 = table_neat(list(m_neat(mtcars$mpg, 1),
 #'                           m_neat(mtcars$wt, 2, new_name = 'weight'),
@@ -58,7 +58,7 @@ table_neat = function( values_list, group_by = NULL, group_per = 'rows', to_clip
         {
             pkg.globals$my_unique_grouping_var = group_by
             pkg.globals$my_unique_median = medians
-            the_table = Reduce(function(x, y) merge(x, y, by = "group", all=TRUE), values_list )
+            the_table = Reduce(function(x, y) merge(x, y, by = "group", all=T), values_list )
         },
         error=function(error_message) {
             message(error_message)

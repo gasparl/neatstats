@@ -14,7 +14,7 @@ t_neat(var1, var2, pair = F, greater = "", ci = NULL, bf_added = T,
 
 \item{var2}{Numeric vector; numbers of the second variable.}
 
-\item{pair}{Logical. If TRUE, all tests (t, BF, AUC) are conducted for paired
+\item{pair}{Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for paired
 samples. Otherwise (default) for independent samples.}
 
 \item{greater}{String (or number); optionally specifies one-sided tests (t and
@@ -24,16 +24,16 @@ mean). If left empty, the test is two-sided.}
 
 \item{ci}{Numeric; confidence level for returned CIs for Cohen's d and AUC.}
 
-\item{bf_added}{Logical. If TRUE (default), Bayes factor is calculated and
+\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated and
 displayed.}
 
-\item{auc_added}{Logical. If TRUE, AUC is calculated and displayed. (FALSE by
+\item{auc_added}{Logical. If \code{TRUE}, AUC is calculated and displayed. (\code{FALSE} by
 default.)}
 
-\item{r_added}{Logical. If TRUE (default), Pearson correlation is calculated
+\item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is calculated
 and displayed in case of paired comparison.}
 
-\item{for_table}{Logical. If TRUE, omits the confidence level display from the
+\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display from the
 printed text.}
 
 \item{test_title}{String, "Descriptives:" by default. Simply displayed in

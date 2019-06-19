@@ -16,7 +16,7 @@ The "age" column must contain numbers, while "gender" column must contain 1
 \item{group_by}{A vector of factors by which the statistics are grouped,
 typically a column from the data frame provided as \code{data_per_subject}.}
 
-\item{percent}{Logical. If FALSE, gender ratio is presented as count of
+\item{percent}{Logical. If \code{FALSE}, gender ratio is presented as count of
 males. Otherwise (default), presented as percent of males.}
 
 \item{round_perc}{Number \code{\link[=ro]{to round}} to, when using percents.}

@@ -21,9 +21,9 @@ function; see Details.}
 "c" or "col", etc.), each column contains statistics for one group.
 Otherwise (default), each row contains statistics for one group.}
 
-\item{to_clipboard}{Logical. If TRUE, the table is copied to the clipboard.}
+\item{to_clipboard}{Logical. If \code{TRUE}, the table is copied to the clipboard.}
 
-\item{medians}{Logical. If TRUE, medians are calculated, otherwise means.
+\item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise means.
 (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)}
 }
 \value{

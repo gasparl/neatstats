@@ -7,22 +7,22 @@
 #'  curve}} (AUC).
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
-#'@param pair Logical. If TRUE, all tests (t, BF, AUC) are conducted for paired
+#'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for paired
 #'  samples. Otherwise (default) for independent samples.
 #'@param greater String (or number); optionally specifies one-sided tests (t and
 #'  BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
 #'  mean) or "2" (\code{var2} mean expected to be greater than \code{var1}
 #'  mean). If left empty, the test is two-sided.
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
-#'@param bf_added Logical. If TRUE (default), Bayes factor is calculated and
+#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated and
 #'  displayed.
-#'@param auc_added Logical. If TRUE, AUC is calculated and displayed. (FALSE by
+#'@param auc_added Logical. If \code{TRUE}, AUC is calculated and displayed. (\code{FALSE} by
 #'  default.)
-#'@param r_added Logical. If TRUE (default), Pearson correlation is calculated
+#'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is calculated
 #'  and displayed in case of paired comparison.
 #'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
 #'  CI.
-#'@param for_table Logical. If TRUE, omits the confidence level display from the
+#'@param for_table Logical. If \code{TRUE}, omits the confidence level display from the
 #'  printed text.
 #'@param test_title String, "Descriptives:" by default. Simply displayed in
 #'  printing preceding the descriptive statistics. (Useful e.g. to distinguish
