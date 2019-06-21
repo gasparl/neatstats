@@ -131,26 +131,32 @@ anova_neat = function(data_per_subject,
         bf = eval(parse(
             text =
                 paste0(
-                    'as.vector( BayesFactor::anovaBF(',
+                    'BayesFactor::anovaBF(',
                     value_col,
                     ' ~ ',
                     indep_vars,
                     id_part,
                     ', data = this_data, whichRandom = "',
                     id_col,
-                    '", whichModels = "bottom") )'
+                    '", whichModels = "withmain")'
                 )
         ))
         prnt("--- Bayes factor ---")
+        bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = T)
         print(bf) # to remove
-        names(bf) = bf_names(names(bf))
+        print(bf_inc) # to remove
+        bf_models = bf
+        bf_inc = setNames(object = bf_inc$BF, nm = rownames(bf_inc))
+        names(bf_inc) = bf_names(names(bf_inc))
     } else {
-        bf = NULL
+        bf_inc = NULL
+        bf_models = NULL
     }
     to_return = anova_apa(
         ezANOVA_out = ez_anova_out,
         ci = ci,
-        bf_added = bf,
+        bf_added = bf_inc,
+        bf_models = bf_models,
         test_title = test_title,
         welch = w_anova,
         e_correction = e_correction
@@ -161,6 +167,7 @@ anova_neat = function(data_per_subject,
 anova_apa = function(ezANOVA_out,
                      ci = 0.90,
                      bf_added = NULL,
+                     bf_models = NULL,
                      test_title = "--- neat ANOVA ---",
                      welch = NULL,
                      e_correction = '') {
@@ -307,5 +314,6 @@ anova_apa = function(ezANOVA_out,
             bf = as.numeric(bf_val)
         )
     }
+    stat_list = c(stat_list, bf_models = bf_models, ez_anova = ezANOVA_out)
     invisible(stat_list)
 }

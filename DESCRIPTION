@@ -5,7 +5,7 @@ Authors@R: person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role = 
 Description: This package focuses on user-friendly, clear and simple statistics, primarily
     for publication in psychological science. The main functions are wrappers for other
     packages, but there are various additions as well.
-Depends: R (>= 3.4.4), pROC, MBESS, ez, BayesFactor
+Depends: R (>= 3.4.4), pROC, MBESS, ez, BayesFactor, bayestestR
 License: BSD-2-Clause
 Encoding: UTF-8
 LazyData: true
