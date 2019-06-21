@@ -127,7 +127,7 @@ anova_neat = function(data_per_subject,
     # suppressMessages
 
     if (bf_added == T) {
-        indep_vars = gsub(',', ' *', paste0(between_vars_bf, within_vars_bf))
+        indep_vars = gsub(',', '*', paste0(between_vars_bf, within_vars_bf))
         bf = eval(parse(
             text =
                 paste0(
@@ -142,11 +142,16 @@ anova_neat = function(data_per_subject,
                 )
         ))
         prnt("--- Bayes factor ---")
-        bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = T)
+        if (is.null(within_vars) && length( to_c(between_vars) ) == 1 ) {
+            bf_inc = as.vector(bf)
+        } else {
+            bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = T)
+            print(bf_inc) # to remove
+            bf_inc = setNames(object = bf_inc$BF, nm = rownames(bf_inc))
+        }
         print(bf) # to remove
         print(bf_inc) # to remove
         bf_models = bf
-        bf_inc = setNames(object = bf_inc$BF, nm = rownames(bf_inc))
         names(bf_inc) = bf_names(names(bf_inc))
     } else {
         bf_inc = NULL
