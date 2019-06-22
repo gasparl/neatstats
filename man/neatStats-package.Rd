@@ -9,6 +9,13 @@
 This package focuses on user-friendly, simple functions to produce clear but comprehensive statistics, primarily for publication in psychological science.
 Most functions are wrappers for base R functions and other packages, but there are various additions as well. Highlights are the \code{\link[=t_neat]{t-test}}, and the \code{\link[=anova_neat]{ANOVA}} (both including appropriate effect sizes with confidence intervals, and Bayes factors, all printed in APA style), as well as the \code{\link[=table_neat]{aggregate table}}.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/gasparl/neatstats}
+}
+
+}
 \author{
 \strong{Maintainer}: Gáspár Lukács \email{lkcsgaspar@gmail.com} (0000-0001-9401-4830)
 

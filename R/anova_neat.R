@@ -1,11 +1,135 @@
-#' Neat ANOVA
+#'@title Neat ANOVA
 #'
-#' This function gives thorough ANOVA results including CIs and BFs.
-#' @keywords anova
-#' @export
+#'@description This function gives thorough ANOVA results including CIs and BFs.
+#'
+#' @seealso \code{\link{corr_neat}}, \code{\link{roc_neat}}
+#'
 #' @examples
-#' anova_neat()
-
+#' # assign random data in a data frame for illustration
+#' # (note that the 'subject' is only for illustration; since each line contains the
+#' # data of a single subject, no additional subject id is needed)
+#' dat_1 = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     grouping1 = c(1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
+#'     grouping2 = c(1, 2, 1, 2, 2, 1, 1, 1, 2, 1),
+#'     value_1_a = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
+#'     value_2_a = c(-14.1, 58.5, -25.5, 42.2, -13, 4.4, 55.5, -28.5, 25.6, -37.1),
+#'     value_1_b = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     value_2_b = c(8.024, -14.162, 3.1, -2.1, -1.5, 0.91, 11.53, 18.37, 0.3, -0.59),
+#'     value_1_c = c(27.4,-17.6,-32.7, 0.4, 37.2, 1.7, 18.2, 8.9, 1.9, 0.4),
+#'     value_2_c = c(7.7, -0.8, 2.2, 14.1, 22.1, -47.7, -4.8, 8.6, 6.2, 18.2)
+#' )
+#' head(dat_1) # see what we have
+#'
+#' # For example, numbers '1' and '2' in the variable names of the values can
+#' # denote sessions in an experiment, such as '_1' for first session, and '_2 for
+#' # second session'. The letters '_a', '_b', '_c' could denote three different
+#' # types of techniques used within each session, to be compared to each other.
+#' # See further below for a more verbose but more meaningful example data.
+#'
+#' # get the between-subject effect of 'grouping1'
+#' anova_neat('dat_1', values = 'value_1_a', between_vars = 'grouping1')
+#'
+#' # main effects of 'grouping1', 'grouping2', and their interactions
+#' anova_neat('dat_1', values = 'value_1_a', between_vars = 'grouping1, grouping2')
+#'
+#' # repeated measures:
+#' # get the within-subject effect for 'value_1_a' vs. 'value_1_b'
+#' anova_neat('dat_1', values = 'value_1_a, value_1_b')
+#'
+#' # same, but give the factor a custom variable name
+#' anova_neat('dat_1', values = 'value_1_a, value_1_b', within_ids = 'a_vs_b')
+#' # or
+#' anova_neat('dat_1', values = 'value_1_a, value_1_b', within_ids = 'letters')
+#'
+#' # within-subject effect for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c'
+#' anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c')
+#'
+#' # within-subject main effect for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c',
+#' # between-subject main effect 'grouping1', and the interaction of these two main
+#' # effects
+#' anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c', between_vars = 'grouping1')
+#'
+#' # within-subject 'number' main effect for variables with number '1' vs. number
+#' # '2' ('value_1_a' and 'value_1_b' vs. 'value_2_a' and 'value_2_b'), 'letter'
+#' # main effect for variables with final letterr 'a' vs. final letter 'b'
+#' # ('value_1_a' and 'value_2_a' vs. 'value_1_b' and 'value_2_b'), and the
+#' # 'letter' x 'number' interaction
+#' anova_neat('dat_1',
+#'            values = 'value_1_a, value_2_a, value_1_b, value_2_b',
+#'            within_ids = list(
+#'                letters = c('_a', '_b'),
+#'                numbers =  c('_1', '_2')
+#'            ))
+#'
+#' # same as above, but now including between-subject main effect 'grouping2' and
+#' # its interactions
+#' anova_neat(
+#'     'dat_1',
+#'     values = 'value_1_a, value_2_a, value_1_b, value_2_b',
+#'     within_ids = list(
+#'         letters = c('_a', '_b'),
+#'         numbers =  c('_1', '_2')
+#'     ),
+#'     between_vars = 'grouping2'
+#' )
+#'
+#' # In real datasets, these could of course be more meaningful. For example, let's
+#' # say participants rated the attractiveness of pictures with low or high levels
+#' # of frightening and low or high levels of disgusting qualities. So there are
+#' # four types of ratings:
+#' # 'low disgusting, low frightening' pictures
+#' # 'low disgusting, high frightening' pictures
+#' # 'high disgusting, low frightening' pictures
+#' # 'high disgusting, high frightening' pictures
+#'
+#' # this could be meaningfully assigned e.g. as below
+#' pic_ratings = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
+#'     rating_fright_high_disgust_low = c(-14.1, 58.5,-25.5, 42.2,-13, 4.4, 55.5,-28.5, 25.6,-37.1),
+#'     rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     rating_fright_high_disgust_high = c(8.024,-14.162, 3.1,-2.1,-1.5, 0.91, 11.53, 18.37, 0.3,-0.59)
+#' )
+#' head(pic_ratings) # see what we have
+#'
+#' # now the same logic applies as for the examples above, but now the
+#' # within-subject differences can be more meaningfully specified, e.g.
+#' # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
+#' # 'fright_low' vs. 'fright_high' for levels of frighteningness
+#' anova_neat('pic_ratings',
+#'            values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+#'            within_ids = list(
+#'                disgustingness = c('disgust_low', 'disgust_high'),
+#'                frighteningness =  c('fright_low', 'fright_high')
+#'            ))
+#' # the results are the same as for the analogous test for the 'dat_1' data, only
+#' # with different names
+#'
+#' # now let's say the ratings were done in two sessions
+#' pic_ratings = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     session = c(1, 2, 1, 2, 2, 1, 1, 1, 2, 1),
+#'     rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
+#'     rating_fright_high_disgust_low = c(-14.1, 58.5,-25.5, 42.2,-13, 4.4, 55.5,-28.5, 25.6,-37.1),
+#'     rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     rating_fright_high_disgust_high = c(8.024,-14.162, 3.1,-2.1,-1.5, 0.91, 11.53, 18.37, 0.3,-0.59)
+#' )
+#'
+#' # now test the effect and interactions of 'session'
+#' anova_neat(
+#'     'pic_ratings',
+#'     values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+#'     within_ids = list(
+#'         disgustingness = c('disgust_low', 'disgust_high'),
+#'         frighteningness =  c('fright_low', 'fright_high')
+#'     ),
+#'     between_vars = 'session'
+#' )
+#'
+#' # again, same results as with 'dat_1' (using 'grouping2' as sessions)
+#'
+#' @export
 anova_neat = function(data_per_subject,
                       values,
                       between_vars = NULL,
