@@ -4,7 +4,7 @@
 \alias{dems_neat}
 \title{Demographics}
 \usage{
-dems_neat(data_per_subject, group_by = NULL, percent = T,
+dems_neat(data_per_subject, group_by = NULL, percent = TRUE,
   round_perc = 0)
 }
 \arguments{

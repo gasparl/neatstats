@@ -5,7 +5,7 @@
 \title{Neat Descriptives}
 \usage{
 m_neat(values, round_to = 0, new_name = NULL, group_by = NULL,
-  medians = F)
+  medians = FALSE)
 }
 \arguments{
 \item{values}{A vector of numbers from which the statistics are to be
@@ -39,7 +39,7 @@ res2 = m_neat(mtcars$wt, 2, new_name = 'weight') # rounded to 2 and renamed
 
 res3 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl) # grouped by cyl (Number of cylinders)
 
-res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = T) # medians
+res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = TRUE) # medians
 }
 \seealso{
 \code{\link{table_neat}} to create full tables using multiple

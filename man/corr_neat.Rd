@@ -4,8 +4,8 @@
 \alias{corr_neat}
 \title{Correlation Statistics}
 \usage{
-corr_neat(var1, var2, ci = 0.95, bf_added = T, direction = "",
-  round_r = 3, for_table = F)
+corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = "",
+  round_r = 3, for_table = FALSE)
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -54,7 +54,7 @@ The correlation and CI is calculated via
 \code{\link[stats:cor.test]{stats::cor.test}}.
 
 The Bayes factor is calculated via
-\code{\link[BayesFactor::correlationBF]{BayesFactor:correlationBF}}.
+\code{\link[BayesFactor:correlationBF]{BayesFactor::correlationBF}}.
 }
 \examples{
 # assign two variables
@@ -64,7 +64,7 @@ v2 = c(4, -2, 23, 13, 32, 16, 3, 29, 37, -4, 65 )
 corr_neat(v1, v2) # prints statistics
 
 # one-sided, and omitting the "95\% CI" part
-corr_neat(v1, v2, direction = 'pos', for_table = T)
+corr_neat(v1, v2, direction = 'pos', for_table = TRUE)
 
 # print statistics and assign main results
 results = corr_neat(v1, v2, direction = 'pos')

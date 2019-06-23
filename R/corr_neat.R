@@ -34,7 +34,7 @@
 #'\code{\link[stats:cor.test]{stats::cor.test}}.
 #'
 #'The Bayes factor is calculated via
-#'\code{\link[BayesFactor::correlationBF]{BayesFactor:correlationBF}}.
+#'\code{\link[BayesFactor:correlationBF]{BayesFactor::correlationBF}}.
 #'
 #' @seealso \code{\link{t_neat}}
 #' @examples
@@ -45,7 +45,7 @@
 #' corr_neat(v1, v2) # prints statistics
 #'
 #' # one-sided, and omitting the "95% CI" part
-#' corr_neat(v1, v2, direction = 'pos', for_table = T)
+#' corr_neat(v1, v2, direction = 'pos', for_table = TRUE)
 #'
 #' # print statistics and assign main results
 #' results = corr_neat(v1, v2, direction = 'pos')
@@ -55,50 +55,50 @@
 corr_neat = function(var1,
                      var2,
                      ci = .95,
-                     bf_added = T,
+                     bf_added = TRUE,
                      direction = "",
                      round_r = 3,
-                     for_table = F) {
+                     for_table = FALSE) {
     if (direction != "" &&
         substr("negative", 1, nchar(direction)) == direction) {
         message("One-sided test! Negative correlation expected.")
-        the_cor = cor.test(var1,
+        the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "l",
                            conf.level = ci)
-        if (bf_added == T) {
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(-1, 0))[1])
         }
     } else if (direction != "" &
                substr("positive", 1, nchar(direction)) == direction) {
         message("One-sided test! Positive correlation expected.")
-        the_cor = cor.test(var1,
+        the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "g",
                            conf.level = ci)
-        if (bf_added == T) {
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(0, 1))[1])
         }
     } else {
-        the_cor = cor.test(var1, var2, conf.level = ci)
-        if (bf_added == T) {
+        the_cor = stats::cor.test(var1, var2, conf.level = ci)
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::correlationBF(var1, var2))
         }
     }
-    if (bf_added == T) {
+    if (bf_added == TRUE) {
         bf_out = bf_neat(bf)
     } else {
         bf_out = "."
         bf = NA
     }
-    if (for_table == T) {
+    if (for_table == TRUE) {
         ci_disp = ""
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    r = edges(the_cor$estimate, round_r, no_null = T)
-    lower = edges(the_cor$conf.int[1], round_r, no_null = T)
-    upper = edges(the_cor$conf.int[2], round_r, no_null = T)
+    r = edges(the_cor$estimate, round_r, no_null = TRUE)
+    lower = edges(the_cor$conf.int[1], round_r, no_null = TRUE)
+    upper = edges(the_cor$conf.int[2], round_r, no_null = TRUE)
     p_value = the_cor$p.value
     df = the_cor$parameter
     out = paste0("r(",

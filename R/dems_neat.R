@@ -27,7 +27,7 @@
 #' @export
 dems_neat = function(data_per_subject,
                      group_by = NULL,
-                     percent = T,
+                     percent = TRUE,
                      round_perc = 0) {
     if (class(data_per_subject) == "character") {
         s_dat = eval(parse(text = data_per_subject))
@@ -35,7 +35,7 @@ dems_neat = function(data_per_subject,
         s_dat = data_per_subject
     }
     if (all(data_per_subject$gender == '1' |
-            data_per_subject$gender == '2') == F) {
+            data_per_subject$gender == '2') == FALSE) {
         stop('The "gender" column must only contain the values 1 (male) or 2 (female).')
     }
     if (is.null(group_by)) {
@@ -45,7 +45,7 @@ dems_neat = function(data_per_subject,
     } else {
         s_dat$neat_cond = group_by
     }
-    gender = as.data.frame.matrix(xtabs( ~ neat_cond + gender, s_dat))
+    gender = as.data.frame.matrix(stats::xtabs( ~ neat_cond + gender, s_dat))
     if (!'1' %in% colnames(gender)) {
         gender = data.frame('1' = 0, gender)
     } else if (!'2' %in% colnames(gender)) {
@@ -54,16 +54,16 @@ dems_neat = function(data_per_subject,
     gender$ratio = gender[[1]] / (gender[[1]] + gender[[2]]) * 100
     gender$neat_cond = row.names(gender)
 
-    age = do.call(data.frame, aggregate(s_dat$age, by = list(s_dat$neat_cond), function(x)
+    age = do.call(data.frame, stats::aggregate(s_dat$age, by = list(s_dat$neat_cond), function(x)
         c(
             count = length(x),
             mean = mean(x),
-            sd = sd(x)
+            sd = stats::sd(x)
         )))
     names(age)[names(age) == "Group.1"] <- "neat_cond"
     age_gend = merge(age, gender, by = 'neat_cond')
 
-    if (percent != F) {
+    if (percent != FALSE) {
         for (i in 1:nrow(age_gend)) {
             row <- age_gend[i, ]
             prnt(

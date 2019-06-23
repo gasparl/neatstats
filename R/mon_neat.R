@@ -129,6 +129,6 @@ mon_params.mon_neat = function(mon_obj) {
         '\nmon_width_pixel: ',
         mon_obj$mon_width_pixel,
         sep = '',
-        fill = T
+        fill = TRUE
     )
 }

@@ -5,7 +5,7 @@
 \title{Neat Table}
 \usage{
 table_neat(values_list, group_by = NULL, group_per = "rows",
-  to_clipboard = F, medians = NULL)
+  to_clipboard = FALSE, medians = NULL)
 }
 \arguments{
 \item{values_list}{Values returned (as data frames) from the
@@ -66,7 +66,7 @@ Ms_SDs3 = table_neat(list(m_neat(mtcars$mpg, 1),
                           m_neat(mtcars$wt, 2, new_name = 'weight'),
                           m_neat(mtcars$hp)),
                      group_by = mtcars$cyl,
-                     medians = T,
+                     medians = TRUE,
                      group_per = 'columns')
 }
 \seealso{

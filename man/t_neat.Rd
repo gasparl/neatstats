@@ -4,10 +4,10 @@
 \alias{t_neat}
 \title{Difference of Two Means and Area Under the Curve}
 \usage{
-t_neat(var1, var2, pair = F, greater = "", ci = NULL, bf_added = T,
-  auc_added = F, r_added = T, for_table = F,
-  test_title = "Descriptives:", round_descr = 2, round_auc = 3,
-  auc_greater = "")
+t_neat(var1, var2, pair = FALSE, greater = "", ci = NULL,
+  bf_added = TRUE, auc_added = FALSE, r_added = TRUE,
+  for_table = FALSE, test_title = "Descriptives:", round_descr = 2,
+  round_auc = 3, auc_greater = "")
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -51,9 +51,6 @@ have greater values for 'cases' as opposed to 'controls': "1" (default;
 \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
 (\code{var2} expected to be greater for 'cases' than \code{var1}). Not
 to be confused with one-sided tests; see Details.}
-
-\item{round_r}{Number \code{\link[=ro]{to round}} to the correlation and its
-CI.}
 }
 \value{
 Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
@@ -131,12 +128,12 @@ v1 = c(191, 115, 129, 43, 523,-4, 34, 28, 33,-1, 54)
 v2 = c(4,-2, 23, 13, 32, 16, 3, 29, 37,-4, 65)
 
 t_neat(v1, v2) # prints results as independent samples
-t_neat(v1, v2, pair = T) # as paired samples (r added by default)
-t_neat(v1, v2, pair = T, greater = "1") # one-sided
-t_neat(v1, v2, pair = T, auc_added = T ) # AUC included
+t_neat(v1, v2, pair = TRUE) # as paired samples (r added by default)
+t_neat(v1, v2, pair = TRUE, greater = "1") # one-sided
+t_neat(v1, v2, pair = TRUE, auc_added = TRUE ) # AUC included
 
 # print results and assign returned list
-results = t_neat(v1, v2, pair = T)
+results = t_neat(v1, v2, pair = TRUE)
 
 results$stats['bf'] # get precise BF value
 

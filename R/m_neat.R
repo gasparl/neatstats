@@ -24,14 +24,14 @@
 #'
 #' res3 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl) # grouped by cyl (Number of cylinders)
 #'
-#' res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = T) # medians
+#' res4 = m_neat(mtcars$wt, 2, group_by = mtcars$cyl, medians = TRUE) # medians
 #' @export
 
 m_neat = function(values,
                   round_to = 0,
                   new_name = NULL,
                   group_by = NULL,
-                  medians = F) {
+                  medians = FALSE) {
     if (is.null(new_name)) {
         val_name = deparse(substitute(values))
         if (grepl('\\$', val_name)) {
@@ -51,20 +51,20 @@ m_neat = function(values,
     if (is.null(group_by)) {
         group_by = rep(0, length(values))
     }
-    if (medians == T) {
-        per_cond = do.call(data.frame, aggregate(values, by = list(group_by), function(x)
+    if (medians == TRUE) {
+        per_cond = do.call(data.frame, stats::aggregate(values, by = list(group_by), function(x)
             c(
-                median = ro(median(x), round_to),
-                sd = ro(sd(x), round_to)
+                median = ro(stats::median(x), round_to),
+                sd = ro(stats::sd(x), round_to)
             )))
         per_cond[val_name] = paste(per_cond$x.median, per_cond$x.sd, sep =
                                        "\u00b1")
         per_cond = subset(per_cond, select = -c(x.median, x.sd))
     } else {
-        per_cond = do.call(data.frame, aggregate(values, by = list(group_by), function(x)
+        per_cond = do.call(data.frame, stats::aggregate(values, by = list(group_by), function(x)
             c(
                 mean = ro(mean(x), round_to),
-                sd = ro(sd(x), round_to)
+                sd = ro(stats::sd(x), round_to)
             )))
         per_cond[val_name] = paste(per_cond$x.mean, per_cond$x.sd, sep =
                                        "\u00b1")

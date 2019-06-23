@@ -5,7 +5,7 @@
 \title{Difference of Two Proportions}
 \usage{
 props_neat(case1, case2, n1, n2, greater = "", ci = NULL,
-  bf_added = T, h_added = F, for_table = F)
+  bf_added = TRUE, h_added = FALSE, for_table = FALSE)
 }
 \arguments{
 \item{case1}{Number of 'cases' (as opposed to 'controls'; e.g. positive
@@ -43,9 +43,9 @@ Prints exact test statistics (including proportion difference with CI,
  \code{bf} (Bayes factor).
 }
 \description{
-\code{\link[Exact:exact.test]{ Barnard's unconditional exact
- test}} results for the comparison of two independent proportions, including
- confidence interval (CI) for the proportion difference, and corresponding
+\code{\link[Exact:exact.test]{ Unconditional exact test}} results
+ for the comparison of two independent proportions, including confidence
+ interval (CI) for the proportion difference, and corresponding
  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
  contingency table Bayes factor}} (BF). Cohen's h and its CI are also
  calculated.
@@ -80,7 +80,7 @@ props_neat(
     case2 = 48,
     n1 = 80,
     n2 = 77,
-    h_added = T
+    h_added = TRUE
 )
 
 props_neat(

@@ -1,8 +1,8 @@
 #'@title Difference of Two Proportions
 #'
-#'@description \code{\link[Exact:exact.test]{ Barnard's unconditional exact
-#'  test}} results for the comparison of two independent proportions, including
-#'  confidence interval (CI) for the proportion difference, and corresponding
+#'@description \code{\link[Exact:exact.test]{ Unconditional exact test}} results
+#'  for the comparison of two independent proportions, including confidence
+#'  interval (CI) for the proportion difference, and corresponding
 #'  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
 #'  contingency table Bayes factor}} (BF). Cohen's h and its CI are also
 #'  calculated.
@@ -76,7 +76,7 @@
 #'     case2 = 48,
 #'     n1 = 80,
 #'     n2 = 77,
-#'     h_added = T
+#'     h_added = TRUE
 #' )
 #'
 #' props_neat(
@@ -93,23 +93,23 @@ props_neat = function(case1,
                       n2,
                       greater = "",
                       ci = NULL,
-                      bf_added = T,
-                      h_added = F,
-                      for_table = F) {
+                      bf_added = TRUE,
+                      h_added = FALSE,
+                      for_table = FALSE) {
     # to add: McNemar for paired; corresponding BF
     prop_1 = case1 / n1
     prop_2 = case2 / n2
     p_diff = prop_1 - prop_2
     matr = matrix(c(case1, case2, n1 - case1, n2 - case2), 2, 2)
-    exact_res = Exact::exact.test(matr, to.plot = F)
+    exact_res = Exact::exact.test(matr, to.plot = FALSE)
     z_norm = -0.862 + sqrt(0.743 - 2.404 * log(exact_res$p.value))
     p_se = abs(p_diff / z_norm)
     if (greater == "1") {
         message("One-sided exact-test (with 90% CI default)! H1: first is greater than second.")
-        exact_res = Exact::exact.test(matr, to.plot = F, alternative = "greater")
+        exact_res = Exact::exact.test(matr, to.plot = FALSE, alternative = "greater")
     } else if (greater == "2") {
         message("One-sided exact-test (with 90% CI default)! H1: second is greater than first.")
-        exact_res = Exact::exact.test(matr, to.plot = F, alternative = "less")
+        exact_res = Exact::exact.test(matr, to.plot = FALSE, alternative = "less")
     } else {
         if (is.null(ci)) {
             ci = 0.95
@@ -118,7 +118,7 @@ props_neat = function(case1,
     if (is.null(ci)) {
         ci = 0.90
     }
-    z_c = qnorm(1 - (1 - ci) / 2)
+    z_c = stats::qnorm(1 - (1 - ci) / 2)
     p_low = p_diff - p_se * z_c
     p_upp = p_diff + p_se * z_c
 
@@ -131,20 +131,20 @@ props_neat = function(case1,
     h = es * 2
     z = exact_res$statistic
     pvalue = exact_res$p.value
-    if (bf_added == T) {
-        bf = contingencyTableBF(matr, sampleType = "indepMulti", fixedMargin = "rows")
+    if (bf_added == TRUE) {
+        bf = BayesFactor::contingencyTableBF(matr, sampleType = "indepMulti", fixedMargin = "rows")
         bf = as.vector(bf)
         bf_out = bf_neat(bf)
     } else {
         bf_out = "."
         bf = NA
     }
-    if (for_table == T) {
+    if (for_table == TRUE) {
         ci_disp = ""
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    if (h_added == T) {
+    if (h_added == TRUE) {
         h_out = paste0(", h = ",
                        ro(h, 2),
                        ci_disp,
@@ -156,9 +156,9 @@ props_neat = function(case1,
     } else {
         h_out = ''
     }
-    p_diff_out = edges(p_diff, 2, no_null = T)
-    p_low_out = edges(p_low, 2, no_null = T)
-    p_upp_out = edges(p_upp, 2, no_null = T)
+    p_diff_out = edges(p_diff, 2, no_null = TRUE)
+    p_low_out = edges(p_low, 2, no_null = TRUE)
+    p_upp_out = edges(p_upp, 2, no_null = TRUE)
 
     out = paste0(
         'Z = ',

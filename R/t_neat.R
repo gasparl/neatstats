@@ -20,8 +20,6 @@
 #'  (\code{FALSE} by default.)
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
 #'  calculated and displayed in case of paired comparison.
-#'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
-#'  CI.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
 #'  from the printed text.
 #'@param test_title String, "Descriptives:" by default. Simply displayed in
@@ -118,44 +116,44 @@
 #' v2 = c(4,-2, 23, 13, 32, 16, 3, 29, 37,-4, 65)
 #'
 #' t_neat(v1, v2) # prints results as independent samples
-#' t_neat(v1, v2, pair = T) # as paired samples (r added by default)
-#' t_neat(v1, v2, pair = T, greater = "1") # one-sided
-#' t_neat(v1, v2, pair = T, auc_added = T ) # AUC included
+#' t_neat(v1, v2, pair = TRUE) # as paired samples (r added by default)
+#' t_neat(v1, v2, pair = TRUE, greater = "1") # one-sided
+#' t_neat(v1, v2, pair = TRUE, auc_added = TRUE ) # AUC included
 #'
 #' # print results and assign returned list
-#' results = t_neat(v1, v2, pair = T)
+#' results = t_neat(v1, v2, pair = TRUE)
 #'
 #' results$stats['bf'] # get precise BF value
 #'
 #' @export
 t_neat = function(var1,
                   var2,
-                  pair = F,
+                  pair = FALSE,
                   greater = "",
                   ci = NULL,
-                  bf_added = T,
-                  auc_added = F,
-                  r_added = T,
-                  for_table = F,
+                  bf_added = TRUE,
+                  auc_added = FALSE,
+                  r_added = TRUE,
+                  for_table = FALSE,
                   test_title = "Descriptives:",
                   round_descr = 2,
                   round_auc = 3,
                   auc_greater = "") {
     descr_1 = paste0(ro(mean(var1), round_descr),
                      "CHAR_PLUSMIN",
-                     ro(sd(var1), round_descr))
+                     ro(stats::sd(var1), round_descr))
     descr_2 = paste0(ro(mean(var2), round_descr),
                      "CHAR_PLUSMIN",
-                     ro(sd(var2), round_descr))
-    if (pair == T & r_added == T) {
+                     ro(stats::sd(var2), round_descr))
+    if (pair == TRUE & r_added == TRUE) {
         cat("Correlation: ")
-        corr_neat(var1, var2, ci = 0.95, bf_added = F)
+        corr_neat(var1, var2, ci = 0.95, bf_added = FALSE)
     }
     prnt(test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2)
     if (greater == "1") {
         message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
-        ttest = t.test(var1, var2, paired = pair, alternative = "greater")
-        if (bf_added == T) {
+        ttest = stats::t.test(var1, var2, paired = pair, alternative = "greater")
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
                 var1,
                 var2,
@@ -165,8 +163,8 @@ t_neat = function(var1,
         }
     } else if (greater == "2") {
         message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
-        ttest = t.test(var1, var2, paired = pair, alternative = "less")
-        if (bf_added == T) {
+        ttest = stats::t.test(var1, var2, paired = pair, alternative = "less")
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
                 var1,
                 var2,
@@ -175,8 +173,8 @@ t_neat = function(var1,
             )[1])
         }
     } else {
-        ttest = t.test(var1, var2, paired = pair)
-        if (bf_added == T) {
+        ttest = stats::t.test(var1, var2, paired = pair)
+        if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
         }
         if (is.null(ci)) {
@@ -186,7 +184,7 @@ t_neat = function(var1,
     if (is.null(ci)) {
         ci = 0.90
     }
-    if (bf_added == T) {
+    if (bf_added == TRUE) {
         bf_out = bf_neat(bf)
     } else {
         bf_out = "."
@@ -197,7 +195,7 @@ t_neat = function(var1,
     pvalue = ttest$p.value
     n1 = length(var1)
     n2 = length(var2)
-    if (pair == T) {
+    if (pair == TRUE) {
         sm = quiet(MBESS::ci.sm(
             ncp = ttest$statistic,
             N = n1,
@@ -221,7 +219,7 @@ t_neat = function(var1,
         lower = ro(the_smd$Lower.Conf.Limit.smd, 2)
         upper = ro(the_smd$Upper.Conf.Limit.smd, 2)
     }
-    if (for_table == T) {
+    if (for_table == TRUE) {
         ci_disp = ""
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
@@ -244,7 +242,7 @@ t_neat = function(var1,
         bf_out
     )
     prnt(out)
-    if (auc_added == T) {
+    if (auc_added == TRUE) {
         if (auc_greater == "2") {
             auc_dir = ">" # v2 expected larger
         } else {

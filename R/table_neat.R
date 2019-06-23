@@ -48,21 +48,21 @@
 #'                           m_neat(mtcars$wt, 2, new_name = 'weight'),
 #'                           m_neat(mtcars$hp)),
 #'                      group_by = mtcars$cyl,
-#'                      medians = T,
+#'                      medians = TRUE,
 #'                      group_per = 'columns')
 #' @export
 
 table_neat = function(values_list,
                       group_by = NULL,
                       group_per = 'rows',
-                      to_clipboard = F,
+                      to_clipboard = FALSE,
                       medians = NULL) {
     print_off()
     tryCatch({
         pkg.globals$my_unique_grouping_var = group_by
         pkg.globals$my_unique_median = medians
         the_table = Reduce(function(x, y)
-            merge(x, y, by = "group", all = T), values_list)
+            merge(x, y, by = "group", all = TRUE), values_list)
     },
     error = function(error_message) {
         message(error_message)
@@ -80,13 +80,13 @@ table_neat = function(values_list,
         the_table = data.frame(variables = row.names(the_table), the_table)
         row.names(the_table) = 1:nrow(the_table)
     }
-    if (to_clipboard == T) {
-        write.table(
+    if (to_clipboard == TRUE) {
+        utils::write.table(
             the_table,
             "clipboard",
             sep = "\t",
-            quote = F,
-            row.names = F
+            quote = FALSE,
+            row.names = FALSE
         )
         message('Table copied to Clipboard.')
     }

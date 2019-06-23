@@ -5,8 +5,8 @@
 \title{Comparison of Multiple Means: ANOVA}
 \usage{
 anova_neat(data_per_subject, values, between_vars = NULL,
-  within_ids = NULL, ci = 0.9, bf_added = T,
-  test_title = "--- neat ANOVA ---", welch = T, e_correction = "")
+  within_ids = NULL, ci = 0.9, bf_added = TRUE,
+  test_title = "--- neat ANOVA ---", welch = TRUE, e_correction = "")
 }
 \arguments{
 \item{data_per_subject}{Data frame or name of data frame as string. Should
@@ -74,7 +74,7 @@ Prints ANOVA statistics (including, for each model, F-test with
 }
 \description{
 \code{\link[ez:ezANOVA]{Analysis of variance}} (ANOVA) F-test
- results with appropriate \code{\link[stats:oneway.test]{Welch's}} and
+ results with appropriate \code{\link[stats:oneway.test]{Welch}}'s and
  epsilon corrections where applicable (unless specified otherwise), including
  partial eta squared effect sizes with confidence intervals (CIs), and
  \code{\link[bayestestR:bayesfactor_inclusion]{inclusion Bayes factor based
@@ -82,8 +82,8 @@ Prints ANOVA statistics (including, for each model, F-test with
 }
 \details{
 The Bayes factor (BF) is always calculated with the default \code{rscaleFixed}
-of \code{0.5} (\code"medium") and \code{rscaleRandom} r-scale of \code{1}
-(\code"nuisance"). BF supporting null hypothesis is denoted as BF01, while
+of \code{0.5} (\code{"medium"}) and \code{rscaleRandom} r-scale of \code{1}
+(\code{"nuisance"}). BF supporting null hypothesis is denoted as BF01, while
 that supporting alternative hypothesis is denoted as BF10. When the BF is
 smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
 (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to
@@ -113,7 +113,7 @@ All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
 
  The inclusion Bayes factor based on matched models is calculated via
  \code{\link[bayestestR:bayesfactor_inclusion]{bayestestR::bayesfactor_inclusion}},
-  (with \code{match_models = T}, and using an
+  (with \code{match_models = TRUE}, and using an
  \code{\link[BayesFactor:anovaBF]{BayesFactor::anovaBF}} object for
  \code{models} input).
 }
@@ -211,7 +211,8 @@ head(pic_ratings) # see what we have
 # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
 # 'fright_low' vs. 'fright_high' for levels of frighteningness
 anova_neat('pic_ratings',
-           values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+           values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
+               rating_fright_low_disgust_high, rating_fright_high_disgust_high',
            within_ids = list(
                disgustingness = c('disgust_low', 'disgust_high'),
                frighteningness =  c('fright_low', 'fright_high')
@@ -232,7 +233,8 @@ pic_ratings = data.frame(
 # now test the effect and interactions of 'group_id'
 anova_neat(
     'pic_ratings',
-    values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+    values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
+        rating_fright_low_disgust_high, rating_fright_high_disgust_high',
     within_ids = list(
         disgustingness = c('disgust_low', 'disgust_high'),
         frighteningness =  c('fright_low', 'fright_high')

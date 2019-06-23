@@ -4,7 +4,7 @@
 \alias{roc_neat}
 \title{Difference of Two Areas Under the Curves}
 \usage{
-roc_neat(roc1, roc2, pair = F, greater = "")
+roc_neat(roc1, roc2, pair = FALSE, greater = "")
 }
 \arguments{
 \item{roc1}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
@@ -43,12 +43,12 @@ The ROC object may be calculated via \code{\link{t_neat}}, or directly with
 # calculate first AUC (from v1 and v2)
 v1 = c(191, 115, 129, 43, 523,-4, 34, 28, 33,-1, 54)
 v2 = c(4,-2, 23, 13, 32, 16, 3, 29, 37,-4, 65)
-results1 = t_neat(v1, v2, auc_added = T)
+results1 = t_neat(v1, v2, auc_added = TRUE)
 
 # calculate second AUC (from v3 and v4)
 v3 = c(14.1, 58.5, 25.5, 42.2, 13, 4.4, 55.5, 28.5, 25.6, 37.1)
 v4 = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9)
-results2 = t_neat(v3, v4, auc_added = T)
+results2 = t_neat(v3, v4, auc_added = TRUE)
 
 # one-sided comparison of the two AUCs
 roc_neat(results1$roc_obj, results2$roc_obj, greater = "1")

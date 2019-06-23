@@ -1,7 +1,7 @@
 #'@title Comparison of Multiple Means: ANOVA
 #'
 #'@description \code{\link[ez:ezANOVA]{Analysis of variance}} (ANOVA) F-test
-#'  results with appropriate \code{\link[stats:oneway.test]{Welch's}} and
+#'  results with appropriate \code{\link[stats:oneway.test]{Welch}}'s and
 #'  epsilon corrections where applicable (unless specified otherwise), including
 #'  partial eta squared effect sizes with confidence intervals (CIs), and
 #'  \code{\link[bayestestR:bayesfactor_inclusion]{inclusion Bayes factor based
@@ -49,8 +49,8 @@
 #'@details
 #'
 #'The Bayes factor (BF) is always calculated with the default \code{rscaleFixed}
-#'of \code{0.5} (\code"medium") and \code{rscaleRandom} r-scale of \code{1}
-#'(\code"nuisance"). BF supporting null hypothesis is denoted as BF01, while
+#'of \code{0.5} (\code{"medium"}) and \code{rscaleRandom} r-scale of \code{1}
+#'(\code{"nuisance"}). BF supporting null hypothesis is denoted as BF01, while
 #'that supporting alternative hypothesis is denoted as BF10. When the BF is
 #'smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
 #'(hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to
@@ -93,7 +93,7 @@
 #'
 #'  The inclusion Bayes factor based on matched models is calculated via
 #'  \code{\link[bayestestR:bayesfactor_inclusion]{bayestestR::bayesfactor_inclusion}},
-#'   (with \code{match_models = T}, and using an
+#'   (with \code{match_models = TRUE}, and using an
 #'  \code{\link[BayesFactor:anovaBF]{BayesFactor::anovaBF}} object for
 #'  \code{models} input).
 #'
@@ -225,7 +225,8 @@
 #' # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
 #' # 'fright_low' vs. 'fright_high' for levels of frighteningness
 #' anova_neat('pic_ratings',
-#'            values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+#'            values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
+#'                rating_fright_low_disgust_high, rating_fright_high_disgust_high',
 #'            within_ids = list(
 #'                disgustingness = c('disgust_low', 'disgust_high'),
 #'                frighteningness =  c('fright_low', 'fright_high')
@@ -246,7 +247,8 @@
 #' # now test the effect and interactions of 'group_id'
 #' anova_neat(
 #'     'pic_ratings',
-#'     values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low, rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+#'     values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
+#'         rating_fright_low_disgust_high, rating_fright_high_disgust_high',
 #'     within_ids = list(
 #'         disgustingness = c('disgust_low', 'disgust_high'),
 #'         frighteningness =  c('fright_low', 'fright_high')
@@ -262,9 +264,9 @@ anova_neat = function(data_per_subject,
                       between_vars = NULL,
                       within_ids = NULL,
                       ci = 0.90,
-                      bf_added = T,
+                      bf_added = TRUE,
                       test_title = "--- neat ANOVA ---",
-                      welch = T,
+                      welch = TRUE,
                       e_correction = '') {
     if (class(data_per_subject) == "character") {
         data_wide = eval(parse(text = data_per_subject))
@@ -322,14 +324,14 @@ anova_neat = function(data_per_subject,
         value_col = values
         this_data = data_wide
         within_vars = NULL
-        if (length(to_c(between_vars)) == 1 && welch != F) {
+        if (length(to_c(between_vars)) == 1 && welch != FALSE) {
             w_anova = eval(parse(
                 text = paste0(
                     'stats::oneway.test(',
                     value_col,
                     ' ~ ',
                     between_vars,
-                    ', data = this_data, var.equal = F  )'
+                    ', data = this_data, var.equal = FALSE  )'
                 )
             ))
         }
@@ -377,7 +379,7 @@ anova_neat = function(data_per_subject,
     # suppressWarnings
     # suppressMessages
 
-    if (bf_added == T) {
+    if (bf_added == TRUE) {
         indep_vars = gsub(',', '*', paste0(between_vars_bf, within_vars_bf))
         bf = eval(parse(
             text =
@@ -396,9 +398,9 @@ anova_neat = function(data_per_subject,
         if (is.null(within_vars) && length( to_c(between_vars) ) == 1 ) {
             bf_inc = as.vector(bf)
         } else {
-            bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = T)
+            bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = TRUE)
             print(bf_inc) # to remove
-            bf_inc = setNames(object = bf_inc$BF, nm = rownames(bf_inc))
+            bf_inc = stats::setNames(object = bf_inc$BF, nm = rownames(bf_inc))
         }
         print(bf) # to remove
         print(bf_inc) # to remove

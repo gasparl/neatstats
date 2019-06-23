@@ -6,7 +6,7 @@ pkg.globals$my_unique_median = NULL
 # the function below is to be added later
 # to_clipboard = function( printing_function ) {
 #    text_for_cb = capture.output( printing_function )
-#    write.table( text_for_cb, "clipboard", quote = F, row.names = F, col.names = F )
+#    write.table( text_for_cb, "clipboard", quote = FALSE, row.names = FALSE, col.names = FALSE )
 # }
 
 # misc local functions below
@@ -39,12 +39,12 @@ prnt = function(...) {
 }
 
 pkg.globals$printing = function(to_print) {
-    cat(to_print, fill = T)
+    cat(to_print, fill = TRUE)
 }
 
 print_on = function() {
     pkg.globals$printing = function(to_print) {
-        cat(to_print, fill = T)
+        cat(to_print, fill = TRUE)
     }
 }
 
@@ -55,7 +55,7 @@ print_off = function() {
 }
 
 cit_d = function(probe_rts, irr_rts) {
-    return((mean(probe_rts) - mean(irr_rts)) / sd(irr_rts))
+    return((mean(probe_rts) - mean(irr_rts)) / stats::sd(irr_rts))
 }
 
 to_exp = function(the_num) {
@@ -98,8 +98,8 @@ bf_names = function(the_names) {
 show_auc = function(theroc,
                     ci = 0.95,
                     round_to = 3,
-                    for_table = F) {
-    if (for_table == T) {
+                    for_table = FALSE) {
+    if (for_table == TRUE) {
         ci_disp = ""
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
@@ -111,12 +111,12 @@ show_auc = function(theroc,
     prnt("AUC = ", auc_num, ci_disp, " [", lower, ", ", upper, "]")
 }
 
-edges = function(the_num, round_to, no_null = F) {
+edges = function(the_num, round_to, no_null = FALSE) {
     if (round(the_num, round_to) == 1) {
         return("1")
     } else if (round(the_num, round_to) == -1) {
         return("-1")
-    } else if (round(the_num, round_to) == 0 & no_null == F) {
+    } else if (round(the_num, round_to) == 0 & no_null == FALSE) {
         return("0")
     } else {
         return(sub("0\\.", "\\.", ro(the_num, round_to)))
