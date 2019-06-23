@@ -21,28 +21,29 @@ function; see Details.}
 "c" or "col", etc.), each column contains statistics for one group.
 Otherwise (default), each row contains statistics for one group.}
 
-\item{to_clipboard}{Logical. If \code{TRUE}, the table is copied to the clipboard.}
+\item{to_clipboard}{Logical. If \code{TRUE}, the table is copied to the
+clipboard.}
 
-\item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise means.
-(Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)}
+\item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise
+means. (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)}
 }
 \value{
 Returns a data frame with means or medians and SDs per variable and
   per group.
 }
 \description{
-Creates a neat means (or medians) and standard deviations table, using
-m_neat() function(s) as arguments.
+Creates a neat means (or medians) and standard deviations table,
+  using m_neat() function(s) as arguments.
 }
 \details{
-The \code{values}, \code{round_to}, and \code{new_name} arguments given in
-the \code{\link{m_neat}} function are always applied. However, the
-\code{group_by} or \code{medians} given in the \code{\link{m_neat}} function
-are only applied when no arguments are given in the \code{\link{table_neat}}
-function for the identical parameters (\code{group_by} or \code{medians}). If
-either parameter is given in the \code{\link{table_neat}} function, all
-separately given respective argument(s) in the \code{\link{m_neat}}
-function(s) are ignored.
+The \code{values}, \code{round_to}, and \code{new_name} arguments
+  given in the \code{\link{m_neat}} function are always applied. However, the
+  \code{group_by} or \code{medians} given in the \code{\link{m_neat}}
+  function are only applied when no arguments are given in the
+  \code{\link{table_neat}} function for the identical parameters
+  (\code{group_by} or \code{medians}). If either parameter is given in the
+  \code{\link{table_neat}} function, all separately given respective
+  argument(s) in the \code{\link{m_neat}} function(s) are ignored.
 }
 \examples{
 data("mtcars") # load base R example dataset

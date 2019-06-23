@@ -49,7 +49,7 @@ print_on = function() {
 }
 
 print_off = function() {
-    pkg.globals$printing = function( to_print ) {
+    pkg.globals$printing = function(to_print) {
         invisible()
     }
 }

@@ -8,7 +8,7 @@
 #'   \code{\link{mon_conv}} function.
 #' @seealso \code{\link{mon_conv}}, \code{\link{mon_params}}
 #' @examples
-#' # assign monitor with 57 cm viewing distance, and screen width 52 cm and 1920 pixels
+#' # assign monitor with 57 cm viewing distance, screen width 52 cm and 1920 pixels
 #' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 #' @export
 mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
@@ -53,7 +53,7 @@ mon_conv = function(mon_obj, value, from, to) {
 }
 
 #' @export
-mon_conv.default = function( ... ) {
+mon_conv.default = function(...) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
@@ -110,18 +110,25 @@ mon_conv.mon_neat = function(mon_obj, value, from, to) {
 #' # print the above given parameters
 #' mon_params( my_mon )
 #' @export
-mon_params = function( mon_obj ) {
+mon_params = function(mon_obj) {
     UseMethod('mon_params')
 }
 
 #' @export
-mon_params.default = function( ... ) {
+mon_params.default = function(...) {
     cat('This function is to be used with "mon_neat" objects.\n')
 }
 
 #' @export
-mon_params.mon_neat = function( mon_obj ) {
-    cat( 'distance: ', mon_obj$distance,
-         '\nmon_width_cm: ', mon_obj$mon_width_cm,
-         '\nmon_width_pixel: ', mon_obj$mon_width_pixel, sep = '', fill = T )
+mon_params.mon_neat = function(mon_obj) {
+    cat(
+        'distance: ',
+        mon_obj$distance,
+        '\nmon_width_cm: ',
+        mon_obj$mon_width_cm,
+        '\nmon_width_pixel: ',
+        mon_obj$mon_width_pixel,
+        sep = '',
+        fill = T
+    )
 }

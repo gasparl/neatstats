@@ -13,12 +13,13 @@ object}}.}
 \item{roc2}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
 object}}.}
 
-\item{pair}{Logical. If \code{TRUE}, the test is conducted for paired
-samples. Otherwise (default) for independent samples.}
+\item{pair}{Logical. If \code{TRUE}, the test is conducted for paired samples.
+Otherwise (default) for independent samples.}
 
-\item{greater}{String (or number); optionally specifies one-sided test: either "1" (\code{roc1} AUC expected to be greater than \code{roc2}
-AUC) or "2" (\code{roc2} AUC expected to be greater than \code{roc2}
-AUC). If left empty, the test is two-sided.}
+\item{greater}{String (or number); optionally specifies one-sided test: either
+"1" (\code{roc1} AUC expected to be greater than \code{roc2} AUC) or "2"
+(\code{roc2} AUC expected to be greater than \code{roc2} AUC). If left
+empty, the test is two-sided.}
 }
 \value{
 Prints DeLong's test results for the comparison of the two given AUCs
@@ -26,14 +27,16 @@ Prints DeLong's test results for the comparison of the two given AUCs
  following two elements: \code{stat} (D value), \code{p} (p value).
 }
 \description{
-Comparison of two \code{\link[=t_neat]{areas under the receiver operating characteristic curves}} (AUCs).
+Comparison of two \code{\link[=t_neat]{areas under the receiver
+ operating characteristic curves}} (AUCs).
 }
 \note{
-The test statistics are calculated via \code{\link[pROC]{roc.test}} as
-DeLong's test (for both paired and unpaired). The \code{roc_neat} function
-merely prints it in APA style.
+The test statistics are calculated via
+\code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both paired
+and unpaired). The \code{roc_neat} function merely prints it in APA style.
 
-The ROC object may be calculated via \code{\link{t_neat}}, or directly with \code{\link[pROC:roc]{pROC::roc}}.
+The ROC object may be calculated via \code{\link{t_neat}}, or directly with
+\code{\link[pROC:roc]{pROC::roc}}.
 }
 \examples{
 

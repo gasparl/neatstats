@@ -7,23 +7,23 @@
 #'  curve}} (AUC).
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
-#'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for paired
-#'  samples. Otherwise (default) for independent samples.
+#'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
+#'  paired samples. Otherwise (default) for independent samples.
 #'@param greater String (or number); optionally specifies one-sided tests (t and
 #'  BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
 #'  mean) or "2" (\code{var2} mean expected to be greater than \code{var1}
 #'  mean). If left empty, the test is two-sided.
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
-#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated and
-#'  displayed.
-#'@param auc_added Logical. If \code{TRUE}, AUC is calculated and displayed. (\code{FALSE} by
-#'  default.)
-#'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is calculated
-#'  and displayed in case of paired comparison.
+#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
+#'  and displayed.
+#'@param auc_added Logical. If \code{TRUE}, AUC is calculated and displayed.
+#'  (\code{FALSE} by default.)
+#'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
+#'  calculated and displayed in case of paired comparison.
 #'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
 #'  CI.
-#'@param for_table Logical. If \code{TRUE}, omits the confidence level display from the
-#'  printed text.
+#'@param for_table Logical. If \code{TRUE}, omits the confidence level display
+#'  from the printed text.
 #'@param test_title String, "Descriptives:" by default. Simply displayed in
 #'  printing preceding the descriptive statistics. (Useful e.g. to distinguish
 #'  several different comparisons inside a \code{function} or a \code{for}
@@ -37,13 +37,13 @@
 #'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not
 #'  to be confused with one-sided tests; see Details.
 #'@details
-#' The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-#' BF supporting null hypothesis is denoted as BF01, while that supporting
-#' alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-#' (i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-#' BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-#' exponential form is reported for readability. (The original full BF number is
-#' available in the returned named vector as \code{bf}.)
+#' The Bayes factor (BF) is always calculated with the default r-scale of
+#' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
+#' supporting alternative hypothesis is denoted as BF10. When the BF is smaller
+#' than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
+#' BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
+#' scientific (exponential) form is reported for readability. (The original full
+#' BF number is available in the returned named vector as \code{bf}.)
 #'
 #'The original \code{\link[pROC:auc]{pROC::auc}} function, by default, always
 #'returns an AUC greater than (or equal to) .5, assuming that the prediction
@@ -77,23 +77,25 @@
 #'  '\code{best_thresholds}', which contains the best threshold value(s) for
 #'  classification, along with corresponding specificity and sensitivity.
 #'
-#' @note
-#'The Welch's t-test is calculated via \code{\link[stats]{t.test}}.
+#'@note The Welch's t-test is calculated via
+#'\code{\link[stats:t.test]{stats::t.test}}.
 #'
 #'Cohen's d and its confidence interval are calculated, using the t value, via
-#'\code{\link[MBESS]{ci.smd}} for independent samples (as standardized mean
-#'difference) and via \code{\link[MBESS]{ci.sm}} for paired samples (as
-#'standardized mean).
+#'\code{\link[MBESS:ci.smd]{MBESS::ci.smd}} for independent samples (as
+#'standardized mean difference) and via \code{\link[MBESS:ci.sm]{MBESS::ci.sm}}
+#'for paired samples (as standardized mean).
 #'
-#'The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
+#'The Bayes factor is calculated via
+#'\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}.
 #'
-#'The correlation and its CI are calculated via \code{\link[stats]{cor.test}},
-#'and is always two-sided, always with 95 percent CI. For more, use
-#'\code{\link{corr_neat}}.
+#'The correlation and its CI are calculated via
+#'\code{\link[stats:cor.test]{stats::cor.test}}, and is always two-sided, always
+#'with 95 percent CI. For more, use \code{\link{corr_neat}}.
 #'
-#'The AUC and its CI are calculated via \code{\link[pROC]{auc}}, and the
-#'accuracy at most optimal threshold via \code{\link[pROC]{coords}} (\code{x =
-#'"best"}); both using the object \code{\link[pROC]{roc}}.
+#'The AUC and its CI are calculated via \code{\link[pROC:auc]{pROC::auc}}, and
+#'the accuracy at most optimal threshold via
+#'\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
+#'object \code{\link[pROC:roc]{pROC::roc}}.
 #'
 #'@references Delacre, M., Lakens, D., & Leys, C. (2017). Why psychologists
 #'should by default use Welch's t-test instead of Student's t-test.
@@ -126,40 +128,66 @@
 #' results$stats['bf'] # get precise BF value
 #'
 #' @export
-t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, auc_added = F, r_added = T, for_table = F, test_title = "Descriptives:", round_descr = 2, round_auc = 3, auc_greater = "" ) {
-    descr_1 = paste0( ro( mean(var1), round_descr ), "CHAR_PLUSMIN", ro( sd(var1), round_descr ) )
-    descr_2 = paste0( ro( mean(var2), round_descr ), "CHAR_PLUSMIN", ro( sd(var2), round_descr ) )
-    if ( pair == T & r_added == T ) {
-        cat( "Correlation: " )
-        corr_neat( var1, var2, ci = 0.95, bf_added = F )
+t_neat = function(var1,
+                  var2,
+                  pair = F,
+                  greater = "",
+                  ci = NULL,
+                  bf_added = T,
+                  auc_added = F,
+                  r_added = T,
+                  for_table = F,
+                  test_title = "Descriptives:",
+                  round_descr = 2,
+                  round_auc = 3,
+                  auc_greater = "") {
+    descr_1 = paste0(ro(mean(var1), round_descr),
+                     "CHAR_PLUSMIN",
+                     ro(sd(var1), round_descr))
+    descr_2 = paste0(ro(mean(var2), round_descr),
+                     "CHAR_PLUSMIN",
+                     ro(sd(var2), round_descr))
+    if (pair == T & r_added == T) {
+        cat("Correlation: ")
+        corr_neat(var1, var2, ci = 0.95, bf_added = F)
     }
-    prnt( test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2 )
-    if ( greater == "1" ) {
+    prnt(test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2)
+    if (greater == "1") {
         message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
-        ttest = t.test( var1, var2, paired = pair, alternative = "greater" )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair, nullInterval = c(0, Inf) )[1] )
+        ttest = t.test(var1, var2, paired = pair, alternative = "greater")
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::ttestBF(
+                var1,
+                var2,
+                paired = pair,
+                nullInterval = c(0, Inf)
+            )[1])
         }
-    } else if ( greater == "2" ) {
+    } else if (greater == "2") {
         message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
-        ttest = t.test( var1, var2, paired = pair, alternative = "less" )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair, nullInterval = c(0, -Inf) )[1] )
+        ttest = t.test(var1, var2, paired = pair, alternative = "less")
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::ttestBF(
+                var1,
+                var2,
+                paired = pair,
+                nullInterval = c(0,-Inf)
+            )[1])
         }
     } else {
-        ttest = t.test( var1, var2, paired = pair )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::ttestBF( var1, var2, paired = pair ) )
+        ttest = t.test(var1, var2, paired = pair)
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
         }
-        if ( is.null(ci) ) {
+        if (is.null(ci)) {
             ci = 0.95
         }
     }
-    if ( is.null(ci) ) {
+    if (is.null(ci)) {
         ci = 0.90
     }
-    if ( bf_added == T ) {
-        bf_out = bf_neat( bf )
+    if (bf_added == T) {
+        bf_out = bf_neat(bf)
     } else {
         bf_out = "."
         bf = NA
@@ -169,40 +197,97 @@ t_neat = function( var1, var2, pair = F, greater = "", ci = NULL, bf_added = T, 
     pvalue = ttest$p.value
     n1 = length(var1)
     n2 = length(var2)
-    if ( pair == T ) {
-        sm = quiet( MBESS::ci.sm( ncp = ttest$statistic, N = n1, conf.level = ci ) )
+    if (pair == T) {
+        sm = quiet(MBESS::ci.sm(
+            ncp = ttest$statistic,
+            N = n1,
+            conf.level = ci
+        ))
         d_orig = sm$Standardized.Mean
-        d = paste0( "d = ", ro( d_orig, 2 ) )
-        df = ro( df, 0 )
-        lower = ro( sm$Lower.Conf.Limit.Standardized.Mean, 2 )
-        upper = ro( sm$Upper.Conf.Limit.Standardized.Mean, 2 )
+        d = paste0("d = ", ro(d_orig, 2))
+        df = ro(df, 0)
+        lower = ro(sm$Lower.Conf.Limit.Standardized.Mean, 2)
+        upper = ro(sm$Upper.Conf.Limit.Standardized.Mean, 2)
     } else {
-        the_smd = MBESS::ci.smd( ncp = t, n.1 = n1, n.2 = n2, conf.level = ci )
+        the_smd = MBESS::ci.smd(
+            ncp = t,
+            n.1 = n1,
+            n.2 = n2,
+            conf.level = ci
+        )
         d_orig = the_smd$smd
-        d = paste0( "d = ", ro( d_orig, 2 ) )
-        df = ro( df, 1 )
-        lower = ro( the_smd$Lower.Conf.Limit.smd, 2 )
-        upper = ro( the_smd$Upper.Conf.Limit.smd, 2 )
+        d = paste0("d = ", ro(d_orig, 2))
+        df = ro(df, 1)
+        lower = ro(the_smd$Lower.Conf.Limit.smd, 2)
+        upper = ro(the_smd$Upper.Conf.Limit.smd, 2)
     }
     if (for_table == T) {
         ci_disp = ""
     } else {
-        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
+        ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    out = paste0( "t(", df, ") = ", ro(t, 2), ", p = ", ro(pvalue,3), ", ", d, ci_disp, " [", lower, ", ", upper, "]", bf_out )
+    out = paste0(
+        "t(",
+        df,
+        ") = ",
+        ro(t, 2),
+        ", p = ",
+        ro(pvalue, 3),
+        ", ",
+        d,
+        ci_disp,
+        " [",
+        lower,
+        ", ",
+        upper,
+        "]",
+        bf_out
+    )
     prnt(out)
-    if ( auc_added == T ) {
-        if ( auc_greater == "2" ) {
+    if (auc_added == T) {
+        if (auc_greater == "2") {
             auc_dir = ">" # v2 expected larger
         } else {
             auc_dir = "<" # v1 expected larger
         }
-        the_roc = pROC::roc( response = c( rep( 0, length(var2) ), rep( 1, length(var1) ) ), predictor = c(var2, var1), levels = c(0, 1), direction =  auc_dir ) # v1 larger
-        show_auc( theroc = the_roc, ci = ci, round_to = round_auc, for_table = for_table )
-        max_acc = as.numeric( pROC::coords(the_roc, x = "best", ret = "accuracy" ) )[1]
-        best_coords = pROC::coords(the_roc, x = "best" )
-        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = pROC::auc(the_roc), accuracy = max_acc ), roc_obj = the_roc, best_thresholds = best_coords ) )
+        the_roc = pROC::roc(
+            response = c(rep(0, length(var2)), rep(1, length(var1))),
+            predictor = c(var2, var1),
+            levels = c(0, 1),
+            direction =  auc_dir
+        ) # v1 larger
+        show_auc(
+            theroc = the_roc,
+            ci = ci,
+            round_to = round_auc,
+            for_table = for_table
+        )
+        max_acc = as.numeric(pROC::coords(the_roc, x = "best", ret = "accuracy"))[1]
+        best_coords = pROC::coords(the_roc, x = "best")
+        invisible(list(
+            stats = c(
+                t = as.numeric(t),
+                p = pvalue,
+                d = as.numeric(d_orig),
+                bf = as.numeric(bf),
+                auc = pROC::auc(the_roc),
+                accuracy = max_acc
+            ),
+            roc_obj = the_roc,
+            best_thresholds = best_coords
+        ))
     } else {
-        invisible( list( stats = c( t = as.numeric(t), p = pvalue, d = as.numeric(d_orig), bf = as.numeric(bf), auc = NULL, accuracy = NULL ), roc_obj = NULL, best_thresholds = NULL ) )
+        invisible(list(
+            stats = c(
+                t = as.numeric(t),
+                p = pvalue,
+                d = as.numeric(d_orig),
+                bf = as.numeric(bf),
+                auc = NULL,
+                accuracy = NULL
+            ),
+            roc_obj = NULL,
+            best_thresholds = NULL
+        ))
     }
 }

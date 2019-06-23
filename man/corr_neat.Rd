@@ -15,8 +15,8 @@ corr_neat(var1, var2, ci = 0.95, bf_added = T, direction = "",
 \item{ci}{Numeric; confidence level for the returned CI, as implemented in
 \code{\link[stats]{cor.test}}.}
 
-\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated and
-displayed.}
+\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
+and displayed.}
 
 \item{direction}{String; optionally specifies one-sided test: either
 "negative" (negative correlation expected) or "positive" (positive
@@ -26,14 +26,14 @@ If left empty, the test is two-sided.}
 \item{round_r}{Number \code{\link[=ro]{to round}} to the correlation and its
 CI.}
 
-\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display from the
-printed text.}
+\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display
+from the printed text.}
 }
 \value{
 Prints correlation statistics (including CI and BF) in APA style.
-Furthermore, when assigned, returns a named vector with the following
-elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf} (Bayes
-factor).
+ Furthermore, when assigned, returns a named vector with the following
+ elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf}
+ (Bayes factor).
 }
 \description{
 \code{\link[stats:cor.test]{Pearson correlation}} results
@@ -41,18 +41,20 @@ factor).
  \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF).
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-BF supporting null hypothesis is denoted as BF01, while that supporting
-alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-(i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-exponential form is reported for readability. (The original full BF number is
-available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) is always calculated with the default r-scale of
+\code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
+supporting alternative hypothesis is denoted as BF10. When the BF is smaller
+than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
+BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
+scientific (exponential) form is reported for readability. (The original full
+BF number is available in the returned named vector as \code{bf}.)
 }
 \note{
-The correlation and CI is calculated via \code{\link[stats]{cor.test}}.
+The correlation and CI is calculated via
+\code{\link[stats:cor.test]{stats::cor.test}}.
 
-The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
+The Bayes factor is calculated via
+\code{\link[BayesFactor::correlationBF]{BayesFactor:correlationBF}}.
 }
 \examples{
 # assign two variables

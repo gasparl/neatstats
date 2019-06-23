@@ -7,33 +7,34 @@
 #'@param var2 Numeric vector; numbers of the second variable.
 #'@param ci Numeric; confidence level for the returned CI, as implemented in
 #'  \code{\link[stats]{cor.test}}.
-#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated and
-#'  displayed.
+#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
+#'  and displayed.
 #'@param direction String; optionally specifies one-sided test: either
 #'  "negative" (negative correlation expected) or "positive" (positive
 #'  correlation expected). (Short forms also work, e.g. "p", "pos", "neg", etc.)
 #'  If left empty, the test is two-sided.
 #'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
 #'  CI.
-#'@param for_table Logical. If \code{TRUE}, omits the confidence level display from the
-#'  printed text.
+#'@param for_table Logical. If \code{TRUE}, omits the confidence level display
+#'  from the printed text.
 #'@details
-#' The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-#' BF supporting null hypothesis is denoted as BF01, while that supporting
-#' alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-#' (i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-#' BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-#' exponential form is reported for readability. (The original full BF number is
-#' available in the returned named vector as \code{bf}.)
+#' The Bayes factor (BF) is always calculated with the default r-scale of
+#' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
+#' supporting alternative hypothesis is denoted as BF10. When the BF is smaller
+#' than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
+#' BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
+#' scientific (exponential) form is reported for readability. (The original full
+#' BF number is available in the returned named vector as \code{bf}.)
 #'
 #'@return Prints correlation statistics (including CI and BF) in APA style.
-#'Furthermore, when assigned, returns a named vector with the following
-#'elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf} (Bayes
-#'factor).
-#' @note
-#'The correlation and CI is calculated via \code{\link[stats]{cor.test}}.
+#'  Furthermore, when assigned, returns a named vector with the following
+#'  elements: \code{r} (Pearson correlation), \code{p} (p value), \code{bf}
+#'  (Bayes factor).
+#'@note The correlation and CI is calculated via
+#'\code{\link[stats:cor.test]{stats::cor.test}}.
 #'
-#'The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
+#'The Bayes factor is calculated via
+#'\code{\link[BayesFactor::correlationBF]{BayesFactor:correlationBF}}.
 #'
 #' @seealso \code{\link{t_neat}}
 #' @examples
@@ -51,27 +52,41 @@
 #'
 #' results['p'] # get precise p value
 #' @export
-corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_r = 3, for_table = F ) {
-    if ( direction != "" && substr("negative", 1, nchar(direction) ) == direction ) {
+corr_neat = function(var1,
+                     var2,
+                     ci = .95,
+                     bf_added = T,
+                     direction = "",
+                     round_r = 3,
+                     for_table = F) {
+    if (direction != "" &&
+        substr("negative", 1, nchar(direction)) == direction) {
         message("One-sided test! Negative correlation expected.")
-        the_cor = cor.test( var1, var2, alternative = "l", conf.level = ci )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::correlationBF( var1, var2, nullInterval = c(-1, 0) )[1] )
+        the_cor = cor.test(var1,
+                           var2,
+                           alternative = "l",
+                           conf.level = ci)
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(-1, 0))[1])
         }
-    } else if ( direction != "" & substr("positive", 1, nchar(direction) ) == direction ) {
+    } else if (direction != "" &
+               substr("positive", 1, nchar(direction)) == direction) {
         message("One-sided test! Positive correlation expected.")
-        the_cor = cor.test( var1, var2, alternative = "g", conf.level = ci )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::correlationBF( var1, var2, nullInterval = c(0, 1) )[1] )
+        the_cor = cor.test(var1,
+                           var2,
+                           alternative = "g",
+                           conf.level = ci)
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(0, 1))[1])
         }
     } else {
-        the_cor = cor.test( var1, var2, conf.level = ci )
-        if ( bf_added == T ) {
-            bf = as.vector( BayesFactor::correlationBF( var1, var2 ) )
+        the_cor = cor.test(var1, var2, conf.level = ci)
+        if (bf_added == T) {
+            bf = as.vector(BayesFactor::correlationBF(var1, var2))
         }
     }
-    if ( bf_added == T ) {
-        bf_out = bf_neat( bf )
+    if (bf_added == T) {
+        bf_out = bf_neat(bf)
     } else {
         bf_out = "."
         bf = NA
@@ -79,14 +94,30 @@ corr_neat = function( var1, var2, ci = .95, bf_added = T, direction = "", round_
     if (for_table == T) {
         ci_disp = ""
     } else {
-        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
+        ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    r = edges( the_cor$estimate, round_r, no_null = T )
-    lower = edges( the_cor$conf.int[1], round_r, no_null = T )
-    upper = edges( the_cor$conf.int[2], round_r, no_null = T )
+    r = edges(the_cor$estimate, round_r, no_null = T)
+    lower = edges(the_cor$conf.int[1], round_r, no_null = T)
+    upper = edges(the_cor$conf.int[2], round_r, no_null = T)
     p_value = the_cor$p.value
     df = the_cor$parameter
-    out = paste0( "r(", df, ") = ", r, ci_disp, " [", lower, ", ", upper, "]", ", p = ", ro(p_value,3), bf_out )
+    out = paste0("r(",
+                 df,
+                 ") = ",
+                 r,
+                 ci_disp,
+                 " [",
+                 lower,
+                 ", ",
+                 upper,
+                 "]",
+                 ", p = ",
+                 ro(p_value, 3),
+                 bf_out)
     prnt(out)
-    invisible( c( r = as.numeric( the_cor$estimate ), p = p_value, bf = as.numeric(bf) ) )
+    invisible(c(
+        r = as.numeric(the_cor$estimate),
+        p = p_value,
+        bf = as.numeric(bf)
+    ))
 }

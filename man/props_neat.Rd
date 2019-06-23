@@ -26,14 +26,14 @@ two-sided.}
 \item{ci}{Numeric; confidence level for the returned CIs (proportion
 difference and Cohen's h).}
 
-\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated and
-displayed. (Always two-sided.)}
+\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
+and displayed. (Always two-sided.)}
 
-\item{h_added}{Logical. If \code{TRUE}, Cohen's h and its CI are calculated and
-displayed. (\code{FALSE} by default.)}
+\item{h_added}{Logical. If \code{TRUE}, Cohen's h and its CI are calculated
+and displayed. (\code{FALSE} by default.)}
 
-\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display from the
-printed text.}
+\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display
+from the printed text.}
 }
 \value{
 Prints exact test statistics (including proportion difference with CI,
@@ -46,31 +46,33 @@ Prints exact test statistics (including proportion difference with CI,
 \code{\link[Exact:exact.test]{ Barnard's unconditional exact
  test}} results for the comparison of two independent proportions, including
  confidence interval (CI) for the proportion difference, and corresponding
- \code{\link[BayesFactor:contingencyTableBF]{independent multinomial contingency
- table Bayes factor}} (BF). Cohen's h and its CI are also calculated.
+ \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
+ contingency table Bayes factor}} (BF). Cohen's h and its CI are also
+ calculated.
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-BF supporting null hypothesis is denoted as BF01, while that supporting
-alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-(i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-exponential form is reported for readability. (The original full BF number is
-available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) is always calculated with the default r-scale
+ of \code{0.707}. BF supporting null hypothesis is denoted as BF01, while
+ that supporting alternative hypothesis is denoted as BF10. When the BF is
+ smaller than 1 (i.e., supports null hypothesis), the reciprocal is
+ calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than
+ or equal to 10000, scientific (exponential) form is reported for
+ readability. (The original full BF number is available in the returned named
+ vector as \code{bf}.)
 }
 \note{
 Barnard's unconditional exact test is calculated via
-\code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
+ \code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
 
-The CIs for the proportion difference is calculated based on the p value, as
-described by Altman and Bland (2011).
+ The CIs for the proportion difference is calculated based on the p value, as
+ described by Altman and Bland (2011).
 
-The Bayes factor is calculated via
-\code{\link[BayesFactor]{contingencyTableBF}}, with \code{sampleType =
-"indepMulti"}, as appropriate when both sample sizes (\code{n1} and \code{n2})
-are known in advance (as it normally happens). (For details, see
-\code{\link[BayesFactor]{contingencyTableBF}}, or e.g. 'Chapter 17 Bayesian
-statistics' in Navarro, 2019.)
+ The Bayes factor is calculated via
+ \code{\link[BayesFactor:contingencyTableBF]{BayesFactor::contingencyTableBF}},
+  with \code{sampleType = "indepMulti"}, as appropriate when both sample
+ sizes (\code{n1} and \code{n2}) are known in advance (as it normally
+ happens). (For details, see \code{\link[BayesFactor]{contingencyTableBF}},
+ or e.g. 'Chapter 17 Bayesian statistics' in Navarro, 2019.)
 }
 \examples{
 props_neat(
@@ -90,20 +92,21 @@ props_neat(
 )
 }
 \references{
-Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
-from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
+Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence
+ interval from a P value. Bmj, 343(d2090).
+ \doi{https://doi.org/10.1136/bmj.d2090}
 
-Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika,
-34(1/2), 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
+ Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika,
+ 34(1/2), 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
 
-Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
-association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
-\doi{https://doi.org/10.1002/sim.3531}
+ Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
+ association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
+ \doi{https://doi.org/10.1002/sim.3531}
 
-Navarro, D. (2019). Learning statistics with R.
-\url{https://learningstatisticswithr.com/}
+ Navarro, D. (2019). Learning statistics with R.
+ \url{https://learningstatisticswithr.com/}
 
-Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for the
-2 times 2 binomial trial. Journal of the Royal Statistical Society: Series A
-(General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
+ Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for
+ the 2 times 2 binomial trial. Journal of the Royal Statistical Society:
+ Series A (General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
 }

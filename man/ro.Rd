@@ -9,13 +9,16 @@ ro(num, round_to = 2)
 \arguments{
 \item{num}{Number to be rounded.}
 
-\item{round_to}{Number of fractional digits (i.e., digits after the decimal point), to round to.}
+\item{round_to}{Number of fractional digits (i.e., digits after the decimal
+point), to round to.}
 }
 \value{
-Number as string: \code{num} rounded to \code{round_to} digits, with trailing zeros when applicable.
+Number as string: \code{num} rounded to \code{round_to} digits, with
+  trailing zeros when applicable.
 }
 \description{
-Rounds a given number to given number of digits after the decimal point, returning it as string, with trailing zeros when applicable.
+Rounds a given number to given number of digits after the
+  decimal point, returning it as string, with trailing zeros when applicable.
 }
 \examples{
 ro( 1.2345 ) # returns "1.23"

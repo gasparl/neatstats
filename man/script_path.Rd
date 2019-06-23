@@ -14,7 +14,8 @@ Script file's path as string. If \code{subdir} is given, it is
   appended to the original path.
 }
 \description{
-Gives, in RStudio, the path to the script file in which it is executed.
+Gives, in RStudio, the path to the script file in which it is
+  executed.
 }
 \examples{
 setwd( script_path() ) # sets working directory to the script's path, e.g. "C:/script_folder/"

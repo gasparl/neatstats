@@ -1,26 +1,28 @@
 #'@title Difference of Two Areas Under the Curves
 #'
-#'@description Comparison of two \code{\link[=t_neat]{areas under the receiver operating characteristic curves}} (AUCs).
-#'
+#'@description Comparison of two \code{\link[=t_neat]{areas under the receiver
+#'  operating characteristic curves}} (AUCs).
 #'@param roc1 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
 #'  object}}.
 #'@param roc2 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
 #'  object}}.
-#'@param pair Logical. If \code{TRUE}, the test is conducted for paired
-#'  samples. Otherwise (default) for independent samples.
-#'@param greater String (or number); optionally specifies one-sided test: either "1" (\code{roc1} AUC expected to be greater than \code{roc2}
-#'  AUC) or "2" (\code{roc2} AUC expected to be greater than \code{roc2}
-#'  AUC). If left empty, the test is two-sided.
+#'@param pair Logical. If \code{TRUE}, the test is conducted for paired samples.
+#'  Otherwise (default) for independent samples.
+#'@param greater String (or number); optionally specifies one-sided test: either
+#'  "1" (\code{roc1} AUC expected to be greater than \code{roc2} AUC) or "2"
+#'  (\code{roc2} AUC expected to be greater than \code{roc2} AUC). If left
+#'  empty, the test is two-sided.
 #'
 #'@return Prints DeLong's test results for the comparison of the two given AUCs
 #'  in APA style. Furthermore, when assigned, returns a named vector with the
 #'  following two elements: \code{stat} (D value), \code{p} (p value).
-#' @note
-#'The test statistics are calculated via \code{\link[pROC]{roc.test}} as
-#'DeLong's test (for both paired and unpaired). The \code{roc_neat} function
-#'merely prints it in APA style.
+#'@note
+#'The test statistics are calculated via
+#'\code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both paired
+#'and unpaired). The \code{roc_neat} function merely prints it in APA style.
 #'
-#'The ROC object may be calculated via \code{\link{t_neat}}, or directly with \code{\link[pROC:roc]{pROC::roc}}.
+#'The ROC object may be calculated via \code{\link{t_neat}}, or directly with
+#'\code{\link[pROC:roc]{pROC::roc}}.
 #'
 #'@references
 #'DeLong, E. R., DeLong, D. M., & Clarke-Pearson, D. L. (1988). Comparing the
@@ -50,10 +52,13 @@
 #' roc_neat(results1$roc_obj, results2$roc_obj, greater = "1")
 #' @export
 
-roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
-    if ( greater == "1" ) {
+roc_neat = function(roc1,
+                    roc2,
+                    pair = F,
+                    greater = "") {
+    if (greater == "1") {
         alt = "greater"
-    } else if ( greater == "2" ) {
+    } else if (greater == "2") {
         alt = "less"
     } else {
         alt = "two.sided"
@@ -62,11 +67,16 @@ roc_neat = function( roc1, roc2, pair = F, greater = "" ) {
     roc_stat = roc_test$statistic
     df = roc_test$parameter
     p_value = roc_test$p.value
-    if ( pair == F ) {
-        out = paste0( "D(", ro(df, 1), ") = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
+    if (pair == F) {
+        out = paste0("D(",
+                     ro(df, 1),
+                     ") = ",
+                     ro(roc_stat, 2),
+                     ", p = ",
+                     ro(p_value, 3))
     } else {
-        out = paste0( "D = ", ro(roc_stat, 2), ", p = ", ro(p_value,3) )
+        out = paste0("D = ", ro(roc_stat, 2), ", p = ", ro(p_value, 3))
     }
     prnt(out)
-    invisible( c(stat = as.numeric(roc_stat), p = p_value) )
+    invisible(c(stat = as.numeric(roc_stat), p = p_value))
 }

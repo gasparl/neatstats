@@ -3,8 +3,9 @@
 #'@description \code{\link[Exact:exact.test]{ Barnard's unconditional exact
 #'  test}} results for the comparison of two independent proportions, including
 #'  confidence interval (CI) for the proportion difference, and corresponding
-#'  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial contingency
-#'  table Bayes factor}} (BF). Cohen's h and its CI are also calculated.
+#'  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
+#'  contingency table Bayes factor}} (BF). Cohen's h and its CI are also
+#'  calculated.
 #'@param case1 Number of 'cases' (as opposed to 'controls'; e.g. positive
 #'  outcomes vs. negative outcomes) in 'group 1'.
 #'@param case2 Number of 'cases' in 'group 2'.
@@ -17,20 +18,20 @@
 #'  two-sided.
 #'@param ci Numeric; confidence level for the returned CIs (proportion
 #'  difference and Cohen's h).
-#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated and
-#'  displayed. (Always two-sided.)
-#'@param h_added Logical. If \code{TRUE}, Cohen's h and its CI are calculated and
-#'  displayed. (\code{FALSE} by default.)
-#'@param for_table Logical. If \code{TRUE}, omits the confidence level display from the
-#'  printed text.
-#'@details
-#' The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-#' BF supporting null hypothesis is denoted as BF01, while that supporting
-#' alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-#' (i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-#' BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-#' exponential form is reported for readability. (The original full BF number is
-#' available in the returned named vector as \code{bf}.)
+#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
+#'  and displayed. (Always two-sided.)
+#'@param h_added Logical. If \code{TRUE}, Cohen's h and its CI are calculated
+#'  and displayed. (\code{FALSE} by default.)
+#'@param for_table Logical. If \code{TRUE}, omits the confidence level display
+#'  from the printed text.
+#'@details The Bayes factor (BF) is always calculated with the default r-scale
+#'  of \code{0.707}. BF supporting null hypothesis is denoted as BF01, while
+#'  that supporting alternative hypothesis is denoted as BF10. When the BF is
+#'  smaller than 1 (i.e., supports null hypothesis), the reciprocal is
+#'  calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than
+#'  or equal to 10000, scientific (exponential) form is reported for
+#'  readability. (The original full BF number is available in the returned named
+#'  vector as \code{bf}.)
 #'
 #'@return Prints exact test statistics (including proportion difference with CI,
 #'  and BF) in APA style. Furthermore, when assigned, returns a named vector
@@ -38,39 +39,38 @@
 #'  \code{prop_diff} (raw proportion difference), \code{h} (Cohen's h),
 #'  \code{bf} (Bayes factor).
 #'
-#' @note
-#'Barnard's unconditional exact test is calculated via
-#'\code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
+#'@note Barnard's unconditional exact test is calculated via
+#'  \code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
 #'
-#'The CIs for the proportion difference is calculated based on the p value, as
-#'described by Altman and Bland (2011).
+#'  The CIs for the proportion difference is calculated based on the p value, as
+#'  described by Altman and Bland (2011).
 #'
-#'The Bayes factor is calculated via
-#'\code{\link[BayesFactor]{contingencyTableBF}}, with \code{sampleType =
-#'"indepMulti"}, as appropriate when both sample sizes (\code{n1} and \code{n2})
-#'are known in advance (as it normally happens). (For details, see
-#'\code{\link[BayesFactor]{contingencyTableBF}}, or e.g. 'Chapter 17 Bayesian
-#'statistics' in Navarro, 2019.)
+#'  The Bayes factor is calculated via
+#'  \code{\link[BayesFactor:contingencyTableBF]{BayesFactor::contingencyTableBF}},
+#'   with \code{sampleType = "indepMulti"}, as appropriate when both sample
+#'  sizes (\code{n1} and \code{n2}) are known in advance (as it normally
+#'  happens). (For details, see \code{\link[BayesFactor]{contingencyTableBF}},
+#'  or e.g. 'Chapter 17 Bayesian statistics' in Navarro, 2019.)
 #'
-#'@references
-#'Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
-#'from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
+#'@references Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence
+#'  interval from a P value. Bmj, 343(d2090).
+#'  \doi{https://doi.org/10.1136/bmj.d2090}
 #'
-#'Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika,
-#'34(1/2), 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
+#'  Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika,
+#'  34(1/2), 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
 #'
-#'Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
-#'association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
-#'\doi{https://doi.org/10.1002/sim.3531}
+#'  Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
+#'  association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
+#'  \doi{https://doi.org/10.1002/sim.3531}
 #'
-#'Navarro, D. (2019). Learning statistics with R.
-#'\url{https://learningstatisticswithr.com/}
+#'  Navarro, D. (2019). Learning statistics with R.
+#'  \url{https://learningstatisticswithr.com/}
 #'
-#'Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for the
-#'2 times 2 binomial trial. Journal of the Royal Statistical Society: Series A
-#'(General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
+#'  Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for
+#'  the 2 times 2 binomial trial. Journal of the Royal Statistical Society:
+#'  Series A (General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
 #'
-#' @examples
+#'@examples
 #' props_neat(
 #'     case1 = 35,
 #'     case2 = 48,
@@ -87,16 +87,23 @@
 #'     greater = "2"
 #' )
 #' @export
-
-props_neat = function( case1, case2, n1, n2, greater = "", ci = NULL, bf_added = T, h_added = F, for_table = F ){
+props_neat = function(case1,
+                      case2,
+                      n1,
+                      n2,
+                      greater = "",
+                      ci = NULL,
+                      bf_added = T,
+                      h_added = F,
+                      for_table = F) {
     # to add: McNemar for paired; corresponding BF
-    prop_1 = case1/n1
-    prop_2 = case2/n2
+    prop_1 = case1 / n1
+    prop_2 = case2 / n2
     p_diff = prop_1 - prop_2
-    matr = matrix(c( case1, case2, n1-case1, n2-case2), 2, 2 )
-    exact_res = Exact::exact.test( matr, to.plot = F )
-    z_norm = -0.862 + sqrt( 0.743 - 2.404 * log( exact_res$p.value  ) )
-    p_se = abs( p_diff / z_norm )
+    matr = matrix(c(case1, case2, n1 - case1, n2 - case2), 2, 2)
+    exact_res = Exact::exact.test(matr, to.plot = F)
+    z_norm = -0.862 + sqrt(0.743 - 2.404 * log(exact_res$p.value))
+    p_se = abs(p_diff / z_norm)
     if (greater == "1") {
         message("One-sided exact-test (with 90% CI default)! H1: first is greater than second.")
         exact_res = Exact::exact.test(matr, to.plot = F, alternative = "greater")
@@ -108,7 +115,7 @@ props_neat = function( case1, case2, n1, n2, greater = "", ci = NULL, bf_added =
             ci = 0.95
         }
     }
-    if ( is.null(ci) ) {
+    if (is.null(ci)) {
         ci = 0.90
     }
     z_c = qnorm(1 - (1 - ci) / 2)
@@ -135,10 +142,17 @@ props_neat = function( case1, case2, n1, n2, greater = "", ci = NULL, bf_added =
     if (for_table == T) {
         ci_disp = ""
     } else {
-        ci_disp = paste0(", ", ro(ci*100, 0), "% CI")
+        ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    if ( h_added == T ) {
-        h_out = paste0(", h = ", ro(h, 2), ci_disp, " [", ro(h_low, 2), ", ", ro(h_upp, 2), "]")
+    if (h_added == T) {
+        h_out = paste0(", h = ",
+                       ro(h, 2),
+                       ci_disp,
+                       " [",
+                       ro(h_low, 2),
+                       ", ",
+                       ro(h_upp, 2),
+                       "]")
     } else {
         h_out = ''
     }
@@ -146,7 +160,28 @@ props_neat = function( case1, case2, n1, n2, greater = "", ci = NULL, bf_added =
     p_low_out = edges(p_low, 2, no_null = T)
     p_upp_out = edges(p_upp, 2, no_null = T)
 
-    out = paste0( 'Z = ',  ro(z, 2), ", p = ", ro(pvalue,3), ", Pdiff = ", p_diff_out, ci_disp, " [", p_low_out, ", ", p_upp_out, "]", h_out, bf_out )
-    prnt( out )
-    invisible( c( z = as.numeric(z), p = pvalue, prop_diff = p_diff, h = h, bf = as.numeric(bf) ) )
+    out = paste0(
+        'Z = ',
+        ro(z, 2),
+        ", p = ",
+        ro(pvalue, 3),
+        ", Pdiff = ",
+        p_diff_out,
+        ci_disp,
+        " [",
+        p_low_out,
+        ", ",
+        p_upp_out,
+        "]",
+        h_out,
+        bf_out
+    )
+    prnt(out)
+    invisible(c(
+        z = as.numeric(z),
+        p = pvalue,
+        prop_diff = p_diff,
+        h = h,
+        bf = as.numeric(bf)
+    ))
 }

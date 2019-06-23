@@ -9,18 +9,29 @@ anova_neat(data_per_subject, values, between_vars = NULL,
   test_title = "--- neat ANOVA ---", welch = T, e_correction = "")
 }
 \arguments{
-\item{data_per_subject}{Data frame or name of data frame as string. Should contain all values (measurements/observations) in a single row per each subject.}
+\item{data_per_subject}{Data frame or name of data frame as string. Should
+contain all values (measurements/observations) in a single row per each
+subject.}
 
-\item{values}{String; column name or names. Multiple column names are also to be given as a single string, separated by commas (e.g., \code{values = 'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain a single dependent variable. This means, to test repeated (within-subject) measurements, each specified column should contain one measurement.}
+\item{values}{String; column name or names. Multiple column names are also to
+be given as a single string, separated by commas (e.g., \code{values =
+'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
+a single dependent variable. This means, to test repeated (within-subject)
+measurements, each specified column should contain one measurement.}
 
-\item{between_vars}{String; column name or names. Multiple column names are also to be given as a single string, separated by commas (e.g., \code{values = 'grouping1, grouping2'}). (Spaces are ignored.) Each such column should contain a single between-subject independent variable (representing a between-subject factor).}
+\item{between_vars}{String; column name or names. Multiple column names are
+also to be given as a single string, separated by commas (e.g., \code{values
+= 'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
+contain a single between-subject independent variable (representing a
+between-subject factor).}
 
-\item{within_ids}{String (or number); optionally specifies one-sided tests (t and
-BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
-mean) or "2" (\code{var2} mean expected to be greater than \code{var1}
-mean). If left empty, the test is two-sided.}
+\item{within_ids}{String (or number); optionally specifies one-sided tests (t
+and BF): either "1" (\code{var1} mean expected to be greater than
+\code{var2} mean) or "2" (\code{var2} mean expected to be greater than
+\code{var1} mean). If left empty, the test is two-sided.}
 
-\item{ci}{Numeric; confidence level for returned CIs. (Otherwise 90% by default; Lakens, 2014; Steiger, 2004.)}
+\item{ci}{Numeric; confidence level for returned CIs. (Otherwise 90% by
+default; Lakens, 2014; Steiger, 2004.)}
 
 \item{bf_added}{Logical. If \code{TRUE} (default), inclusion Bayes factor is
 calculated and displayed. (Note: with multiple factors and/or larger
@@ -29,23 +40,37 @@ dataset, the calculation can take considerable time.)}
 \item{test_title}{String, "--- neat ANOVA ---" by default. Simply displayed in
 printing preceding the statistics.}
 
-\item{welch}{If FALSE, calculates via \code{\link[ez:ezANOVA]{ez::ezANOVA}} in case of a single factor (one-way) between-subject design (i.e., same as in case of every other design). Otherwise (default), calculates Welch's ANOVA via \code{\link[stats:oneway.test]{stats::oneway.test}} in such cases (one-way between-subject).}
+\item{welch}{If FALSE, calculates via \code{\link[ez:ezANOVA]{ez::ezANOVA}} in
+case of a single factor (one-way) between-subject design (i.e., same as in
+case of every other design). Otherwise (default), calculates Welch's ANOVA
+via \code{\link[stats:oneway.test]{stats::oneway.test}} in such cases
+(one-way between-subject).}
 
-\item{e_correction}{String: \code{'gg'}, \code{'hf'}, \code{'none'}, or empty. If set to \code{'gg'}, Greenhouse-Geisser correction is applied in case of repeated measures (regardless of violation of sphericity). If set to \code{'hf'}, Huynh-Feldt correction is applied. If set to \code{'none'}, no correction is applied. Otherwise (e.g. if left empty, \code{''}, as per default), Greenhouse-Geisser correction is applied when Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon is not larger than \code{.75}, while Huynh-Feldt correction is applied when Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon is larger than \code{.75} (see Girden, 1992).}
+\item{e_correction}{String: \code{'gg'}, \code{'hf'}, \code{'none'}, or empty.
+If set to \code{'gg'}, Greenhouse-Geisser correction is applied in case of
+repeated measures (regardless of violation of sphericity). If set to
+\code{'hf'}, Huynh-Feldt correction is applied. If set to \code{'none'}, no
+correction is applied. Otherwise (e.g. if left empty, \code{''}, as per
+default), Greenhouse-Geisser correction is applied when Mauchly's sphericity
+test is significant and the Greenhouse-Geisser epsilon is not larger than
+\code{.75}, while Huynh-Feldt correction is applied when Mauchly's
+sphericity test is significant and the Greenhouse-Geisser epsilon is larger
+than \code{.75} (see Girden, 1992).}
 }
 \value{
-Prints ANOVA statistics (including, for each model, F-test with partial eta squared and its CI, and BF, as specified via the corresponding parameters) in APA style. Furthermore, when
- assigned, returns a list, that contains a named vector '\code{stats}' with
- the following elements: \code{t} (t value), \code{p} (p value), \code{d}
- (Cohen's d), \code{bf} (Bayes factor), \code{auc} (AUC), \code{accuracy}
- (accuracy using the most optimal classification threshold). The latter two
- is \code{NULL} when \code{auc_added} is \code{FALSE}. There are also two additional elements of the list. One is
- '\code{roc_obj}', which is a \code{\link[pROC]{roc}} object, to be used e.g.
- with the \code{\link{roc_neat}} function. The other is
- '\code{best_thresholds}', which contains the best threshold value(s) for
- classification, along with corresponding specificity and sensitivity.
-
-(The ezANOVA object values will likely differ from the printed information when using Welch's one-way ANOVA, since that is not calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}}, but via \code{\link[stats:oneway.test]{stats::oneway.test}}; see Note.)
+Prints ANOVA statistics (including, for each model, F-test with
+ partial eta squared and its CI, and BF, as specified via the corresponding
+ parameters) in APA style. Furthermore, when assigned, returns a list with up
+ to three elements. First, '\code{stat_list}', a list of named vectors per
+ each effect (main or interaction). Each vector contains the following
+ elements: \code{F} (F value), \code{p} (p value), \code{petas} (partial eta
+ squared), \code{epsilon} (epsilon used for correction), and \code{bf}
+ (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second, the
+ \code{\link[ez]{ezANOVA}} object, named \code{ez_anova} (calculated even
+ when \code{\link[stats]{oneway.test}} is printed). Third, when
+ \code{bf_added} is not \code{FALSE}, the \code{\link[BayesFactor]{anovaBF}}
+ object, named \code{bf_models}; including all models on which the inclusion
+ BFs are based.
 }
 \description{
 \code{\link[ez:ezANOVA]{Analysis of variance}} (ANOVA) F-test
@@ -56,41 +81,41 @@ Prints ANOVA statistics (including, for each model, F-test with partial eta squa
  on matched models}} (BFs).
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-BF supporting null hypothesis is denoted as BF01, while that supporting
-alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-(i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-exponential form is reported for readability. (The original full BF number is
-available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) is always calculated with the default \code{rscaleFixed}
+of \code{0.5} (\code"medium") and \code{rscaleRandom} r-scale of \code{1}
+(\code"nuisance"). BF supporting null hypothesis is denoted as BF01, while
+that supporting alternative hypothesis is denoted as BF10. When the BF is
+smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
+(hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to
+10000, scientific (exponential) form is reported for readability. (The
+original full BF number is available in the returned named vector as
+\code{bf}.)
 
-The original \code{\link[pROC:auc]{pROC::auc}} function, by default, always
-returns an AUC greater than (or equal to) .5, assuming that the prediction
-based on values in the expected direction work correctly at least at chance
-level. This however may be confusing. Consider an example where we measure the
-heights of persons in a specific small sample and expect that greater height
-predicts masculine gender. The results are, say, 169, 175, 167, 164 (cm) for
-one gender, and 176, 182, 179, 165 for the other. If the expectation is
-correct (the second, greater values are for males), the AUC is .812. However,
-if in this particular population females are actually taller than males, the
-AUC is in fact .188. To keep things clear, the \code{t_neat} function always
-makes an assumption about which variable is expected to be greater for correct
-classification ("1" by default; i.e., \code{var1}; to be specified as
-\code{auc_greater = "2"} for \code{var2} to be expected as greater). For this
-example, if the first (smaller) variables are given as \code{var1} for
-females, and second (larger), variables are given as \code{var2} for males, we
-have to specify \code{auc_greater = "2"} to indicate the expectation of larger
-values for males. (Or, easier, just add the expected larger values as
-\code{var1}.)
+Levene's test is returned for between-subject design without Welch's
+correction, while Mauchly's sphericity test is returned for repeated measures
+with more than two levels. If Mauchly's test is significant, epsilon
+correction may be applied (see the \code{e_correction} parameter). If Levene's
+test is significant and the data is unbalanced (unequal group sample sizes),
+you should either consider the results respectively or choose a different
+test.
 }
 \note{
-Confidence intervals are calculated, using the F value, via
-\code{\link[MBESS:conf.limits.ncf]{MBESS::conf.limits.ncf}}, coverting noncentrality parameters to partial eta squared as \code{x/(x+ df_nom+df_denom+1)} (Smithson, 2003).
+All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
+ including Levene's test and Mauchly's sphericity test. (But Welch's ANOVA is
+ calculated in case of one-way between-subject designs via
+ \code{\link[stats:oneway.test]{stats::oneway.test}}, unless the \code{welch}
+ parameter is set to \code{FALSE}.)
 
-The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
+ Confidence intervals are calculated, using the F value, via
+ \code{\link[MBESS:conf.limits.ncf]{MBESS::conf.limits.ncf}}, coverting
+ noncentrality parameters to partial eta squared as \code{ncp/(ncp+
+ df_nom+df_denom+1)} (Smithson, 2003).
 
-
-If Levene's test is significant and the data is unbalanced (unequal group sample sizes), you should either consider the results carefully or choose a different test.
+ The inclusion Bayes factor based on matched models is calculated via
+ \code{\link[bayestestR:bayesfactor_inclusion]{bayestestR::bayesfactor_inclusion}},
+  (with \code{match_models = T}, and using an
+ \code{\link[BayesFactor:anovaBF]{BayesFactor::anovaBF}} object for
+ \code{models} input).
 }
 \examples{
 # assign random data in a data frame for illustration

@@ -21,7 +21,7 @@ A monitor object with the specified parameters, to be used in the
 Assigns a monitor object, storing distance and width parameters.
 }
 \examples{
-# assign monitor with 57 cm viewing distance, and screen width 52 cm and 1920 pixels
+# assign monitor with 57 cm viewing distance, screen width 52 cm and 1920 pixels
 my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 }
 \seealso{

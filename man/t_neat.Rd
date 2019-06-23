@@ -14,8 +14,8 @@ t_neat(var1, var2, pair = F, greater = "", ci = NULL, bf_added = T,
 
 \item{var2}{Numeric vector; numbers of the second variable.}
 
-\item{pair}{Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for paired
-samples. Otherwise (default) for independent samples.}
+\item{pair}{Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
+paired samples. Otherwise (default) for independent samples.}
 
 \item{greater}{String (or number); optionally specifies one-sided tests (t and
 BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
@@ -24,17 +24,17 @@ mean). If left empty, the test is two-sided.}
 
 \item{ci}{Numeric; confidence level for returned CIs for Cohen's d and AUC.}
 
-\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated and
-displayed.}
+\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
+and displayed.}
 
-\item{auc_added}{Logical. If \code{TRUE}, AUC is calculated and displayed. (\code{FALSE} by
-default.)}
+\item{auc_added}{Logical. If \code{TRUE}, AUC is calculated and displayed.
+(\code{FALSE} by default.)}
 
-\item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is calculated
-and displayed in case of paired comparison.}
+\item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is
+calculated and displayed in case of paired comparison.}
 
-\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display from the
-printed text.}
+\item{for_table}{Logical. If \code{TRUE}, omits the confidence level display
+from the printed text.}
 
 \item{test_title}{String, "Descriptives:" by default. Simply displayed in
 printing preceding the descriptive statistics. (Useful e.g. to distinguish
@@ -77,13 +77,13 @@ Welch's \code{\link[stats:t.test]{t-test}} results
  curve}} (AUC).
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of 0.707.
-BF supporting null hypothesis is denoted as BF01, while that supporting
-alternative hypothesis is denoted as BF10. When the BF is smaller than 1
-(i.e., supports null hypothesis), the reciprocal is calculated (hence, BF10 =
-BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-exponential form is reported for readability. (The original full BF number is
-available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) is always calculated with the default r-scale of
+\code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
+supporting alternative hypothesis is denoted as BF10. When the BF is smaller
+than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
+BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
+scientific (exponential) form is reported for readability. (The original full
+BF number is available in the returned named vector as \code{bf}.)
 
 The original \code{\link[pROC:auc]{pROC::auc}} function, by default, always
 returns an AUC greater than (or equal to) .5, assuming that the prediction
@@ -105,22 +105,25 @@ values for males. (Or, easier, just add the expected larger values as
 \code{var1}.)
 }
 \note{
-The Welch's t-test is calculated via \code{\link[stats]{t.test}}.
+The Welch's t-test is calculated via
+\code{\link[stats:t.test]{stats::t.test}}.
 
 Cohen's d and its confidence interval are calculated, using the t value, via
-\code{\link[MBESS]{ci.smd}} for independent samples (as standardized mean
-difference) and via \code{\link[MBESS]{ci.sm}} for paired samples (as
-standardized mean).
+\code{\link[MBESS:ci.smd]{MBESS::ci.smd}} for independent samples (as
+standardized mean difference) and via \code{\link[MBESS:ci.sm]{MBESS::ci.sm}}
+for paired samples (as standardized mean).
 
-The Bayes factor is calculated via \code{\link[BayesFactor]{correlationBF}}.
+The Bayes factor is calculated via
+\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}.
 
-The correlation and its CI are calculated via \code{\link[stats]{cor.test}},
-and is always two-sided, always with 95 percent CI. For more, use
-\code{\link{corr_neat}}.
+The correlation and its CI are calculated via
+\code{\link[stats:cor.test]{stats::cor.test}}, and is always two-sided, always
+with 95 percent CI. For more, use \code{\link{corr_neat}}.
 
-The AUC and its CI are calculated via \code{\link[pROC]{auc}}, and the
-accuracy at most optimal threshold via \code{\link[pROC]{coords}} (\code{x =
-"best"}); both using the object \code{\link[pROC]{roc}}.
+The AUC and its CI are calculated via \code{\link[pROC:auc]{pROC::auc}}, and
+the accuracy at most optimal threshold via
+\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
+object \code{\link[pROC:roc]{pROC::roc}}.
 }
 \examples{
 # assign two variables (numeric vectors)
