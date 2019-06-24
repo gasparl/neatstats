@@ -19,16 +19,30 @@ be given as a single string, separated by commas (e.g., \code{values =
 a single dependent variable. This means, to test repeated (within-subject)
 measurements, each specified column should contain one measurement.}
 
-\item{between_vars}{String; column name or names. Multiple column names are
-also to be given as a single string, separated by commas (e.g., \code{values
-= 'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
+\item{between_vars}{\code{NULL} (deafault; in case of no between-subject
+factors) or string; column name or names. Multiple column names are also to
+be given as a single string, separated by commas (e.g., \code{between_vars =
+'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
 contain a single between-subject independent variable (representing a
 between-subject factor).}
 
-\item{within_ids}{String (or number); optionally specifies one-sided tests (t
-and BF): either "1" (\code{var1} mean expected to be greater than
-\code{var2} mean) or "2" (\code{var2} mean expected to be greater than
-\code{var1} mean). If left empty, the test is two-sided.}
+\item{within_ids}{\code{NULL}, string, or named list. In case of no
+within-subject factors, leave as \code{NULL}. In case of a single within
+subject factor, a single string may be given to optionally provide custom
+name for the within-subject factor (note: this is a programming variable
+name, so it should not contain spaces, etc.); otherwise it will always just
+be named \code{"within_factor"}. In case of multiple within-subject factors,
+each factor must be specified as a named list element, each with a vector of
+strings that distinguishes the levels within that factors. The column names
+given as \code{values} should always contain one (and only one) of these
+strings within each within-subject factor, and thus they will be assigned
+the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
+rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
+'s2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
+must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+not set levels \code{c('a','b')}, because \code{'a')} is also found in
+\code{apple_a}. In this case, you could choose levels \code{c('_a','_b')} to
+make sure the values are correctly distinguished.) See also Examples.}
 
 \item{ci}{Numeric; confidence level for returned CIs. (Otherwise 90% by
 default; Lakens, 2014; Steiger, 2004.)}
