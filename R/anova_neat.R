@@ -18,27 +18,28 @@
 #'  factors) or string; column name or names. Multiple column names are also to
 #'  be given as a single string, separated by commas (e.g., \code{between_vars =
 #'  'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
-#'  contain a single between-subject independent variable (representing a
-#'  between-subject factor).
+#'  contain a single between-subject independent variable (representing
+#'  between-subject factors).
 #'@param within_ids \code{NULL}, string, or named list. In case of no
 #'  within-subject factors, leave as \code{NULL}. In case of a single within
 #'  subject factor, a single string may be given to optionally provide custom
 #'  name for the within-subject factor (note: this is a programming variable
-#'  name, so it should not contain spaces, etc.); otherwise it will always just
-#'  be named \code{"within_factor"}. In case of multiple within-subject factors,
-#'  each factor must be specified as a named list element, each with a vector of
-#'  strings that distinguishes the levels within that factors. The column names
-#'  given as \code{values} should always contain one (and only one) of these
-#'  strings within each within-subject factor, and thus they will be assigned
-#'  the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
-#'  rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
-#'  's2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
-#'  must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
-#'  not set levels \code{c('a','b')}, because \code{'a')} is also found in
-#'  \code{apple_a}. In this case, you could choose levels \code{c('_a','_b')} to
-#'  make sure the values are correctly distinguished.) See also Examples.
-#'@param ci Numeric; confidence level for returned CIs. (Otherwise 90% by
-#'  default; Lakens, 2014; Steiger, 2004.)
+#'  name, so it should not contain spaces, etc.); otherwise (if left
+#'  \code{NULL}) it will always just be named \code{"within_factor"}. In case of
+#'  multiple within-subject factors, each factor must be specified as a named
+#'  list element, each with a vector of strings that distinguishes the levels
+#'  within that factors. The column names given as \code{values} should always
+#'  contain one (and only one) of these strings within each within-subject
+#'  factor, and thus they will be assigned the appropriate level. For example,
+#'  \code{values = 'rt_s1_neg, rt_s1_pos, rt_s2_neg, rt_s2_pos'} could have
+#'  \code{within_ids = list( session = c('s1', 's2'), valence =  c('pos',
+#'  'neg')}. (Note: the strings for distinguishing must be unambigous. E.g., for
+#'  values \code{apple_a} and \code{apple_b}, do not set levels
+#'  \code{c('a','b')}, because \code{'a'} is also found in \code{apple_b}. In
+#'  this case, you could choose levels \code{c('_a','_b')} to make sure the
+#'  values are correctly distinguished.) See also Examples.
+#'@param ci Numeric; confidence level for returned CIs. (Default: \code{.9};
+#'  Lakens, 2014; Steiger, 2004.)
 #'@param bf_added Logical. If \code{TRUE} (default), inclusion Bayes factor is
 #'  calculated and displayed. (Note: with multiple factors and/or larger
 #'  dataset, the calculation can take considerable time.)
@@ -49,21 +50,21 @@
 #'  case of every other design). Otherwise (default), calculates Welch's ANOVA
 #'  via \code{\link[stats:oneway.test]{stats::oneway.test}} in such cases
 #'  (one-way between-subject).
-#'@param e_correction String: \code{'gg'}, \code{'hf'}, \code{'none'}, or empty.
-#'  If set to \code{'gg'}, Greenhouse-Geisser correction is applied in case of
-#'  repeated measures (regardless of violation of sphericity). If set to
-#'  \code{'hf'}, Huynh-Feldt correction is applied. If set to \code{'none'}, no
-#'  correction is applied. Otherwise (e.g. if left empty, \code{''}, as per
-#'  default), Greenhouse-Geisser correction is applied when Mauchly's sphericity
-#'  test is significant and the Greenhouse-Geisser epsilon is not larger than
-#'  \code{.75}, while Huynh-Feldt correction is applied when Mauchly's
-#'  sphericity test is significant and the Greenhouse-Geisser epsilon is larger
-#'  than \code{.75} (see Girden, 1992).
+#'@param e_correction String: \code{'gg'}, \code{'hf'}, \code{'none'}, or
+#'  \code{''} (empty). If set to \code{'gg'}, Greenhouse-Geisser correction is
+#'  applied in case of repeated measures (regardless of violation of
+#'  sphericity). If set to \code{'hf'}, Huynh-Feldt correction is applied. If
+#'  set to \code{'none'}, no correction is applied. Otherwise (e.g. if left
+#'  empty, \code{''}, as per default), Greenhouse-Geisser correction is applied
+#'  when Mauchly's sphericity test is significant and the Greenhouse-Geisser
+#'  epsilon is not larger than \code{.75}, while Huynh-Feldt correction is
+#'  applied when Mauchly's sphericity test is significant and the
+#'  Greenhouse-Geisser epsilon is larger than \code{.75} (see Girden, 1992).
 #'
 #'@details
 #'
 #'The Bayes factor (BF) is always calculated with the default \code{rscaleFixed}
-#'of \code{0.5} (\code{"medium"}) and \code{rscaleRandom} r-scale of \code{1}
+#'of \code{0.5} (\code{"medium"}) and \code{rscaleRandom} of \code{1}
 #'(\code{"nuisance"}). BF supporting null hypothesis is denoted as BF01, while
 #'that supporting alternative hypothesis is denoted as BF10. When the BF is
 #'smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
@@ -234,7 +235,7 @@
 #' )
 #' head(pic_ratings) # see what we have
 #'
-#' # now the same logic applies as for the examples above, but now the
+#' # the same logic applies as for the examples above, but now the
 #' # within-subject differences can be more meaningfully specified, e.g.
 #' # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
 #' # 'fright_low' vs. 'fright_high' for levels of frighteningness
