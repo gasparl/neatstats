@@ -16,7 +16,7 @@ mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
                   list(
                       val_arg(distance, c('num'), 1),
                       val_arg(mon_width_cm, c('num'), 1),
-                      val_arg(mon_width_pixel, c('num'), 1),
+                      val_arg(mon_width_pixel, c('num'), 1)
                   ))
     mon_obj = list(
         distance = distance,

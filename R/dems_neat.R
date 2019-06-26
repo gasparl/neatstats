@@ -39,7 +39,7 @@ dems_neat = function(data_per_subject,
     validate_args(match.call(),
                   list(
                       val_arg(data_per_subject, c('df')),
-                      val_arg(percent, c('null'), 1),
+                      val_arg(percent, c('bool'), 1),
                       val_arg(round_perc, c('num'), 1)
                   ))
     if (all(data_per_subject$gender == '1' |
