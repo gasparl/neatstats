@@ -99,12 +99,12 @@ props_neat = function(case1,
     validate_args(
         match.call(),
         list(
-            val_arg(case1, c('num'), 0),
-            val_arg(case2, c('num'), 0),
-            val_arg(n1, c('num'), 0),
-            val_arg(n2, c('num'), 0),
+            val_arg(case1, c('num'), 1),
+            val_arg(case2, c('num'), 1),
+            val_arg(n1, c('num'), 1),
+            val_arg(n2, c('num'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
-            val_arg(ci, c('num'), 1),
+            val_arg(ci, c('null','num'), 1),
             val_arg(bf_added, c('bool'), 1),
             val_arg(h_added, c('bool'), 1),
             val_arg(for_table, c('bool'), 1)
