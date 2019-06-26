@@ -4,7 +4,7 @@
 \alias{props_neat}
 \title{Difference of Two Proportions}
 \usage{
-props_neat(case1, case2, n1, n2, greater = "", ci = NULL,
+props_neat(case1, case2, n1, n2, greater = NULL, ci = NULL,
   bf_added = TRUE, h_added = FALSE, for_table = FALSE)
 }
 \arguments{
@@ -17,11 +17,11 @@ outcomes vs. negative outcomes) in 'group 1'.}
 
 \item{n2}{Number; sample size of 'group 2'.}
 
-\item{greater}{String (or number); optionally specifies one-sided exact test:
-either "1" (\code{case1/n1} proportion expected to be greater than
-\code{case2/n2} proportion) or "2" (\code{case2/n2} proportion expected to
-be greater than \code{case1/n1} proportion). If left empty, the test is
-two-sided.}
+\item{greater}{\code{NULL} or string (or number); optionally specifies
+one-sided exact test: either "1" (\code{case1/n1} proportion expected to be
+greater than \code{case2/n2} proportion) or "2" (\code{case2/n2} proportion
+expected to be greater than \code{case1/n1} proportion). If \code{NULL}
+(default), the test is two-sided.}
 
 \item{ci}{Numeric; confidence level for the returned CIs (proportion
 difference and Cohen's h).}

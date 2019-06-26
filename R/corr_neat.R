@@ -9,10 +9,10 @@
 #'  \code{\link[stats]{cor.test}}.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
-#'@param direction String; optionally specifies one-sided test: either
-#'  "negative" (negative correlation expected) or "positive" (positive
+#'@param direction \code{NULL} or string; optionally specifies one-sided test:
+#'  either "negative" (negative correlation expected) or "positive" (positive
 #'  correlation expected). (Short forms also work, e.g. "p", "pos", "neg", etc.)
-#'  If left empty, the test is two-sided.
+#'  If \code{NULL} (default), the test is two-sided.
 #'@param round_r Number \code{\link[=ro]{to round}} to the correlation and its
 #'  CI.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
@@ -56,9 +56,22 @@ corr_neat = function(var1,
                      var2,
                      ci = .95,
                      bf_added = TRUE,
-                     direction = "",
+                     direction = NULL,
                      round_r = 3,
                      for_table = FALSE) {
+    validate_args(
+        match.call(),
+        list(
+            val_arg(var1, c('num'), 0),
+            val_arg(var2, c('num'), 0),
+            val_arg(ci, c('num'), 1),
+            val_arg(bf_added, c('bool'), 1),
+            val_arg(direction, c('null', 'char'), 1),
+            val_arg(round_r, c('num'), 1),
+            val_arg(for_table, c('bool'), 1)
+        )
+    )
+    direction = toString(direction)
     if (direction != "" &&
         substr("negative", 1, nchar(direction)) == direction) {
         message("One-sided test! Negative correlation expected.")

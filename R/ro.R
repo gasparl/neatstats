@@ -15,6 +15,9 @@
 #' ro( 12.3, 4 ) # returns "12.3000"
 #' @export
 ro = function(num, round_to = 2) {
+    validate_args(match.call(),
+                  list(val_arg(num, c('num'), 0),
+                       val_arg(round_to, c('num'), 0)))
     value = as.numeric(num)
     return(format(round(num, round_to), nsmall = round_to))
 }

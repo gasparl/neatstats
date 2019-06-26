@@ -11,11 +11,11 @@
 #'@param case2 Number of 'cases' in 'group 2'.
 #'@param n1 Number; sample size of 'group 1'.
 #'@param n2 Number; sample size of 'group 2'.
-#'@param greater String (or number); optionally specifies one-sided exact test:
-#'  either "1" (\code{case1/n1} proportion expected to be greater than
-#'  \code{case2/n2} proportion) or "2" (\code{case2/n2} proportion expected to
-#'  be greater than \code{case1/n1} proportion). If left empty, the test is
-#'  two-sided.
+#'@param greater \code{NULL} or string (or number); optionally specifies
+#'  one-sided exact test: either "1" (\code{case1/n1} proportion expected to be
+#'  greater than \code{case2/n2} proportion) or "2" (\code{case2/n2} proportion
+#'  expected to be greater than \code{case1/n1} proportion). If \code{NULL}
+#'  (default), the test is two-sided.
 #'@param ci Numeric; confidence level for the returned CIs (proportion
 #'  difference and Cohen's h).
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
@@ -91,11 +91,26 @@ props_neat = function(case1,
                       case2,
                       n1,
                       n2,
-                      greater = "",
+                      greater = NULL,
                       ci = NULL,
                       bf_added = TRUE,
                       h_added = FALSE,
                       for_table = FALSE) {
+    validate_args(
+        match.call(),
+        list(
+            val_arg(case1, c('num'), 0),
+            val_arg(case2, c('num'), 0),
+            val_arg(n1, c('num'), 0),
+            val_arg(n2, c('num'), 0),
+            val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+            val_arg(ci, c('num'), 1),
+            val_arg(bf_added, c('bool'), 1),
+            val_arg(h_added, c('bool'), 1),
+            val_arg(for_table, c('bool'), 1)
+        )
+    )
+    greater = toString(greater)
     # to add: McNemar for paired; corresponding BF
     prop_1 = case1 / n1
     prop_2 = case2 / n2

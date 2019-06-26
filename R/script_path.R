@@ -14,6 +14,8 @@
 #' @export
 script_path = function(subdir = '') {
     if (Sys.getenv("RSTUDIO") == "1") {
+        validate_args(match.call(),
+                      list(val_arg(subdir, c('char'), 1)))
         the_path = ''
         tryCatch({
             the_path = paste0(dirname(rstudioapi::getActiveDocumentContext()$path),

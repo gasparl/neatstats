@@ -8,10 +8,10 @@
 #'  object}}.
 #'@param pair Logical. If \code{TRUE}, the test is conducted for paired samples.
 #'  Otherwise (default) for independent samples.
-#'@param greater String (or number); optionally specifies one-sided test: either
-#'  "1" (\code{roc1} AUC expected to be greater than \code{roc2} AUC) or "2"
-#'  (\code{roc2} AUC expected to be greater than \code{roc2} AUC). If left
-#'  empty, the test is two-sided.
+#'@param greater \code{NULL} or string (or number); optionally specifies
+#'  one-sided test: either "1" (\code{roc1} AUC expected to be greater than
+#'  \code{roc2} AUC) or "2" (\code{roc2} AUC expected to be greater than
+#'  \code{roc2} AUC). If \code{NULL} (default), the test is two-sided.
 #'
 #'@return Prints DeLong's test results for the comparison of the two given AUCs
 #'  in APA style. Furthermore, when assigned, returns a named vector with the
@@ -55,7 +55,15 @@
 roc_neat = function(roc1,
                     roc2,
                     pair = FALSE,
-                    greater = "") {
+                    greater = NULL) {
+    validate_args(
+        match.call(),
+        list(
+            val_arg(pair, c('bool'), 1),
+            val_arg(greater, c('null', 'char'), 1, c('1', '2'))
+        )
+    )
+    greater = toString(greater)
     if (greater == "1") {
         alt = "greater"
     } else if (greater == "2") {

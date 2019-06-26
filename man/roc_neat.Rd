@@ -4,7 +4,7 @@
 \alias{roc_neat}
 \title{Difference of Two Areas Under the Curves}
 \usage{
-roc_neat(roc1, roc2, pair = FALSE, greater = "")
+roc_neat(roc1, roc2, pair = FALSE, greater = NULL)
 }
 \arguments{
 \item{roc1}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
@@ -16,10 +16,10 @@ object}}.}
 \item{pair}{Logical. If \code{TRUE}, the test is conducted for paired samples.
 Otherwise (default) for independent samples.}
 
-\item{greater}{String (or number); optionally specifies one-sided test: either
-"1" (\code{roc1} AUC expected to be greater than \code{roc2} AUC) or "2"
-(\code{roc2} AUC expected to be greater than \code{roc2} AUC). If left
-empty, the test is two-sided.}
+\item{greater}{\code{NULL} or string (or number); optionally specifies
+one-sided test: either "1" (\code{roc1} AUC expected to be greater than
+\code{roc2} AUC) or "2" (\code{roc2} AUC expected to be greater than
+\code{roc2} AUC). If \code{NULL} (default), the test is two-sided.}
 }
 \value{
 Prints DeLong's test results for the comparison of the two given AUCs

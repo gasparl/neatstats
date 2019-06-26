@@ -5,11 +5,12 @@
 #' @param values A vector of numbers from which the statistics are to be
 #'   calculated.
 #' @param round_to Number of digits after the decimal point to round to.
-#' @param new_name String. A new name for the variable to be used as column
-#'   title.
+#' @param new_name \code{NULL} (default) or string. String specifies new name
+#'   for the variable to be used as column title. If \code{NULL}, the input
+#'   variable name is used.
 #' @param group_by A vector of factors by which the statistics are grouped.
 #' @param medians Logical. If \code{TRUE}, medians are calculated, otherwise
-#'   means.
+#'   (default: \code{FALSE}) means.
 #' @return A data frame with the statistics per group. Furthermore, prints
 #'   statistics per group, unless used within the \code{\link{table_neat}}
 #'   function, in which case nothing is printed.
@@ -32,6 +33,13 @@ m_neat = function(values,
                   new_name = NULL,
                   group_by = NULL,
                   medians = FALSE) {
+    validate_args(match.call(),
+                  list(
+                      val_arg(values, c('num'), 0),
+                      val_arg(round_to, c('num'), 1),
+                      val_arg(new_name, c('char', 'null'), 1),
+                      val_arg(medians, c('bool'), 1)
+                  ))
     if (is.null(new_name)) {
         val_name = deparse(substitute(values))
         if (grepl('\\$', val_name)) {

@@ -4,7 +4,7 @@
 \alias{corr_neat}
 \title{Correlation Statistics}
 \usage{
-corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = "",
+corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = NULL,
   round_r = 3, for_table = FALSE)
 }
 \arguments{
@@ -18,10 +18,10 @@ corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = "",
 \item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
 and displayed.}
 
-\item{direction}{String; optionally specifies one-sided test: either
-"negative" (negative correlation expected) or "positive" (positive
+\item{direction}{\code{NULL} or string; optionally specifies one-sided test:
+either "negative" (negative correlation expected) or "positive" (positive
 correlation expected). (Short forms also work, e.g. "p", "pos", "neg", etc.)
-If left empty, the test is two-sided.}
+If \code{NULL} (default), the test is two-sided.}
 
 \item{round_r}{Number \code{\link[=ro]{to round}} to the correlation and its
 CI.}

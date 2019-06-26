@@ -13,13 +13,14 @@ calculated.}
 
 \item{round_to}{Number of digits after the decimal point to round to.}
 
-\item{new_name}{String. A new name for the variable to be used as column
-title.}
+\item{new_name}{\code{NULL} (default) or string. String specifies new name
+for the variable to be used as column title. If \code{NULL}, the input
+variable name is used.}
 
 \item{group_by}{A vector of factors by which the statistics are grouped.}
 
 \item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise
-means.}
+(default: \code{FALSE}) means.}
 }
 \value{
 A data frame with the statistics per group. Furthermore, prints

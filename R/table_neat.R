@@ -13,9 +13,10 @@
 #'   "c" or "col", etc.), each column contains statistics for one group.
 #'   Otherwise (default), each row contains statistics for one group.
 #' @param to_clipboard Logical. If \code{TRUE}, the table is copied to the
-#'   clipboard.
+#'   clipboard (default: \code{FALSE}).
 #' @param medians Logical. If \code{TRUE}, medians are calculated, otherwise
-#'   means. (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)
+#'   (default: \code{FALSE}) means. (Overwrites \code{medians} in
+#'   \code{\link{m_neat}}; see Details.)
 #' @details The \code{values}, \code{round_to}, and \code{new_name} arguments
 #'   given in the \code{\link{m_neat}} function are always applied. However, the
 #'   \code{group_by} or \code{medians} given in the \code{\link{m_neat}}
@@ -56,7 +57,14 @@ table_neat = function(values_list,
                       group_by = NULL,
                       group_per = 'rows',
                       to_clipboard = FALSE,
-                      medians = NULL) {
+                      medians = FALSE) {
+    validate_args(match.call(),
+                  list(
+                      val_arg(values_list, c('list')),
+                      val_arg(group_per, c('char'), 1),
+                      val_arg(to_clipboard, c('bool'), 1),
+                      val_arg(medians, c('bool'), 1)
+                  ))
     print_off()
     tryCatch({
         pkg.globals$my_unique_grouping_var = group_by

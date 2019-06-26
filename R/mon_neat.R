@@ -12,6 +12,12 @@
 #' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 #' @export
 mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
+    validate_args(match.call(),
+                  list(
+                      val_arg(distance, c('num'), 1),
+                      val_arg(mon_width_cm, c('num'), 1),
+                      val_arg(mon_width_pixel, c('num'), 1),
+                  ))
     mon_obj = list(
         distance = distance,
         mon_width_cm = mon_width_cm,
@@ -59,9 +65,13 @@ mon_conv.default = function(...) {
 
 #' @export
 mon_conv.mon_neat = function(mon_obj, value, from, to) {
-    if (!all(c(from, to) %in% c('cm', 'pix', 'deg'))) {
-        stop('Only the following units can be used: "cm", "pix", or "deg".')
-    } else if (from == to) {
+    validate_args(match.call(),
+                  list(
+                      val_arg(value, c('num'), 1),
+                      val_arg(from, c('char'), 1, c('cm', 'pix', 'deg')),
+                      val_arg(to, c('char'), 1, c('cm', 'pix', 'deg'))
+                  ))
+    if (from == to) {
         return(value)
     }
     if (from == 'pix') {

@@ -289,18 +289,20 @@ anova_neat = function(data_per_subject,
     } else {
         data_wide = data_per_subject
     }
-    validate_args(match.call(),
-                  list(
-                      val_arg(data_per_subject, c('df')),
-                      val_arg(values, c('char'), 1),
-                      val_arg(between_vars, c('null', 'char'), 1),
-                      val_arg(within_ids, c('null', 'char', 'list'), 1),
-                      val_arg(ci, c('num'), 1),
-                      val_arg(bf_added, c('bool'), 1),
-                      val_arg(test_title, c('char'), 1),
-                      val_arg(welch, c('bool'), 1),
-                      val_arg(e_correction, c('null','num'), 1),
-                  ))
+    validate_args(
+        match.call(),
+        list(
+            val_arg(data_per_subject, c('df')),
+            val_arg(values, c('char'), 1),
+            val_arg(between_vars, c('null', 'char'), 1),
+            val_arg(within_ids, c('null', 'char', 'list'), 1),
+            val_arg(ci, c('num'), 1),
+            val_arg(bf_added, c('bool'), 1),
+            val_arg(test_title, c('char'), 1),
+            val_arg(welch, c('bool'), 1),
+            val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none'))
+        )
+    )
     val_wi_id(match.call(), within_ids, values)
     if (is.null(e_correction)){
         e_correction = ''

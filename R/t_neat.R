@@ -8,11 +8,12 @@
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
 #'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
-#'  paired samples. Otherwise (default) for independent samples.
-#'@param greater String (or number); optionally specifies one-sided tests (t and
-#'  BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
-#'  mean) or "2" (\code{var2} mean expected to be greater than \code{var1}
-#'  mean). If left empty, the test is two-sided.
+#'  paired samples. If \code{FALSE} (default) for independent samples.
+#'@param greater \code{NULL} or string (or number); optionally specifies
+#'  one-sided tests (t and BF): either "1" (\code{var1} mean expected to be
+#'  greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
+#'  greater than \code{var1} mean). If \code{NULL} (default), the test is
+#'  two-sided.
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
@@ -32,8 +33,8 @@
 #'@param auc_greater String (or number); specifies which variable is expected to
 #'  have greater values for 'cases' as opposed to 'controls': "1" (default;
 #'  \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
-#'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not
-#'  to be confused with one-sided tests; see Details.
+#'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
+#'  confused with one-sided tests; see Details.
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of
 #' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
@@ -129,7 +130,7 @@
 t_neat = function(var1,
                   var2,
                   pair = FALSE,
-                  greater = "",
+                  greater = NULL,
                   ci = NULL,
                   bf_added = TRUE,
                   auc_added = FALSE,
@@ -138,7 +139,26 @@ t_neat = function(var1,
                   test_title = "Descriptives:",
                   round_descr = 2,
                   round_auc = 3,
-                  auc_greater = "") {
+                  auc_greater = '1') {
+    validate_args(
+        match.call(),
+        list(
+            val_arg(var1, c('num'), 0),
+            val_arg(var2, c('num'), 0),
+            val_arg(pair, c('bool'), 1),
+            val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+            val_arg(ci, c('num'), 1),
+            val_arg(bf_added, c('bool'), 1),
+            val_arg(auc_added, c('bool'), 1),
+            val_arg(r_added, c('bool'), 1),
+            val_arg(for_table, c('bool'), 1),
+            val_arg(test_title, c('char'), 1),
+            val_arg(round_descr, c('num'), 1),
+            val_arg(round_auc, c('num'), 1),
+            val_arg(auc_greater, c('char'), 1, c('1', '2'))
+        )
+    )
+    greater = toString(greater)
     descr_1 = paste0(ro(mean(var1), round_descr),
                      "CHAR_PLUSMIN",
                      ro(stats::sd(var1), round_descr))

@@ -5,7 +5,7 @@
 \title{Neat Table}
 \usage{
 table_neat(values_list, group_by = NULL, group_per = "rows",
-  to_clipboard = FALSE, medians = NULL)
+  to_clipboard = FALSE, medians = FALSE)
 }
 \arguments{
 \item{values_list}{Values returned (as data frames) from the
@@ -22,10 +22,11 @@ function; see Details.}
 Otherwise (default), each row contains statistics for one group.}
 
 \item{to_clipboard}{Logical. If \code{TRUE}, the table is copied to the
-clipboard.}
+clipboard (default: \code{FALSE}).}
 
 \item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise
-means. (Overwrites \code{medians} in \code{\link{m_neat}}; see Details.)}
+(default: \code{FALSE}) means. (Overwrites \code{medians} in
+\code{\link{m_neat}}; see Details.)}
 }
 \value{
 Returns a data frame with means or medians and SDs per variable and

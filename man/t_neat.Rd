@@ -4,10 +4,10 @@
 \alias{t_neat}
 \title{Difference of Two Means and Area Under the Curve}
 \usage{
-t_neat(var1, var2, pair = FALSE, greater = "", ci = NULL,
+t_neat(var1, var2, pair = FALSE, greater = NULL, ci = NULL,
   bf_added = TRUE, auc_added = FALSE, r_added = TRUE,
   for_table = FALSE, test_title = "Descriptives:", round_descr = 2,
-  round_auc = 3, auc_greater = "")
+  round_auc = 3, auc_greater = "1")
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -15,12 +15,13 @@ t_neat(var1, var2, pair = FALSE, greater = "", ci = NULL,
 \item{var2}{Numeric vector; numbers of the second variable.}
 
 \item{pair}{Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
-paired samples. Otherwise (default) for independent samples.}
+paired samples. If \code{FALSE} (default) for independent samples.}
 
-\item{greater}{String (or number); optionally specifies one-sided tests (t and
-BF): either "1" (\code{var1} mean expected to be greater than \code{var2}
-mean) or "2" (\code{var2} mean expected to be greater than \code{var1}
-mean). If left empty, the test is two-sided.}
+\item{greater}{\code{NULL} or string (or number); optionally specifies
+one-sided tests (t and BF): either "1" (\code{var1} mean expected to be
+greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
+greater than \code{var1} mean). If \code{NULL} (default), the test is
+two-sided.}
 
 \item{ci}{Numeric; confidence level for returned CIs for Cohen's d and AUC.}
 
@@ -49,8 +50,8 @@ statistics (means and SDs).}
 \item{auc_greater}{String (or number); specifies which variable is expected to
 have greater values for 'cases' as opposed to 'controls': "1" (default;
 \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
-(\code{var2} expected to be greater for 'cases' than \code{var1}). Not
-to be confused with one-sided tests; see Details.}
+(\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
+confused with one-sided tests; see Details.}
 }
 \value{
 Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
