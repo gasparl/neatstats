@@ -195,9 +195,7 @@ validate_args = function(func_used, evaled_args) {
         feedback = paste0(feedback, part_feed)
     }
     if (feedback != '') {
-        print(deparse(func_used))
         func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
-        print(func_used)
         feedback = paste0(
             "Arguments are not correct in the '",
             func_used,
@@ -212,17 +210,22 @@ validate_args = function(func_used, evaled_args) {
 }
 
 
-val_arg = function(arg_val, req_types, req_length = 99, opts = NULL) {
+val_arg = function(arg_val,
+                   req_types,
+                   req_length = 99,
+                   # 0 means multiple, 1 means single, all else passes
+                   opts = NULL) {
     failed = FALSE
     arg_name = deparse(substitute(arg_val))
-    if (length(arg_val) > 1 ) {
-        if (req_length == 1) {
+    if (length(arg_val) > 1) {
+        if (req_length == 1 &&
+            !is.list(arg_val) && !is.data.frame(arg_val)) {
             failed = TRUE
         }
     } else if (req_length == 0) {
         failed = TRUE
     }
-    valid_types = c('char', 'num', 'bool', 'null', 'df')
+    valid_types = c('char', 'num', 'bool', 'null', 'df', 'list')
     if (!all(req_types %in% valid_types)) {
         stop(
             'invalid req_types: ',
@@ -231,23 +234,29 @@ val_arg = function(arg_val, req_types, req_length = 99, opts = NULL) {
             paste(valid_types, collapse = ', ')
         )
     }
-    req_types = replace(req_types, req_types=='char', 'character')
-    req_types = replace(req_types, req_types=='num', 'double')
-    req_types = replace(req_types, req_types=='bool', 'logical')
-    req_types = replace(req_types, req_types=='null', 'NULL')
-    req_types = replace(req_types, req_types=='df', 'data.frame')
+    req_types = replace(req_types, req_types == 'char', 'character')
+    req_types = replace(req_types, req_types == 'num', 'double')
+    req_types = replace(req_types, req_types == 'bool', 'logical')
+    req_types = replace(req_types, req_types == 'null', 'NULL')
+    req_types = replace(req_types, req_types == 'df', 'data.frame')
     if ((!typeof(arg_val) %in% req_types)
         && (!('data.frame' %in% req_types &&
-              is.data.frame(arg_val)))) {
+              is.data.frame(arg_val))) &&
+        (!('list' %in% req_types &&
+           is.list(arg_val)))) {
         failed = TRUE
     } else if (typeof(arg_val) == 'character' &&
                (!is.null(opts)) && (!arg_val %in% opts)) {
         failed = TRUE
     }
     if (failed == TRUE) {
-        req_types = replace(req_types, req_types == 'character', '"character" (string)')
+        req_types = replace(req_types,
+                            req_types == 'character',
+                            '"character" (string)')
         req_types = replace(req_types, req_types == 'double', '"double" (numeric)')
-        req_types = replace(req_types, req_types == 'logical', '"logical" (boolean)')
+        req_types = replace(req_types,
+                            req_types == 'logical',
+                            '"logical" (boolean)')
         req_types = replace(req_types, req_types == 'data.frame', '"data.frame"')
         if (!is.null(opts)) {
             if (suppressWarnings(all(!is.na(as.numeric(opts))))) {
@@ -257,15 +266,17 @@ val_arg = function(arg_val, req_types, req_length = 99, opts = NULL) {
                     '".'
                 )
             } else {
-                opts_add = paste0(' The only acceptable strings are "',
-                                  paste(opts, collapse = '", or "'),
-                                  '".')
+                opts_add = paste0(
+                    ' The only acceptable strings are "',
+                    paste(opts, collapse = '", or "'),
+                    '".'
+                )
             }
         } else {
             opts_add = ''
         }
         if (req_length == 1) {
-            len_add = ' must be a single element, and'
+            len_add = ' must not be a vector, and'
         } else if (req_length == 0) {
             len_add = ' must be a vector, and'
         } else {
@@ -284,5 +295,91 @@ val_arg = function(arg_val, req_types, req_length = 99, opts = NULL) {
         return(arg_msg)
     } else {
         return('')
+    }
+}
+
+
+val_wi_id = function(func_used, id_arg, vals_arg) {
+    if (is.list(id_arg)) {
+        arg_name = deparse(substitute(arg_val))
+        func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
+        if (length(id_arg) < 2) {
+            feedback = paste0(
+                '\nIf list is given as argument for "',
+                arg_name,
+                '", it must contain at least two elements.'
+            )
+        } else {
+            feedback = ''
+            val_cols = to_c(vals_arg)
+            vals_num = length(val_cols)
+            w_facts_num = length(id_arg)
+            if (2 ** w_facts_num > vals_num) {
+                feedback = paste0(
+                    '\nYou specified ',
+                    w_facts_num,
+                    ' within-subject factors in "',
+                    arg_name,
+                    '". This means there must be at least ',
+                    2 ** w_facts_num,
+                    ' values columns specified, but you only specified ',
+                    vals_num,
+                    '.'
+                )
+            }
+            for (val_name in val_cols) {
+                for (fact_name in names(id_arg)) {
+                    fact_ids = id_arg[fact_name][[1]]
+                    if (length(fact_ids) <= 1) {
+                        feedback = paste0(
+                            feedback,
+                            '\nAll within-subject factors must have at least two levels. (Check "',
+                            fact_name,
+                            '").'
+                        )
+                    } else {
+                        id_count = 0
+                        for (f_id in fact_ids) {
+                            if (grepl(f_id, val_name, fixed = TRUE)) {
+                                id_count = id_count + 1
+                            }
+                        }
+                        if (id_count == 0) {
+                            feedback = paste0(
+                                feedback,
+                                '\nNo matching level found for "',
+                                val_name,
+                                '" for factor "',
+                                fact_name,
+                                '".'
+                            )
+                        } else if (id_count > 1) {
+                            feedback = paste0(
+                                feedback,
+                                '\nMore than one matching level found for "',
+                                val_name,
+                                '" for factor "',
+                                fact_name,
+                                '". (Try different naming for level specification, ',
+                                'or change column names.)'
+                            )
+                        }
+
+                    }
+                }
+            }
+        }
+        if (feedback != '') {
+            feedback = paste0(
+                "Arguments are not correct in the '",
+                func_used,
+                "' function:",
+                feedback,
+                '\n... Hint: enter help(',
+                gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
+                ') for detailed function info.'
+            )
+            stop(feedback, call. = F)
+        }
     }
 }
