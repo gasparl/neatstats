@@ -6,7 +6,8 @@
 \usage{
 anova_neat(data_per_subject, values, between_vars = NULL,
   within_ids = NULL, ci = 0.9, bf_added = TRUE,
-  test_title = "--- neat ANOVA ---", welch = TRUE, e_correction = "")
+  test_title = "--- neat ANOVA ---", welch = TRUE,
+  e_correction = NULL)
 }
 \arguments{
 \item{data_per_subject}{Data frame or name of data frame as string. Should
@@ -19,31 +20,31 @@ be given as a single string, separated by commas (e.g., \code{values =
 a single dependent variable. This means, to test repeated (within-subject)
 measurements, each specified column should contain one measurement.}
 
-\item{between_vars}{\code{NULL} (deafault; in case of no between-subject
+\item{between_vars}{\code{NULL} (default; in case of no between-subject
 factors) or string; column name or names. Multiple column names are also to
 be given as a single string, separated by commas (e.g., \code{between_vars =
 'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
 contain a single between-subject independent variable (representing
 between-subject factors).}
 
-\item{within_ids}{\code{NULL}, string, or named list. In case of no
+\item{within_ids}{\code{NULL} (default), string, or named list. In case of no
 within-subject factors, leave as \code{NULL}. In case of a single within
 subject factor, a single string may be given to optionally provide custom
 name for the within-subject factor (note: this is a programming variable
 name, so it should not contain spaces, etc.); otherwise (if left
-\code{NULL}) it will always just be named \code{"within_factor"}. In case of
-multiple within-subject factors, each factor must be specified as a named
-list element, each with a vector of strings that distinguishes the levels
-within that factors. The column names given as \code{values} should always
-contain one (and only one) of these strings within each within-subject
-factor, and thus they will be assigned the appropriate level. For example,
-\code{values = 'rt_s1_neg, rt_s1_pos, rt_s2_neg, rt_s2_pos'} could have
-\code{within_ids = list( session = c('s1', 's2'), valence =  c('pos',
-'neg')}. (Note: the strings for distinguishing must be unambigous. E.g., for
-values \code{apple_a} and \code{apple_b}, do not set levels
-\code{c('a','b')}, because \code{'a'} is also found in \code{apple_b}. In
-this case, you could choose levels \code{c('_a','_b')} to make sure the
-values are correctly distinguished.) See also Examples.}
+\code{NULL}) this one within-subject factor will always just be named
+\code{"within_factor"}. In case of multiple within-subject factors, each
+factor must be specified as a named list element, each with a vector of
+strings that distinguish the levels within that factors. The column names
+given as \code{values} should always contain one (and only one) of these
+strings within each within-subject factor, and thus they will be assigned
+the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
+rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
+'s2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
+must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+not set levels \code{c('a','b')}, because \code{'a'} is also found in
+\code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
+make sure the values are correctly distinguished.) See also Examples.}
 
 \item{ci}{Numeric; confidence level for returned CIs. (Default: \code{.9};
 Lakens, 2014; Steiger, 2004.)}
@@ -52,25 +53,25 @@ Lakens, 2014; Steiger, 2004.)}
 calculated and displayed. (Note: with multiple factors and/or larger
 dataset, the calculation can take considerable time.)}
 
-\item{test_title}{String, "--- neat ANOVA ---" by default. Simply displayed in
-printing preceding the statistics.}
+\item{test_title}{String, \code{"--- neat ANOVA ---"} by default. Simply
+displayed in printing preceding the statistics.}
 
-\item{welch}{If FALSE, calculates via \code{\link[ez:ezANOVA]{ez::ezANOVA}} in
-case of a single factor (one-way) between-subject design (i.e., same as in
-case of every other design). Otherwise (default), calculates Welch's ANOVA
-via \code{\link[stats:oneway.test]{stats::oneway.test}} in such cases
-(one-way between-subject).}
+\item{welch}{If \code{TRUE} (default), calculates Welch's ANOVA via
+\code{\link[stats:oneway.test]{stats::oneway.test}} in case of a single
+factor (one-way) between-subject design. If \code{FALSE}, calculates via
+\code{\link[ez:ezANOVA]{ez::ezANOVA}} in such cases too (i.e., same as in
+case of every other design).}
 
-\item{e_correction}{String: \code{'gg'}, \code{'hf'}, \code{'none'}, or
-\code{''} (empty). If set to \code{'gg'}, Greenhouse-Geisser correction is
-applied in case of repeated measures (regardless of violation of
-sphericity). If set to \code{'hf'}, Huynh-Feldt correction is applied. If
-set to \code{'none'}, no correction is applied. Otherwise (e.g. if left
-empty, \code{''}, as per default), Greenhouse-Geisser correction is applied
-when Mauchly's sphericity test is significant and the Greenhouse-Geisser
-epsilon is not larger than \code{.75}, while Huynh-Feldt correction is
-applied when Mauchly's sphericity test is significant and the
-Greenhouse-Geisser epsilon is larger than \code{.75} (see Girden, 1992).}
+\item{e_correction}{\code{NULL} (default) or one of the following strings:
+\code{'gg'}, \code{'hf'}, or \code{'none'}. If set to \code{'gg'},
+Greenhouse-Geisser correction is applied in case of repeated measures
+(regardless of violation of sphericity). If set to \code{'hf'}, Huynh-Feldt
+correction is applied. If set to \code{'none'}, no correction is applied. If
+\code{NULL}, Greenhouse-Geisser correction is applied when Mauchly's
+sphericity test is significant and the Greenhouse-Geisser epsilon is not
+larger than \code{.75}, while Huynh-Feldt correction is applied when
+Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
+is larger than \code{.75} (see Girden, 1992).}
 }
 \value{
 Prints ANOVA statistics (including, for each model, F-test with
