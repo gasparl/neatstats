@@ -67,7 +67,7 @@ mon_conv.default = function(...) {
 mon_conv.mon_neat = function(mon_obj, value, from, to) {
     validate_args(match.call(),
                   list(
-                      val_arg(value, c('num'), 1),
+                      val_arg(value, c('num')),
                       val_arg(from, c('char'), 1, c('cm', 'pix', 'deg')),
                       val_arg(to, c('char'), 1, c('cm', 'pix', 'deg'))
                   ))
