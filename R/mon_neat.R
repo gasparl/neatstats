@@ -34,6 +34,7 @@ mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
 #'   (centimeters), "pix" (pixels), or "deg" (degrees of visual angle).
 #' @param mon_obj Monitor object, as assigned with \code{\link{mon_neat}}.
 #' @param value Number; value (magnitude) of the given unit to convert from.
+#'   (Can be vector as well.)
 #' @param from String; unit ("cm", "pix", or "deg") to convert from.
 #' @param to String; unit ("cm", "pix", or "deg") to convert to.
 #' @return Number (magnitude) in the given output (\code{to}) unit.
