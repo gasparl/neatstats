@@ -85,3 +85,73 @@ m_neat = function(values,
     }
     invisible(per_cond)
 }
+
+aggr_neat = function(dat,
+                     values,
+                     method,
+                     group_by = NULL,
+                     filt = NULL,
+                     new_name = NULL,
+                     prefix = NULL) {
+    if (class(dat) == "character") {
+        dat = eval(parse(text = data_per_subject))
+    }
+    filt = deparse(substitute(filt))
+    if (filt != "NULL") {
+        filt = gsub(pattern = "'|\"",
+                    replacement = '',
+                    x = filt)
+        dat = eval(parse(text = paste0('with(data = dat, dat[',
+                                       filt,
+                                       ',])')))
+    }
+    values = deparse(substitute(values))
+    values = gsub(pattern = "'|\"",
+                  replacement = '',
+                  x = values)
+    group_by = deparse(substitute(group_by))
+    if (group_by != "NULL") {
+        group_by = gsub(pattern = "'|\"",
+                        replacement = '',
+                        x = group_by)
+        group_by = dat[[group_by]]
+    } else {
+        group_by = rep(0, nrow(dat))
+    }
+    if (is.function(method) == TRUE) {
+        aggred = aggregate(dat[[values]], by = list(group_by), FUN = method)
+    } else {
+        if (grepl('/', method, fixed = TRUE) == TRUE) {
+            expr = strsplit(method, '/', fixed = TRUE)[[1]]
+            if (length(expr) > 2) {
+                stop(
+                    'The "method" argument must contain',
+                    ' no more than one forward slash ("/") character.'
+                )
+            }
+            nume = to_c(expr[1])
+            denom = to_c(expr[2])
+            aggred = aggregate(
+                dat[[values]],
+                by = list(group_by),
+                FUN = function(x) {
+                    sum(x %in% nume) / sum(x %in% denom)
+                }
+            )
+        } else {
+            nume = to_c(method)
+            aggred = aggregate(
+                dat[[values]],
+                by = list(group_by),
+                FUN = function(x) {
+                    sum(x %in% nume) / length(x)
+                }
+            )
+        }
+    }
+    colnames(aggred)[colnames(aggred) == 'Group.1'] <- 'group'
+    if (is.null(prefix) != TRUE) {
+        aggred$group = paste(prefix, aggred$group, sep="_")
+    }
+    return(aggred)
+}
