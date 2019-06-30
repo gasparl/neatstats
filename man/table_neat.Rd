@@ -5,17 +5,17 @@
 \title{Neat Table}
 \usage{
 table_neat(values_list, group_by = NULL, group_per = "rows",
-  to_clipboard = FALSE, medians = FALSE)
+  to_clipboard = FALSE, method = FALSE)
 }
 \arguments{
 \item{values_list}{Values returned (as data frames) from the
-\code{\link{m_neat}} function: variables from which the statistics for the
+\code{\link{aggr_neat}} function: variables from which the statistics for the
 table are to be calculated. The \code{group_by} and \code{medians}
 parameters are ignored when they are given in the \code{\link{table_neat}}
 function; see Details.}
 
 \item{group_by}{A vector of factors by which the statistics are grouped.
-(Overwrites \code{group_by} in \code{\link{m_neat}}; see Details.)}
+(Overwrites \code{group_by} in \code{\link{aggr_neat}}; see Details.)}
 
 \item{group_per}{String, "rows" or "columns". If set to "columns" (or just
 "c" or "col", etc.), each column contains statistics for one group.
@@ -26,7 +26,7 @@ clipboard (default: \code{FALSE}).}
 
 \item{medians}{Logical. If \code{TRUE}, medians are calculated, otherwise
 (default: \code{FALSE}) means. (Overwrites \code{medians} in
-\code{\link{m_neat}}; see Details.)}
+\code{\link{aggr_neat}}; see Details.)}
 }
 \value{
 Returns a data frame with means or medians and SDs per variable and
@@ -34,42 +34,42 @@ Returns a data frame with means or medians and SDs per variable and
 }
 \description{
 Creates a neat means (or medians) and standard deviations table,
-  using m_neat() function(s) as arguments.
+  using \code{\link{aggr_neat}} functions as arguments.
 }
 \details{
 The \code{values}, \code{round_to}, and \code{new_name} arguments
-  given in the \code{\link{m_neat}} function are always applied. However, the
-  \code{group_by} or \code{medians} given in the \code{\link{m_neat}}
+  given in the \code{\link{aggr_neat}} function are always applied. However, the
+  \code{group_by} or \code{medians} given in the \code{\link{aggr_neat}}
   function are only applied when no arguments are given in the
   \code{\link{table_neat}} function for the identical parameters
   (\code{group_by} or \code{medians}). If either parameter is given in the
   \code{\link{table_neat}} function, all separately given respective
-  argument(s) in the \code{\link{m_neat}} function(s) are ignored.
+  argument(s) in the \code{\link{aggr_neat}} function(s) are ignored.
 }
 \examples{
 data("mtcars") # load base R example dataset
 
 # overall means and SDs table for disp (Displacement) and hp (Gross horsepower)
-Ms_SDs = table_neat(list(m_neat(mtcars$disp),
-                         m_neat(mtcars$hp)))
+Ms_SDs = table_neat(list(aggr_neat(mtcars$disp),
+                         aggr_neat(mtcars$hp)))
 
 # means and SDs table for mpg (Miles/(US) gallon), wt (Weight), and hp (Gross horsepower)
 # grouped by cyl (Number of cylinders)
 # each measure rounded to respective optimal number of digits
 # wt renamed to weight (for the column title)
-Ms_SDs2 = table_neat(list(m_neat(mtcars$mpg, 1),
-                          m_neat(mtcars$wt, 2, new_name = 'weight'),
-                          m_neat(mtcars$hp)),
+Ms_SDs2 = table_neat(list(aggr_neat(mtcars$mpg, 1),
+                          aggr_neat(mtcars$wt, 2, new_name = 'weight'),
+                          aggr_neat(mtcars$hp)),
                      group_by = mtcars$cyl)
 
 # same as above, but with medians, and with groups per columns
-Ms_SDs3 = table_neat(list(m_neat(mtcars$mpg, 1),
-                          m_neat(mtcars$wt, 2, new_name = 'weight'),
-                          m_neat(mtcars$hp)),
+Ms_SDs3 = table_neat(list(aggr_neat(mtcars$mpg, 1),
+                          aggr_neat(mtcars$wt, 2, new_name = 'weight'),
+                          aggr_neat(mtcars$hp)),
                      group_by = mtcars$cyl,
                      medians = TRUE,
                      group_per = 'columns')
 }
 \seealso{
-\code{\link{m_neat}} for more related details
+\code{\link{aggr_neat}} for more related details
 }

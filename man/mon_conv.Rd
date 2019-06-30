@@ -9,7 +9,8 @@ mon_conv(mon_obj, value, from, to)
 \arguments{
 \item{mon_obj}{Monitor object, as assigned with \code{\link{mon_neat}}.}
 
-\item{value}{Number; value (magnitude) of the given unit to convert from.}
+\item{value}{Number; value (magnitude) of the given unit to convert from.
+(Can be vector as well.)}
 
 \item{from}{String; unit ("cm", "pix", or "deg") to convert from.}
 

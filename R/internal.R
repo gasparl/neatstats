@@ -1,7 +1,7 @@
 # globals
 pkg.globals = new.env()
 pkg.globals$my_unique_grouping_var = NULL
-pkg.globals$my_unique_median = NULL
+pkg.globals$my_unique_method = NULL
 
 # the function below is to be added later
 # to_clipboard = function( printing_function ) {
@@ -34,28 +34,7 @@ prnt = function(...) {
         to_print = gsub(pair[1], pair[2], to_print)
         Encoding(to_print) = "UTF-8"
     }
-
-    pkg.globals$printing(to_print)
-}
-
-pkg.globals$printing = function(to_print) {
     cat(to_print, fill = TRUE)
-}
-
-print_on = function() {
-    pkg.globals$printing = function(to_print) {
-        cat(to_print, fill = TRUE)
-    }
-}
-
-print_off = function() {
-    pkg.globals$printing = function(to_print) {
-        invisible()
-    }
-}
-
-cit_d = function(probe_rts, irr_rts) {
-    return((mean(probe_rts) - mean(irr_rts)) / stats::sd(irr_rts))
 }
 
 to_exp = function(the_num) {
@@ -209,7 +188,6 @@ validate_args = function(func_used, evaled_args) {
     }
 }
 
-
 val_arg = function(arg_val,
                    req_types,
                    req_length = 99,
@@ -225,7 +203,7 @@ val_arg = function(arg_val,
     } else if (req_length == 0) {
         failed = TRUE
     }
-    valid_types = c('char', 'num', 'bool', 'null', 'df', 'list')
+    valid_types = c('char', 'num', 'bool', 'null', 'df', 'list', 'function')
     if (!all(req_types %in% valid_types)) {
         stop(
             'invalid req_types: ',
@@ -241,7 +219,9 @@ val_arg = function(arg_val,
     req_types = replace(req_types, req_types == 'df', 'data.frame')
     if ((!typeof(arg_val) %in% req_types)
         && (!('data.frame' %in% req_types &&
-              is.data.frame(arg_val))) &&
+              is.data.frame(arg_val)))
+        && (!('function' %in% req_types &&
+              is.function(arg_val))) &&
         (!('list' %in% req_types &&
            is.list(arg_val)))) {
         failed = TRUE
@@ -297,7 +277,6 @@ val_arg = function(arg_val,
         return('')
     }
 }
-
 
 val_wi_id = function(func_used, id_arg, vals_arg) {
     if (is.list(id_arg)) {
