@@ -165,12 +165,12 @@ anova_neat('dat_1', values = 'value_1_a', between_vars = 'grouping1, grouping2')
 # repeated measures:
 # get the within-subject effect for 'value_1_a' vs. 'value_1_b'
 anova_neat('dat_1', values = 'value_1_a, value_1_b')
-
+\donttest{
 # same, but give the factor a custom variable name
 anova_neat('dat_1', values = 'value_1_a, value_1_b', within_ids = 'a_vs_b')
 # or
 anova_neat('dat_1', values = 'value_1_a, value_1_b', within_ids = 'letters')
-
+}
 # within-subject effect for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c'
 anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c')
 
@@ -178,7 +178,7 @@ anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c')
 # between-subject main effect 'grouping1', and the interaction of these two main
 # effects
 anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c', between_vars = 'grouping1')
-
+\donttest{
 # within-subject 'number' main effect for variables with number '1' vs. number
 # '2' ('value_1_a' and 'value_1_b' vs. 'value_2_a' and 'value_2_b'), 'letter'
 # main effect for variables with final letterr 'a' vs. final letter 'b'
@@ -190,7 +190,7 @@ anova_neat('dat_1',
                letters = c('_a', '_b'),
                numbers =  c('_1', '_2')
            ))
-
+}
 # same as above, but now including between-subject main effect 'grouping2' and
 # its interactions
 anova_neat(
@@ -211,7 +211,7 @@ anova_neat(
 # 'low disgusting, high frightening' pictures
 # 'high disgusting, low frightening' pictures
 # 'high disgusting, high frightening' pictures
-
+\donttest{
 # this could be meaningfully assigned e.g. as below
 pic_ratings = data.frame(
     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
@@ -257,7 +257,7 @@ anova_neat(
     ),
     between_vars = 'group_id'
 )
-
+}
 # again, same results as with 'dat_1' (using 'grouping2' as group_id)
 
 }

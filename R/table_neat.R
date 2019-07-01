@@ -1,12 +1,12 @@
-#' @title Neat Table
+#' @title Table, descriptives
 #'
-#' @description Creates a neat means (or medians) and standard deviations table,
-#'   using \code{\link{aggr_neat}} functions as arguments.
+#' @description Creates a neat means (or similar descriptives) and standard
+#'   deviations table, using \code{\link{aggr_neat}} functions as arguments.
 #' @param values_list Values returned (as data frames) from the
-#'   \code{\link{aggr_neat}} function: variables from which the statistics for the
-#'   table are to be calculated. The \code{group_by} and \code{medians}
-#'   parameters are ignored when they are given in the \code{\link{table_neat}}
-#'   function; see Details.
+#'   \code{\link{aggr_neat}} function: variables from which the statistics for
+#'   the table are to be calculated. The \code{group_by}, \code{method}, and
+#'   \code{prefix} parameters are ignored when they are given in the
+#'   \code{\link{table_neat}} function; see Details.
 #' @param group_by A vector of factors by which the statistics are grouped.
 #'   (Overwrites \code{group_by} in \code{\link{aggr_neat}}; see Details.)
 #' @param group_per String, "rows" or "columns". If set to "columns" (or just
@@ -14,14 +14,16 @@
 #'   Otherwise (default), each row contains statistics for one group.
 #' @param to_clipboard Logical. If \code{TRUE}, the table is copied to the
 #'   clipboard (default: \code{FALSE}).
-#' @param medians Logical. If \code{TRUE}, medians are calculated, otherwise
-#'   (default: \code{FALSE}) means. (Overwrites \code{medians} in
-#'   \code{\link{aggr_neat}}; see Details.)
+#' @param method Function or string; overwrites the \code{method} argument in
+#'   \code{\link{aggr_neat}} when used within this function. See \code{method}
+#'   in the \code{\link{aggr_neat}} function for details. Default value:
+#'   \code{"mean+sd"} (to calculate means and standard deviations table).
 #' @details The \code{values}, \code{round_to}, and \code{new_name} arguments
-#'   given in the \code{\link{aggr_neat}} function are always applied. However, the
-#'   \code{group_by} or \code{medians} given in the \code{\link{aggr_neat}}
-#'   function are only applied when no arguments are given in the
-#'   \code{\link{table_neat}} function for the identical parameters
+#'   given in the \code{\link{aggr_neat}} function are always applied. However,
+#'   the \code{prefix} parameter will be overwritten as \code{NULL}.
+#'   Furthermore, the \code{group_by} or \code{method} given in the
+#'   \code{\link{aggr_neat}} function are only applied when no arguments are
+#'   given in the \code{\link{table_neat}} function for the identical parameters
 #'   (\code{group_by} or \code{medians}). If either parameter is given in the
 #'   \code{\link{table_neat}} function, all separately given respective
 #'   argument(s) in the \code{\link{aggr_neat}} function(s) are ignored.
@@ -32,25 +34,31 @@
 #' data("mtcars") # load base R example dataset
 #'
 #' # overall means and SDs table for disp (Displacement) and hp (Gross horsepower)
-#' Ms_SDs = table_neat(list(aggr_neat(mtcars$disp),
-#'                          aggr_neat(mtcars$hp)))
+#' table_neat(list(aggr_neat(mtcars, disp),
+#'                 aggr_neat(mtcars, hp)))
 #'
 #' # means and SDs table for mpg (Miles/(US) gallon), wt (Weight), and hp (Gross horsepower)
 #' # grouped by cyl (Number of cylinders)
 #' # each measure rounded to respective optimal number of digits
 #' # wt renamed to weight (for the column title)
-#' Ms_SDs2 = table_neat(list(aggr_neat(mtcars$mpg, 1),
-#'                           aggr_neat(mtcars$wt, 2, new_name = 'weight'),
-#'                           aggr_neat(mtcars$hp)),
-#'                      group_by = mtcars$cyl)
+#' table_neat(list(
+#'     aggr_neat(mtcars, mpg, round_to = 1),
+#'     aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
+#'     aggr_neat(mtcars, hp, round_to = 0)
+#' ),
+#' group_by = cyl)
 #'
 #' # same as above, but with medians, and with groups per columns
-#' Ms_SDs3 = table_neat(list(aggr_neat(mtcars$mpg, 1),
-#'                           aggr_neat(mtcars$wt, 2, new_name = 'weight'),
-#'                           aggr_neat(mtcars$hp)),
-#'                      group_by = mtcars$cyl,
-#'                      medians = TRUE,
-#'                      group_per = 'columns')
+#' table_neat(
+#'     list(
+#'         aggr_neat(mtcars, mpg, round_to = 1),
+#'         aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
+#'         aggr_neat(mtcars, hp, round_to = 0)
+#'     ),
+#'     group_by = cyl,
+#'     method = 'median+sd',
+#'     group_per = 'columns'
+#' )
 #' @export
 
 table_neat = function(values_list,
@@ -58,17 +66,17 @@ table_neat = function(values_list,
                       group_per = 'rows',
                       to_clipboard = FALSE,
                       method = 'mean+sd') {
-    validate_args(match.call(),
-                  list(
-                      val_arg(values_list, c('list')),
-                      val_arg(group_per, c('char'), 1),
-                      val_arg(to_clipboard, c('bool'), 1),
-                      val_arg(method, c('function', 'char'), 1)
-                  ))
     group_by = deparse(substitute(group_by))
     tryCatch({
         pkg.globals$my_unique_grouping_var = group_by
         pkg.globals$my_unique_method = method
+        validate_args(match.call(),
+                      list(
+                          val_arg(values_list, c('list')),
+                          val_arg(group_per, c('char'), 1),
+                          val_arg(to_clipboard, c('bool'), 1),
+                          val_arg(method, c('function', 'char'), 1)
+                      ))
         the_table = Reduce(function(x, y)
             merge(x, y, by = "group", all = TRUE), values_list)
     },
