@@ -5,7 +5,7 @@
 \title{Neat Table}
 \usage{
 table_neat(values_list, group_by = NULL, group_per = "rows",
-  to_clipboard = FALSE, method = FALSE)
+  to_clipboard = FALSE, method = mean)
 }
 \arguments{
 \item{values_list}{Values returned (as data frames) from the

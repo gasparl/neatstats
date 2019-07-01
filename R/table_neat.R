@@ -57,7 +57,7 @@ table_neat = function(values_list,
                       group_by = NULL,
                       group_per = 'rows',
                       to_clipboard = FALSE,
-                      method = FALSE) {
+                      method = 'mean+sd') {
     validate_args(match.call(),
                   list(
                       val_arg(values_list, c('list')),
