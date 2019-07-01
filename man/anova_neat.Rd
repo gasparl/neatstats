@@ -230,10 +230,10 @@ anova_neat(
 # this could be meaningfully assigned e.g. as below
 pic_ratings = data.frame(
     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-    rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
-    rating_fright_high_disgust_low = c(-14.1, 58.5, -25.5, 42.2, -13, 4.4, 55.5, -28.5, 25.6, -37.1),
-    rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
-    rating_fright_high_disgust_high = c(8.024, -14.162, 3.1, -2.1, -1.5, 0.91, 11.53, 18.37, 0.3, -0.59)
+    rating_fright_low_disgust_low = c(36.2,45.2,41,24.6,30.5,28.2,40.9,45.1,31,16.9),
+    rating_fright_high_disgust_low = c(-14.1,58.5,-25.5,42.2,-13,4.4,55.5,-28.5,25.6,-37.1),
+    rating_fright_low_disgust_high = c(83,71,111,70,92,75,110,111,110,85),
+    rating_fright_high_disgust_high = c(8.024,-14.162,3.1,-2.1,-1.5,0.91,11.53,18.37,0.3,-0.59)
 )
 head(pic_ratings) # see what we have
 
@@ -258,10 +258,10 @@ anova_neat(
 pic_ratings = data.frame(
     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     group_id = c(1, 2, 1, 2, 2, 1, 1, 1, 2, 1),
-    rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
-    rating_fright_high_disgust_low = c(-14.1, 58.5, -25.5, 42.2, -13, 4.4, 55.5, -28.5, 25.6, -37.1),
-    rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
-    rating_fright_high_disgust_high = c(8.024, -14.162, 3.1, -2.1, -1.5, 0.91, 11.53, 18.37, 0.3, -0.59)
+    rating_fright_low_disgust_low = c(36.2,45.2,41,24.6,30.5,28.2,40.9,45.1,31,16.9),
+    rating_fright_high_disgust_low = c(-14.1,58.5,-25.5,42.2,-13,4.4,55.5,-28.5,25.6,-37.1),
+    rating_fright_low_disgust_high = c(83,71,111,70,92,75,110,111,110,85),
+    rating_fright_high_disgust_high = c(8.024,-14.162,3.1,-2.1,-1.5,0.91,11.53,18.37,0.3,-0.59)
 )
 
 # now test the effect and interactions of 'group_id'
