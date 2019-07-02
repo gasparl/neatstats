@@ -36,8 +36,9 @@
 #'   column names alone; see Examples.
 #' @param prefix \code{NULL} (default) or string. String specifies a prefix for each group type under the \code{group} column.
 #' @param new_name \code{NULL} (default) or string. String specifies new name
-#'   for the variable to be used as column title. If \code{NULL}, the input
-#'   variable name is used.
+#'   for the variable to be used as column title. If \code{NULL}, the name will
+#'   be \code{"aggr_value"} (or, if used with \code{\link{table_neat}}, the
+#'   input variable name is used).
 #' @param round_to Number of digits after the decimal point to round to, when using \code{"+sd"} in \code{method}.
 #' @return A data frame with the statistics per group.
 #' @seealso \code{\link{table_neat}} to create full tables using multiple
@@ -151,9 +152,7 @@ aggr_neat = function(dat,
                   ))
     filt = deparse(substitute(filt))
     if (filt != "NULL") {
-        filt = gsub(pattern = "'|\"",
-                    replacement = '',
-                    x = filt)
+        filt = trimws(filt, whitespace = "['\"]")
         dat = eval(parse(text = paste0(
             'with(data = dat, dat[',
             filt,
@@ -164,11 +163,6 @@ aggr_neat = function(dat,
     values = gsub(pattern = "'|\"",
                   replacement = '',
                   x = values)
-    if (is.null(new_name)) {
-        val_name = values
-    } else {
-        val_name = new_name
-    }
     if (!is.null(pkg.globals$my_unique_method)) {
         method = pkg.globals$my_unique_method
         prefix = NULL
@@ -177,51 +171,64 @@ aggr_neat = function(dat,
         } else {
             group_by = "NULL"
         }
+        if (is.null(new_name)) {
+            val_name = values
+        } else {
+            val_name = new_name
+        }
     } else {
         group_by = deparse(substitute(group_by))
+        if (is.null(new_name)) {
+            val_name = 'aggr_value'
+        } else {
+            val_name = new_name
+        }
     }
     if (group_by != "NULL") {
-        group_by = gsub(pattern = "'|\"",
+        group_by = gsub(pattern = "\\(|\\)|'|\"",
                         replacement = '',
                         x = group_by)
-        group_by = dat[[group_by]]
+        group_by = eval(parse(text = paste0(
+            'with(data = dat, list(',
+            group_by,
+            '))'
+        )))
     } else {
-        group_by = rep(0, nrow(dat))
+        group_by = list(rep(0, nrow(dat)))
     }
     if (is.function(method) == TRUE) {
         aggred = do.call(data.frame,
-                         stats::aggregate(dat[[values]], by = list(group_by), FUN = method))
+                         stats::aggregate(dat[[values]], by = group_by, FUN = method))
     } else if (endsWith(method, '+sd') == TRUE) {
         func_name = strsplit(method, '+', fixed = TRUE)[[1]][1]
         method = eval(parse(text = func_name))
-        aggred = stats::aggregate(dat[[values]], by = list(group_by), FUN = method)
+        aggred = stats::aggregate(dat[[values]], by = group_by, FUN = method)
 
         aggred = do.call(data.frame,
                          stats::aggregate(
                              dat[[values]],
-                             by = list(group_by),
+                             by = group_by,
                              FUN = function(x) {
                                  stats::setNames(c(ro(method(x), round_to), ro(stats::sd(x), round_to)), c(func_name, 'sd'))
                              }
                          ))
         aggred[val_name] = paste(aggred[[paste0('x.', func_name)]], aggred$x.sd, sep =
                                      "\u00b1")
-        aggred = subset(aggred, select = -c(2, 3))
-
+        aggred = aggred[, setdiff(names(aggred), c(paste0('x.', func_name), 'x.sd'))]
     } else {
         nume = to_c(method)
         aggred = stats::aggregate(
             dat[[values]],
-            by = list(group_by),
+            by = group_by,
             FUN = function(x) {
                 sum(x %in% nume) / length(x)
             }
         )
     }
-    colnames(aggred)[colnames(aggred) == 'Group.1'] <- 'group'
+    aggred = merge_cols(aggred)
     colnames(aggred)[colnames(aggred) == 'x'] <- val_name
     if (is.null(prefix) != TRUE) {
-        aggred$group = paste(prefix, aggred$group, sep = "_")
+        aggred$aggr_group = paste(prefix, aggred$aggr_group, sep = "_")
     }
     return(aggred)
 }

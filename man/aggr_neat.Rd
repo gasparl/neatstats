@@ -48,8 +48,9 @@ column names alone; see Examples.}
 \item{prefix}{\code{NULL} (default) or string. String specifies a prefix for each group type under the \code{group} column.}
 
 \item{new_name}{\code{NULL} (default) or string. String specifies new name
-for the variable to be used as column title. If \code{NULL}, the input
-variable name is used.}
+for the variable to be used as column title. If \code{NULL}, the name will
+be \code{"aggr_value"} (or, if used with \code{\link{table_neat}}, the
+input variable name is used).}
 
 \item{round_to}{Number of digits after the decimal point to round to, when using \code{"+sd"} in \code{method}.}
 }

@@ -165,6 +165,39 @@ to_c = function(var) {
     return(strsplit(var, ",")[[1]])
 }
 
+merge_cols = function(dat_aggred) {
+    g_names = names(dat_aggred)[startsWith(names(dat_aggred), 'Group.')]
+    if (length(g_names) > 1) {
+        dat_aggred = eval(parse(
+            text = paste0(
+                "within(dat_aggred, g_merged <-
+                paste(",
+                paste(g_names, collapse = ','),
+                ", sep = '_'))"
+                )
+            ))
+        dat_aggred[, 1] = dat_aggred$g_merged
+        colnames(dat_aggred)[1] <- "aggr_group"
+        dat_aggred = dat_aggred[, setdiff(names(dat_aggred), c('g_merged', g_names))]
+    } else {
+        colnames(dat_aggred)[1] <- "aggr_group"
+    }
+    return(dat_aggred)
+}
+
+transp = function(to_transpose, headers) {
+    if (headers == TRUE) {
+        headers = 'aggr_group'
+    }
+    if (class(to_transpose) == "list") {
+        to_transpose = Reduce(function(x, y)
+            merge(x, y, all = TRUE), to_transpose)
+    }
+    hnames = to_transpose[[headers]]
+    tdat = as.data.frame(t(to_transpose[, -1]))
+    colnames(tdat) = hnames
+    return(tdat)
+}
 
 ## parameter argument valudations
 

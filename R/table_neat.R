@@ -2,11 +2,12 @@
 #'
 #' @description Creates a neat means (or similar descriptives) and standard
 #'   deviations table, using \code{\link{aggr_neat}} functions as arguments.
-#' @param values_list Values returned (as data frames) from the
-#'   \code{\link{aggr_neat}} function: variables from which the statistics for
-#'   the table are to be calculated. The \code{group_by}, \code{method}, and
-#'   \code{prefix} parameters are ignored when they are given in the
-#'   \code{\link{table_neat}} function; see Details.
+#'   Alternatively, simply transposes data frames using first column as headers.
+#' @param values_list Data frames as returned from the \code{\link{aggr_neat}}
+#'   function: variables from which the statistics for the table are to be
+#'   calculated. The \code{group_by}, \code{method}, and \code{prefix}
+#'   parameters are ignored when they are given in the \code{\link{table_neat}}
+#'   function; see Details.
 #' @param group_by A vector of factors by which the statistics are grouped.
 #'   (Overwrites \code{group_by} in \code{\link{aggr_neat}}; see Details.)
 #' @param group_per String, "rows" or "columns". If set to "columns" (or just
@@ -18,12 +19,22 @@
 #'   \code{\link{aggr_neat}} when used within this function. See \code{method}
 #'   in the \code{\link{aggr_neat}} function for details. Default value:
 #'   \code{"mean+sd"} (to calculate means and standard deviations table).
+#' @param transpose Logical (default: \code{FALSE}) or string. If \code{TRUE} or
+#'   string, ignores all other parameters (except \code{values_list}), but
+#'   merges the given list of data frames (as returned from the
+#'   \code{\link{aggr_neat}}) and then transposes them using, by default, the
+#'   \code{"aggr_group"} column values for new headers (corresponding to the
+#'   output of \code{\link{aggr_neat}}; see Examples). However, a string given
+#'   as agrument for the \code{transpose} parameter can also specify a custom
+#'   column name.
 #' @details The \code{values}, \code{round_to}, and \code{new_name} arguments
 #'   given in the \code{\link{aggr_neat}} function are always applied. However,
-#'   the \code{prefix} parameter will be overwritten as \code{NULL}.
-#'   Furthermore, the \code{group_by} or \code{method} given in the
-#'   \code{\link{aggr_neat}} function are only applied when no arguments are
-#'   given in the \code{\link{table_neat}} function for the identical parameters
+#'   the \code{prefix} parameter will be overwritten as \code{NULL}. If
+#'   \code{new_name} in \code{\link{aggr_neat}} is \code{NULL}, the given input
+#'   variable names will be used instead of \code{"aggr_value"}. Furthermore,
+#'   the \code{group_by} or \code{method} given in the \code{\link{aggr_neat}}
+#'   function are only applied when no arguments are given in the
+#'   \code{\link{table_neat}} function for the identical parameters
 #'   (\code{group_by} or \code{medians}). If either parameter is given in the
 #'   \code{\link{table_neat}} function, all separately given respective
 #'   argument(s) in the \code{\link{aggr_neat}} function(s) are ignored.
@@ -65,7 +76,18 @@ table_neat = function(values_list,
                       group_by = NULL,
                       group_per = 'rows',
                       to_clipboard = FALSE,
-                      method = 'mean+sd') {
+                      method = 'mean+sd',
+                      transpose = FALSE) {
+    if (transpose != FALSE) {
+        validate_args(match.call(),
+                      list(val_arg(values_list, c(
+                          'list', 'df'
+                      )),
+                      val_arg(transpose, c(
+                          'bool', 'char'
+                      ), 1)))
+        return(transp(values_list, transpose))
+    }
     group_by = deparse(substitute(group_by))
     tryCatch({
         pkg.globals$my_unique_grouping_var = group_by
@@ -78,7 +100,8 @@ table_neat = function(values_list,
                           val_arg(method, c('function', 'char'), 1)
                       ))
         the_table = Reduce(function(x, y)
-            merge(x, y, by = "group", all = TRUE), values_list)
+            merge(x, y, by = "aggr_group", all = TRUE),
+            values_list)
     },
     error = function(error_message) {
         message(error_message)
