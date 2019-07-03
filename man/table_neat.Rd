@@ -121,9 +121,10 @@ next_subject = function(sub_num) {
     if (sub_dat$condition[1] == 'fullvision') {
         green_neg = (sub_dat$color == 'green' &
                          sub_dat$valence == 'negative')
-        sub_dat$rt[green_neg] = sub_dat$rt[green_neg] + stats::rnorm(n = length(sub_dat$rt[green_neg]),
-                                                                     mean = 43,
-                                                                     sd = 30)
+        sub_dat$rt[green_neg] = sub_dat$rt[green_neg] + stats::rnorm(
+                                     n = length(sub_dat$rt[green_neg]),
+                                     mean = 43,
+                                     sd = 30)
         sub_dat$response[green_neg] = sample(
             c(rep('correct', 7), 'incorrect', 'tooslow'),
             size = length(sub_dat$response[green_neg]),
