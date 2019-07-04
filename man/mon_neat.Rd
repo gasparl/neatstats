@@ -25,5 +25,5 @@ Assigns a monitor object, storing distance and width parameters.
 my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
 }
 \seealso{
-\code{\link{mon_conv}}, \code{\link{mon_params}}
+\code{\link{mon_conv}}
 }

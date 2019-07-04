@@ -447,16 +447,12 @@ anova_neat = function(data_per_subject,
                     '", whichModels = "withmain")'
                 )
         ))
-        prnt("--- Bayes factor ---")
         if (is.null(within_vars) && length( to_c(between_vars) ) == 1 ) {
             bf_inc = as.vector(bf)
         } else {
             bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = TRUE)
-            print(bf_inc) # to remove
             bf_inc = stats::setNames(object = bf_inc$BF, nm = rownames(bf_inc))
         }
-        print(bf) # to remove
-        print(bf_inc) # to remove
         bf_models = bf
         names(bf_inc) = bf_names(names(bf_inc))
     } else {
@@ -503,8 +499,6 @@ anova_apa = function(ezANOVA_out,
     }
     ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
     ezANOVA_out$ANOVA$Effect = as.character(ezANOVA_out$ANOVA$Effect)
-    prnt("--- ezANOVA ---")
-    print(ezANOVA_out) # to remove
     prnt(test_title)
     mauchly = ezANOVA_out$"Mauchly's Test for Sphericity"
     if (!is.null(mauchly)) {

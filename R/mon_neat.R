@@ -6,7 +6,7 @@
 #' @param mon_width_pixel Monitor screen width in pixels.
 #' @return A monitor object with the specified parameters, to be used in the
 #'   \code{\link{mon_conv}} function.
-#' @seealso \code{\link{mon_conv}}, \code{\link{mon_params}}
+#' @seealso \code{\link{mon_conv}}
 #' @examples
 #' # assign monitor with 57 cm viewing distance, screen width 52 cm and 1920 pixels
 #' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
@@ -38,7 +38,7 @@ mon_neat = function(distance, mon_width_cm, mon_width_pixel) {
 #' @param from String; unit ("cm", "pix", or "deg") to convert from.
 #' @param to String; unit ("cm", "pix", or "deg") to convert to.
 #' @return Number (magnitude) in the given output (\code{to}) unit.
-#' @seealso \code{\link{mon_neat}}, \code{\link{mon_params}}
+#' @seealso \code{\link{mon_neat}}
 #' @examples
 #' # assign monitor with 50 cm distance, screen width 52 cm and 1920 pixels
 #' my_mon = mon_neat(distance = 50, mon_width_cm = 52, mon_width_pixel = 1920)
@@ -105,41 +105,4 @@ mon_conv.mon_neat = function(mon_obj, value, from, to) {
             return(deg_res)
         }
     }
-}
-
-
-#' @title Monitor parameters
-#'
-#' @description Prints the parameters of a given monitor object.
-#' @param mon_obj Monitor object, as assigned with \code{\link{mon_neat}}.
-#' @return Returns nothing, just prints all parameters.
-#' @seealso \code{\link{mon_neat}}, \code{\link{mon_conv}}
-#' @examples
-#' # assign monitor with 57 cm distance, and screen width 52 cm and 1920 pixels
-#' my_mon = mon_neat(distance = 57, mon_width_cm = 52, mon_width_pixel = 1920)
-#'
-#' # print the above given parameters
-#' mon_params( my_mon )
-#' @export
-mon_params = function(mon_obj) {
-    UseMethod('mon_params')
-}
-
-#' @export
-mon_params.default = function(...) {
-    cat('This function is to be used with "mon_neat" objects.\n')
-}
-
-#' @export
-mon_params.mon_neat = function(mon_obj) {
-    cat(
-        'distance: ',
-        mon_obj$distance,
-        '\nmon_width_cm: ',
-        mon_obj$mon_width_cm,
-        '\nmon_width_pixel: ',
-        mon_obj$mon_width_pixel,
-        sep = '',
-        fill = TRUE
-    )
 }

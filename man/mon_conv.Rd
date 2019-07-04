@@ -41,5 +41,5 @@ mon_conv(my_mon, 10, from = 'deg', to = 'cm')
 mon_conv(my_mon, 8.748866, from = 'cm', to = 'pix')
 }
 \seealso{
-\code{\link{mon_neat}}, \code{\link{mon_params}}
+\code{\link{mon_neat}}
 }
