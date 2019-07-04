@@ -326,21 +326,9 @@ anova_neat = function(data_per_subject,
     if (is.null(e_correction)){
         e_correction = ''
     }
-    if ('within_factor' %in%  names(data_wide)) {
-        stop(
-            'Sorry, the name "within_factor" is reserved for this function. Remove or rename that column.'
-        )
-    }
-    if ('neat_unique_values' %in%  names(data_wide)) {
-        stop(
-            'Sorry, the name "neat_unique_values" is reserved for this function. Remove or rename that column.'
-        )
-    }
-    if ('neat_unique_id' %in%  names(data_wide)) {
-        stop(
-            'Sorry, the name "neat_unique_values" is reserved for this function. Remove or rename that column.'
-        )
-    }
+    name_taken('within_factor', data_wide)
+    name_taken('neat_unique_values', data_wide)
+    name_taken('neat_unique_id', data_wide)
     id_col = 'neat_unique_id'
     data_wide[[id_col]] = as.character(seq.int(nrow(data_wide)))
     values = to_c(values)
@@ -359,8 +347,7 @@ anova_neat = function(data_per_subject,
             for (fact_name in names(within_ids)) {
                 data_reshaped[[fact_name]] = fact_name
                 for (fact_x in within_ids[[fact_name]]) {
-                    new_type = paste0(fact_name, fact_x)
-                    data_reshaped[[fact_name]][grepl(fact_x, data_reshaped$within_factor)] = new_type
+                    data_reshaped[[fact_name]][grepl(fact_x, data_reshaped$within_factor)] = fact_x
                 }
                 data_reshaped[[fact_name]] = as.factor(data_reshaped[[fact_name]])
             }

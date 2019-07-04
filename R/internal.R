@@ -199,6 +199,16 @@ transp = function(to_transpose, headers) {
     return(tdat)
 }
 
+name_taken = function(name, dat) {
+    if (name %in%  names(dat)) {
+        stop(
+            'Sorry, the name "',
+            name,
+            '" is reserved for this function. Remove or rename that column.'
+        )
+    }
+}
+
 ## parameter argument valudations
 
 validate_args = function(func_used, evaled_args) {
