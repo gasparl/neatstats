@@ -2,23 +2,29 @@
 % Please edit documentation in R/mean_ci.R
 \name{mean_ci}
 \alias{mean_ci}
-\title{Confidence Interval of Mean}
+\title{Confidence Interval of Mean
+limits}
 \usage{
-mean_ci(x, ci = 0.95)
+mean_ci(x, distance_only = TRUE, ci = 0.95)
 }
 \arguments{
 \item{x}{Numeric vector.}
 
+\item{distance_only}{Logical. If \code{TRUE} (default), the function returns
+only the distance between the mean and either confidence interval limit.
+Otherwise returns the confidence interval (i.e., both limits).}
+
 \item{ci}{Numeric; confidence level for returned CI.}
 }
 \value{
-Confidence interval (as named vector).
+Distance of limit or confidence interval (as named vector).
 }
 \description{
 Calculates confidence interval of a vector of numbers.
 }
 \examples{
-mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ) )
+mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE )
+mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE, ci = .80 )
 mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), ci = .80 )
 
 }

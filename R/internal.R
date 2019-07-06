@@ -199,6 +199,37 @@ transp = function(to_transpose, headers) {
     return(tdat)
 }
 
+mains_ebs = function(data_long = this_data, method, eb_method, g_by) {
+    fact_names = to_c(g_by)
+    g_by_text = paste0('with(data = data_long, list(',
+                       g_by,
+                       '))')
+    group_by = eval(parse(text = g_by_text))
+    if (is.null(eb_method)) {
+        eb_method2 = mean
+    } else {
+        eb_method2 = eb_method
+    }
+    to_plot = do.call(
+        data.frame,
+        stats::aggregate(
+            data_long$neat_unique_values,
+            by = group_by,
+            FUN = function(x) {
+                c(main = method(x), eb = eb_method2(x))
+            }
+        )
+    )
+    return(to_plot)
+}
+re_n = function(name, n_dict) {
+    return(if (is.null(n_dict) ||
+               is.na(n_dict[name]))
+        name
+        else
+            n_dict[name])
+}
+
 name_taken = function(name, dat) {
     if (name %in%  names(dat)) {
         stop(

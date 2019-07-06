@@ -11,7 +11,7 @@ Description: This package focuses on user-friendly, clear and simple
   statistics is covered for basic experimental designs.
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.4.0)
-Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2, stats
+Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2, grDevices, stats
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8

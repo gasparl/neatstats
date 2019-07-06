@@ -4,7 +4,11 @@
 \alias{plot_neat}
 \title{Plots of Means}
 \usage{
-plot_neat()
+plot_neat(data_per_subject, values, between_vars = NULL,
+  within_ids = NULL, factor_names = NULL, value_names = NULL,
+  y_title = NULL, reverse = FALSE, panels = NULL, type = "line",
+  dodge = NULL, bar_colors = c("#555555", "#AAAAAA"), method = mean,
+  eb_method = stats::sd)
 }
 \description{
 Plots for factorial designs.

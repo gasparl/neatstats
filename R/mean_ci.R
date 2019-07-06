@@ -1,20 +1,31 @@
 #'@title Confidence Interval of Mean
-#'
+#'limits
 #'@description Calculates confidence interval of a vector of numbers.
 #'@param x Numeric vector.
+#'@param distance_only Logical. If \code{TRUE} (default), the function returns
+#'  only the distance between the mean and either confidence interval limit.
+#'  Otherwise returns the confidence interval (i.e., both limits).
 #'@param ci Numeric; confidence level for returned CI.
-#'@return Confidence interval (as named vector).
+#'@return Distance of limit or confidence interval (as named vector).
 #' @seealso \code{\link{se}}
 #' @examples
-#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ) )
+#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE )
+#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE, ci = .80 )
 #' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), ci = .80 )
 #'
 #' @export
-mean_ci = function(x, ci = 0.95) {
+mean_ci = function(x,
+                   distance_only = TRUE,
+                   ci = 0.95) {
     m_c = mean(x)
     se_c = se(x)
     z_c = stats::qnorm(1 - (1 - ci) / 2)
-    low = (m_c - (z_c * se_c))
-    upp = (m_c + (z_c * se_c))
-    return( c(lower = low, upper = upp) )
+    dist = z_c * se_c
+    low = m_c - dist
+    upp = m_c + dist
+    if (distance_only == TRUE) {
+        return(dist)
+    } else {
+        return(c(lower = low, upper = upp))
+    }
 }
