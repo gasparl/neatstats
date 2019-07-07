@@ -2,14 +2,129 @@
 % Please edit documentation in R/plot_neat.R
 \name{plot_neat}
 \alias{plot_neat}
-\title{Plots of Means}
+\title{Plots of factors}
 \usage{
-plot_neat(data_per_subject, values, between_vars = NULL,
-  within_ids = NULL, factor_names = NULL, value_names = NULL,
+plot_neat(data_per_subject, values, within_ids = NULL,
+  between_vars = NULL, factor_names = NULL, value_names = NULL,
   y_title = NULL, reverse = FALSE, panels = NULL, type = "line",
-  dodge = NULL, bar_colors = c("#555555", "#AAAAAA"), method = mean,
-  eb_method = stats::sd)
+  dodge = NULL, bar_colors = c("#555555", "#AAAAAA"), row_number = 1,
+  method = mean, eb_method = stats::sd)
+}
+\arguments{
+\item{data_per_subject}{Data frame or name of data frame as string. Should
+contain all values (measurements/observations) in a single row per each
+subject.}
+
+\item{values}{String; column name or names. Multiple column names are also to
+be given as a single string, separated by commas (e.g., \code{values =
+'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
+a single dependent variable. This means, to test repeated (within-subject)
+measurements, each specified column should contain one measurement.}
+
+\item{within_ids}{\code{NULL} (default), string, or named list. In case of no
+within-subject factors, leave as \code{NULL}. In case of a single within
+subject factor, a single string may be given to optionally provide custom
+name for the within-subject factor (note: this is a programming variable
+name, so it should not contain spaces, etc.); otherwise (if left
+\code{NULL}) this one within-subject factor will always just be named
+\code{"within_factor"}. In case of multiple within-subject factors, each
+factor must be specified as a named list element, each with a vector of
+strings that distinguish the levels within that factors. The column names
+given as \code{values} should always contain one (and only one) of these
+strings within each within-subject factor, and thus they will be assigned
+the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
+rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
+'s2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
+must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+not set levels \code{c('a','b')}, because \code{'a'} is also found in
+\code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
+make sure the values are correctly distinguished.) See also Examples.}
+
+\item{between_vars}{\code{NULL} (default; in case of no between-subject
+factors) or string; column name or names. Multiple column names are also to
+be given as a single string, separated by commas (e.g., \code{between_vars =
+'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
+contain a single between-subject independent variable (representing
+between-subject factors).}
+
+\item{factor_names}{\code{NULL} or named vector. In a named vector, factor
+names (either within or between) can be given a different name for display,
+in a dictionary style, using original factor name as the name of a vector
+element, and the element's value (as string) for the new name. For example,
+to change a factor named \code{"condition"} to \code{"High vs. low
+arousal"}, the vector may be given (in this case with a single element) as
+\code{factor_names = c(condition = "High vs. low arousal")}.}
+
+\item{value_names}{\code{NULL} or named vector. Same as \code{factor_names},
+but regarding the factor values. For example, to change values
+\code{"high_a"} and \code{"low_a"} to \code{"High"} and \code{"Low"} for
+display, the vector may be given as \code{value_names = c(high_a = "High",
+low_a = "Low")}.}
+
+\item{y_title}{\code{NULL} (default) or string. Optionally given title for the
+\code{y} axis.}
+
+\item{reverse}{Logical (default: \code{FALSE}). If \code{TRUE}, reverses the
+default grouping of variables within the figure, or within each panel, in
+case of multiple panels. (The default grouping is decided automatically by
+given factor order, but always starting, when applicable, with
+within-subject factors: first factor is split to adjacent bars, or
+vertically aligned dots in case of line plot.)}
+
+\item{panels}{\code{NULL} or string. Optionally gives the factor name by which
+the plot is to be split into different panels, in case of three factors. (By
+default, the third given factor is used.)}
+
+\item{type}{Strong: \code{"line"} (default) or \code{"bar"}. The former gives
+line plot, the latter gives bar plot.}
+
+\item{dodge}{Number. Specifies the amount by which the adjacent bars or
+dots \code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
+displaced compared to each other).}
+
+\item{bar_colors}{Vector of strings, specifying colors from which all colors
+for any number of differring adjacent bars are interpolated. (If the number
+of given colors equal the number of different bars, the precise colors will
+correspond to each bar.) The default \code{c('#555555', '#AAAAAA')} gives a
+color gradient from dark grey to light grey.}
+
+\item{row_number}{Number. In case of multiple panels, the number of rows in
+which the panels should be arranged. For example, with the default
+\code{row_number = 1}, all panels will be displayed in one vertically
+aligned row.}
+
+\item{method}{A function (default: \code{mean}) for the calculation of the
+main statistics (bar or dot heights).}
+
+\item{eb_method}{A function (default: \code{sd}) for the calculation of the
+error bar size (as a single value used for both directions of the error
+bar). If set to \code{NULL}, no error bar is displayed.}
+}
+\value{
+A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
+ further modified or adjusted via regular \code{\link[ggplot2]{ggplot}}
+ methods.)
 }
 \description{
-Plots for factorial designs.
+Bar and line \code{\link[ggplot2:ggplot]{plots}} for factorial
+ designs.
+}
+\note{
+The number of factors (within and between together) must be either two
+  or three. Plot for a single factor would make little sense, while more than
+  three is difficult to clearly depict in a simple plot. (In the latter case,
+  you probably want to build an appropriate graph using
+  \code{\link[ggplot2]{ggplot}} directly; but you can also just divide the
+  data to produce several three-factor plots, after which you can use e.g.
+  \code{ggpubr}'s \code{ggarrange} to easily collate the plots.)
+}
+\examples{
+
+# SD to illustrate variability:
+
+# CI to illustrate certainty:
+
+}
+\seealso{
+\code{\link{anova_neat}}
 }

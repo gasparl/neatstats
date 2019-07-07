@@ -4,8 +4,8 @@
 \alias{anova_neat}
 \title{Comparison of Multiple Means: ANOVA}
 \usage{
-anova_neat(data_per_subject, values, between_vars = NULL,
-  within_ids = NULL, ci = 0.9, bf_added = TRUE,
+anova_neat(data_per_subject, values, within_ids = NULL,
+  between_vars = NULL, ci = 0.9, bf_added = TRUE,
   test_title = "--- neat ANOVA ---", welch = TRUE,
   e_correction = NULL)
 }
@@ -19,13 +19,6 @@ be given as a single string, separated by commas (e.g., \code{values =
 'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
 a single dependent variable. This means, to test repeated (within-subject)
 measurements, each specified column should contain one measurement.}
-
-\item{between_vars}{\code{NULL} (default; in case of no between-subject
-factors) or string; column name or names. Multiple column names are also to
-be given as a single string, separated by commas (e.g., \code{between_vars =
-'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
-contain a single between-subject independent variable (representing
-between-subject factors).}
 
 \item{within_ids}{\code{NULL} (default), string, or named list. In case of no
 within-subject factors, leave as \code{NULL}. In case of a single within
@@ -45,6 +38,13 @@ must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
 not set levels \code{c('a','b')}, because \code{'a'} is also found in
 \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 make sure the values are correctly distinguished.) See also Examples.}
+
+\item{between_vars}{\code{NULL} (default; in case of no between-subject
+factors) or string; column name or names. Multiple column names are also to
+be given as a single string, separated by commas (e.g., \code{between_vars =
+'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
+contain a single between-subject independent variable (representing
+between-subject factors).}
 
 \item{ci}{Numeric; confidence level for returned CIs. (Default: \code{.9};
 Lakens, 2014; Steiger, 2004.)}
@@ -312,5 +312,5 @@ Psychological Methods, 9(2), 164-182.
 \doi{https://doi.org/10.1037/1082-989X.9.2.164}
 }
 \seealso{
-\code{\link{t_neat}}
+\code{\link{plot_neat}}, \code{\link{t_neat}}
 }

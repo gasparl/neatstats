@@ -220,6 +220,11 @@ mains_ebs = function(data_long = this_data, method, eb_method, g_by) {
             }
         )
     )
+    for (c_name in names(to_plot)) {
+        if (!c_name %in% c('x.main', 'x.eb')) {
+            to_plot[[c_name]] = as.character(to_plot[[c_name]])
+        }
+    }
     return(to_plot)
 }
 re_n = function(name, n_dict) {

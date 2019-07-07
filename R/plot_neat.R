@@ -64,9 +64,8 @@
 #'  dots \code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
 #'  displaced compared to each other).
 #'@param bar_colors Vector of strings, specifying colors from which all colors
-#'  for any number of differring adjacent bars are
-#'  \code{\link[grDevices:colorRampPalette]{interpolated}}. (If the number of
-#'  given colors equal the number of different bars, the precise colors will
+#'  for any number of differring adjacent bars are interpolated. (If the number
+#'  of given colors equal the number of different bars, the precise colors will
 #'  correspond to each bar.) The default \code{c('#555555', '#AAAAAA')} gives a
 #'  color gradient from dark grey to light grey.
 #'@param row_number Number. In case of multiple panels, the number of rows in
@@ -82,21 +81,23 @@
 #'@return A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
 #'  further modified or adjusted via regular \code{\link[ggplot2]{ggplot}}
 #'  methods.)
-
-
+#'
+#' @note The number of factors (within and between together) must be either two
+#'   or three. Plot for a single factor would make little sense, while more than
+#'   three is difficult to clearly depict in a simple plot. (In the latter case,
+#'   you probably want to build an appropriate graph using
+#'   \code{\link[ggplot2]{ggplot}} directly; but you can also just divide the
+#'   data to produce several three-factor plots, after which you can use e.g.
+#'   \code{ggpubr}'s \code{ggarrange} to easily collate the plots.)
+#'
 #' @seealso \code{\link{anova_neat}}
 #' @examples
-#'
 #'
 #' # SD to illustrate variability:
 #'
 #' # CI to illustrate certainty:
-
-
-
+#'
 #' @export
-
-
 
 plot_neat = function(data_per_subject,
                      values,
@@ -171,11 +172,10 @@ plot_neat = function(data_per_subject,
         } else {
             within_vars = 'within_factor'
         }
-        value_col = "neat_unique_values"
         this_data = data_reshaped
     } else {
-        value_col = values
         this_data = data_wide
+        colnames(this_data)[colnames(this_data) == values] = 'neat_unique_values'
         within_vars = NULL
     }
     this_data[, id_col] = to_fact(this_data[[id_col]])
@@ -189,7 +189,7 @@ plot_neat = function(data_per_subject,
     }
     if (length(to_c(g_by)) > 3) {
         stop("Maximum three factors can be plotted. See help(plot_neat)")
-    } else if (length(to_c(g_by)) < 1) {
+    } else if (length(to_c(g_by)) < 2) {
         stop("Minimum two factors are needed for plotting. See help(plot_neat)")
     }
     to_plot = mains_ebs(
@@ -200,7 +200,6 @@ plot_neat = function(data_per_subject,
     )
     fact_names = to_c(g_by)
     names(to_plot)[1:length(fact_names)] = fact_names
-
     if (!is.null(value_names)) {
         i = sapply(to_plot, is.factor)
         to_plot[i] = lapply(to_plot[i], as.character)
