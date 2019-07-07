@@ -14,12 +14,6 @@
 #'  'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
 #'  a single dependent variable. This means, to test repeated (within-subject)
 #'  measurements, each specified column should contain one measurement.
-#'@param between_vars \code{NULL} (default; in case of no between-subject
-#'  factors) or string; column name or names. Multiple column names are also to
-#'  be given as a single string, separated by commas (e.g., \code{between_vars =
-#'  'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
-#'  contain a single between-subject independent variable (representing
-#'  between-subject factors).
 #'@param within_ids \code{NULL} (default), string, or named list. In case of no
 #'  within-subject factors, leave as \code{NULL}. In case of a single within
 #'  subject factor, a single string may be given to optionally provide custom
@@ -38,6 +32,12 @@
 #'  not set levels \code{c('a','b')}, because \code{'a'} is also found in
 #'  \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 #'  make sure the values are correctly distinguished.) See also Examples.
+#'@param between_vars \code{NULL} (default; in case of no between-subject
+#'  factors) or string; column name or names. Multiple column names are also to
+#'  be given as a single string, separated by commas (e.g., \code{between_vars =
+#'  'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
+#'  contain a single between-subject independent variable (representing
+#'  between-subject factors).
 #'@param ci Numeric; confidence level for returned CIs. (Default: \code{.9};
 #'  Lakens, 2014; Steiger, 2004.)
 #'@param bf_added Logical. If \code{TRUE} (default), inclusion Bayes factor is
@@ -145,7 +145,7 @@
 #'Psychological Methods, 9(2), 164-182.
 #'\doi{https://doi.org/10.1037/1082-989X.9.2.164}
 #'
-#' @seealso \code{\link{t_neat}}
+#' @seealso \code{\link{plot_neat}}, \code{\link{t_neat}}
 #' @examples
 #' # assign random data in a data frame for illustration
 #' # (note that the 'subject' is only for illustration; since each row contains the
@@ -295,8 +295,8 @@
 #' @export
 anova_neat = function(data_per_subject,
                       values,
-                      between_vars = NULL,
                       within_ids = NULL,
+                      between_vars = NULL,
                       ci = 0.90,
                       bf_added = TRUE,
                       test_title = "--- neat ANOVA ---",

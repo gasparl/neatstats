@@ -3,9 +3,9 @@
 #' @description Returns aggregated values per group for given variable. Serves
 #'   as argument in the \code{\link{table_neat}} function.
 #' @param dat Data frame (or name of data frame as string).
-#' @param values The name of the column in the \code{dat} data frame, containing
-#'   the vector of numbers from which the statistics are to be calculated. (Can
-#'   be given either with or without quotes.)
+#' @param values The vector of numbers from which the statistics are to be
+#'   calculated, or the name of the column in the \code{dat} data frame, that
+#'   contains the vector. (Expression or string are both accepted.)
 #' @param method Function of string. If function, uses the \code{values} to
 #'   calculate the returned value for the given function (e.g. means, as per
 #'   default, using the \code{mean} function). Such a function may return a
@@ -150,6 +150,14 @@ aggr_neat = function(dat,
                       val_arg(new_name, c('char', 'null'), 1),
                       val_arg(round_to, c('num'), 1)
                   ))
+    name_taken('neat_unique_values', dat)
+    values = deparse(substitute(values))
+    values = trimws(values, whitespace = "['\"]")
+    if (values %in% names(dat)) {
+        dat$neat_unique_values = dat[[values]]
+    } else {
+        dat$neat_unique_values = eval(parse(text = values))
+    }
     filt = deparse(substitute(filt))
     if (filt != "NULL") {
         filt = trimws(filt, whitespace = "['\"]")
@@ -159,10 +167,7 @@ aggr_neat = function(dat,
             ',])'
         )))
     }
-    values = deparse(substitute(values))
-    values = gsub(pattern = "'|\"",
-                  replacement = '',
-                  x = values)
+
     if (!is.null(pkg.globals$my_unique_method)) {
         method = pkg.globals$my_unique_method
         prefix = NULL
@@ -198,15 +203,15 @@ aggr_neat = function(dat,
     }
     if (is.function(method) == TRUE) {
         aggred = do.call(data.frame,
-                         stats::aggregate(dat[[values]], by = group_by, FUN = method))
+                         stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method))
     } else if (endsWith(method, '+sd') == TRUE) {
         func_name = strsplit(method, '+', fixed = TRUE)[[1]][1]
         method = eval(parse(text = func_name))
-        aggred = stats::aggregate(dat[[values]], by = group_by, FUN = method)
+        aggred = stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method)
 
         aggred = do.call(data.frame,
                          stats::aggregate(
-                             dat[[values]],
+                             dat$neat_unique_values,
                              by = group_by,
                              FUN = function(x) {
                                  stats::setNames(c(ro(method(x), round_to), ro(stats::sd(x), round_to)), c(func_name, 'sd'))
@@ -218,7 +223,7 @@ aggr_neat = function(dat,
     } else {
         nume = to_c(method)
         aggred = stats::aggregate(
-            dat[[values]],
+            dat$neat_unique_values,
             by = group_by,
             FUN = function(x) {
                 sum(x %in% nume) / length(x)
