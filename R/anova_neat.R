@@ -165,7 +165,7 @@
 #' # second session'. The letters '_a', '_b', '_c' could denote three different
 #' # types of techniques used within each session, to be compared to each other.
 #' # See further below for a more verbose but more meaningful example data.
-#'
+#'\donttest{
 #' # get the between-subject effect of 'grouping1'
 #' anova_neat(dat_1, values = 'value_1_a', between_vars = 'grouping1')
 #'
@@ -177,7 +177,7 @@
 #' # repeated measures:
 #' # get the within-subject effect for 'value_1_a' vs. 'value_1_b'
 #' anova_neat(dat_1, values = c('value_1_a', 'value_1_b'))
-#'\donttest{
+#'
 #' # same, but give the factor a custom variable name, and omit BF for speed
 #' anova_neat(
 #'     dat_1,
