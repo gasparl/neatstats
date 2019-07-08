@@ -14,11 +14,10 @@ anova_neat(data_per_subject, values, within_ids = NULL,
 contain all values (measurements/observations) in a single row per each
 subject.}
 
-\item{values}{String; column name or names. Multiple column names are also to
-be given as a single string, separated by commas (e.g., \code{values =
-'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
-a single dependent variable. This means, to test repeated (within-subject)
-measurements, each specified column should contain one measurement.}
+\item{values}{Vector of strings; column name(s) in the \code{data_per_subject}
+data frame. Each column should contain a single dependent variable: thus, to
+test repeated (within-subject) measurements, each specified column should
+contain one measurement.}
 
 \item{within_ids}{\code{NULL} (default), string, or named list. In case of no
 within-subject factors, leave as \code{NULL}. In case of a single within
@@ -40,11 +39,9 @@ not set levels \code{c('a','b')}, because \code{'a'} is also found in
 make sure the values are correctly distinguished.) See also Examples.}
 
 \item{between_vars}{\code{NULL} (default; in case of no between-subject
-factors) or string; column name or names. Multiple column names are also to
-be given as a single string, separated by commas (e.g., \code{between_vars =
-'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
-contain a single between-subject independent variable (representing
-between-subject factors).}
+factors) or vector of strings; column name(s) in the \code{data_per_subject}
+data frame. Each column should contain a single between-subject independent
+variable (representing between-subject factors).}
 
 \item{ci}{Numeric; confidence level for returned CIs. (Default: \code{.9};
 Lakens, 2014; Steiger, 2004.)}
@@ -157,35 +154,45 @@ head(dat_1) # see what we have
 # See further below for a more verbose but more meaningful example data.
 
 # get the between-subject effect of 'grouping1'
-anova_neat('dat_1', values = 'value_1_a', between_vars = 'grouping1')
+anova_neat(dat_1, values = 'value_1_a', between_vars = 'grouping1')
 
 # main effects of 'grouping1', 'grouping2', and their interactions
-anova_neat('dat_1', values = 'value_1_a', between_vars = 'grouping1, grouping2')
+anova_neat(dat_1,
+           values = 'value_1_a',
+           between_vars = c('grouping1', 'grouping2'))
 
 # repeated measures:
 # get the within-subject effect for 'value_1_a' vs. 'value_1_b'
-anova_neat('dat_1', values = 'value_1_a, value_1_b')
-
+anova_neat(dat_1, values = c('value_1_a', 'value_1_b'))
+\donttest{
 # same, but give the factor a custom variable name, and omit BF for speed
-anova_neat('dat_1',
-           values = 'value_1_a, value_1_b',
-           within_ids = 'a_vs_b',
-           bf_added = FALSE)
+anova_neat(
+    dat_1,
+    values = c('value_1_a', 'value_1_b'),
+    within_ids = 'a_vs_b',
+    bf_added = FALSE
+)
 # or
-anova_neat('dat_1',
-           values = 'value_1_a, value_1_b',
-           within_ids = 'letters',
-           bf_added = FALSE)
+anova_neat(
+    dat_1,
+    values = c('value_1_a', 'value_1_b'),
+    within_ids = 'letters',
+    bf_added = FALSE
+)
 
 # within-subject effect for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c'
-anova_neat('dat_1', values = 'value_1_a, value_1_b, value_1_c', bf_added = FALSE)
-
+anova_neat(
+    dat_1,
+    values = c('value_1_a', 'value_1_b', 'value_1_c'),
+    bf_added = FALSE
+)
+}
 # within-subject main effect for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c',
 # between-subject main effect 'grouping1', and the interaction of these two main
 # effects
 anova_neat(
-    'dat_1',
-    values = 'value_1_a, value_1_b, value_1_c',
+    dat_1,
+    values = c('value_1_a', 'value_1_b', 'value_1_c'),
     between_vars = 'grouping1',
     bf_added = FALSE
 )
@@ -196,20 +203,20 @@ anova_neat(
 # ('value_1_a' and 'value_2_a' vs. 'value_1_b' and 'value_2_b'), and the
 # 'letter' x 'number' interaction
 anova_neat(
-    'dat_1',
-    values = 'value_1_a, value_2_a, value_1_b, value_2_b',
+    dat_1,
+    values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
     within_ids = list(
         letters = c('_a', '_b'),
         numbers =  c('_1', '_2')
     ),
     bf_added = FALSE
 )
-
+\donttest{
 # same as above, but now including between-subject main effect 'grouping2' and
 # its interactions
 anova_neat(
-    'dat_1',
-    values = 'value_1_a, value_2_a, value_1_b, value_2_b',
+    dat_1,
+    values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
     within_ids = list(
         letters = c('_a', '_b'),
         numbers =  c('_1', '_2')
@@ -242,15 +249,20 @@ head(pic_ratings) # see what we have
 # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
 # 'fright_low' vs. 'fright_high' for levels of frighteningness
 anova_neat(
-    'pic_ratings',
-    values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
-    rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+    pic_ratings,
+    values = c(
+        'rating_fright_low_disgust_low',
+        'rating_fright_high_disgust_low',
+        'rating_fright_low_disgust_high',
+        'rating_fright_high_disgust_high'
+    ),
     within_ids = list(
         disgustingness = c('disgust_low', 'disgust_high'),
         frighteningness =  c('fright_low', 'fright_high')
     ),
     bf_added = FALSE
 )
+
 # the results are the same as for the analogous test for the 'dat_1' data, only
 # with different names
 
@@ -266,9 +278,13 @@ pic_ratings = data.frame(
 
 # now test the effect and interactions of 'group_id'
 anova_neat(
-    'pic_ratings',
-    values = 'rating_fright_low_disgust_low, rating_fright_high_disgust_low,
-    rating_fright_low_disgust_high, rating_fright_high_disgust_high',
+    pic_ratings,
+    values = c(
+        'rating_fright_low_disgust_low',
+        'rating_fright_high_disgust_low',
+        'rating_fright_low_disgust_high',
+        'rating_fright_high_disgust_high'
+    ),
     within_ids = list(
         disgustingness = c('disgust_low', 'disgust_high'),
         frighteningness =  c('fright_low', 'fright_high')
@@ -278,7 +294,7 @@ anova_neat(
 )
 
 # again, same results as with 'dat_1' (using 'grouping2' as group_id)
-
+}
 }
 \references{
 Girden, E. (1992). ANOVA: Repeated measures. Newbury Park, CA: Sage.

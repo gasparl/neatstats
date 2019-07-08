@@ -6,11 +6,10 @@
 #'@param data_per_subject Data frame or name of data frame as string. Should
 #'  contain all values (measurements/observations) in a single row per each
 #'  subject.
-#'@param values String; column name or names. Multiple column names are also to
-#'  be given as a single string, separated by commas (e.g., \code{values =
-#'  'var1, var2, var3'}). (Spaces are ignored.) Each such column should contain
-#'  a single dependent variable. This means, to test repeated (within-subject)
-#'  measurements, each specified column should contain one measurement.
+#'@param values Vector of strings; column name(s) in the \code{data_per_subject}
+#'  data frame. Each column should contain a single dependent variable: thus, to
+#'  plot repeated (within-subject) measurements, each specified column should
+#'  contain one measurement.
 #'@param within_ids \code{NULL} (default), string, or named list. In case of no
 #'  within-subject factors, leave as \code{NULL}. In case of a single within
 #'  subject factor, a single string may be given to optionally provide custom
@@ -30,11 +29,9 @@
 #'  \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 #'  make sure the values are correctly distinguished.) See also Examples.
 #'@param between_vars \code{NULL} (default; in case of no between-subject
-#'  factors) or string; column name or names. Multiple column names are also to
-#'  be given as a single string, separated by commas (e.g., \code{between_vars =
-#'  'grouping1, grouping2'}). (Spaces are ignored.) Each such column should
-#'  contain a single between-subject independent variable (representing
-#'  between-subject factors).
+#'  factors) or vector of strings; column name(s) in the \code{data_per_subject}
+#'  data frame. Each column should contain a single between-subject independent
+#'  variable (representing between-subject factors).
 #'@param factor_names \code{NULL} or named vector. In a named vector, factor
 #'  names (either within or between) can be given a different name for display,
 #'  in a dictionary style, using original factor name as the name of a vector
@@ -60,13 +57,14 @@
 #'  default, the third given factor is used.)
 #'@param type Strong: \code{"line"} (default) or \code{"bar"}. The former gives
 #'  line plot, the latter gives bar plot.
-#'@param dodge Number. Specifies the amount by which the adjacent bars or
-#'  dots \code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
-#'  displaced compared to each other).
+#'@param dodge Number. Specifies the amount by which the adjacent bars or dots
+#'  \code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
+#'  displaced compared to each other). (Default is \code{0.1} for \code{line}
+#'  plots, and \code{0.9} for \code{bar} plots.)
 #'@param bar_colors Vector of strings, specifying colors from which all colors
 #'  for any number of differring adjacent bars are interpolated. (If the number
 #'  of given colors equal the number of different bars, the precise colors will
-#'  correspond to each bar.) The default \code{c('#555555', '#AAAAAA')} gives a
+#'  correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
 #'  color gradient from dark grey to light grey.
 #'@param row_number Number. In case of multiple panels, the number of rows in
 #'  which the panels should be arranged. For example, with the default
@@ -90,13 +88,217 @@
 #'   data to produce several three-factor plots, after which you can use e.g.
 #'   \code{ggpubr}'s \code{ggarrange} to easily collate the plots.)
 #'
-#' @seealso \code{\link{anova_neat}}
+#' @seealso \code{\link{anova_neat}}, \code{\link{mean_ci}}, \code{\link{se}}
 #' @examples
 #'
-#' # SD to illustrate variability:
+#' # assign random data in a data frame for illustration
+#' # (note that the 'subject' is only for illustration; since each row contains the
+#' # data of a single subject, no additional subject id is needed)
+#' dat_1 = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+#'     grouping1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2),
+#'     grouping2 = c(1, 2, 1, 2, 2, 1,2, 1,2,1, 1, 1, 2, 1),
+#'     value_1_a = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1,
+#'                   31, 16.9, 40.1, 42.1, 41, 12.9),
+#'     value_2_a = c(-14.1, 58.5,-25.5, 42.2,-13, 4.4, 55.5,-28.5,
+#'                   25.6,-37.1, 55.1,-38.5, 28.6,-34.1),
+#'     value_1_b = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85,
+#'                   132, 121, 151, 95),
+#'     value_2_b = c(8.024,-14.162, 3.1,-2.1,-1.5, 0.91, 11.53,
+#'                   18.37, 0.3,-0.59, 12.53, 13.37, 2.3,-3),
+#'     value_1_c = c(27.4, -17.6, -32.7, 0.4, 37.2, 1.7, 18.2, 8.9,
+#'                   1.9, 0.4, 2.7, 14.2, 3.9, 4.9),
+#'     value_2_c = c(7.7,-0.8, 2.2, 14.1, 22.1,-47.7,-4.8, 8.6,
+#'                   6.2, 18.2,-6.8, 5.6, 7.2, 13.2)
+#' )
+#' head(dat_1) # see what we have
 #'
-#' # CI to illustrate certainty:
+#' # plot for factors 'grouping1', 'grouping2'
+#' plot_neat(
+#'     data_per_subject = dat_1,
+#'     values = 'value_1_a',
+#'     between_vars = c('grouping1', 'grouping2')
+#' )
 #'
+#' # same as above, but with bars and renamed factors
+#' plot_neat(
+#'     data_per_subject = dat_1,
+#'     values = 'value_1_a',
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     type = 'bar',
+#'     factor_names = c(grouping1 = 'experimental condition', grouping2 = 'gender')
+#' )
+#'\donttest{
+#' # same, but with different (lighter) grey scale bars
+#' plot_neat(
+#'     dat_1,
+#'     values = 'value_1_a',
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     type = 'bar',
+#'     factor_names = c(grouping1 = 'experimental condition', grouping2 = 'gender'),
+#'     bar_colors = c('#555555', '#BBBBBB')
+#' )
+#'
+#' # same, but with red and blue bars
+#' plot_neat(
+#'     dat_1,
+#'     values = 'value_1_a',
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     type = 'bar',
+#'     factor_names = c(grouping1 = 'experimental condition', grouping2 = 'gender'),
+#'     bar_colors = c('red', 'blue') # equals c('#FF0000', '#0000FF')
+#' )
+#'
+#' # within-subject factor for 'value_1_a' vs. 'value_1_b' vs. 'value_1_c'
+#' # (automatically named 'within_factor'), between-subject factor 'grouping1'
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_1_b', 'value_1_c'),
+#'     between_vars = c('grouping1', 'grouping2')
+#' )
+#'}
+#' # same, but panelled by 'within_factor'
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_1_b', 'value_1_c'),
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     panels = 'within_factor'
+#' )
+#'\donttest{
+#' # same, but SE for error bars instead of (default) SD
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_1_b', 'value_1_c'),
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     panels = 'within_factor',
+#'     eb_method = se
+#' )
+#'
+#' # same, but 95% CI for error bars instead of SE
+#' # (arguably more meaningful than SEs)
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_1_b', 'value_1_c'),
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     panels = 'within_factor',
+#'     eb_method = mean_ci
+#' )
+#'
+#' # same, but using medians and Median Absolute Deviations
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_1_b', 'value_1_c'),
+#'     between_vars = c('grouping1', 'grouping2'),
+#'     panels = 'within_factor',
+#'     method = stats::median,
+#'     eb_method = stats::mad
+#' )
+#'}
+#' # within-subject factor 'number' for variables with number '1' vs. number '2'
+#' # ('value_1_a' and 'value_1_b' vs. 'value_2_a' and 'value_2_b'), factor 'letter'
+#' # for variables with final letter 'a' vs. final letter 'b' ('value_1_a' and
+#' # 'value_2_a' vs. 'value_1_b' and 'value_2_b')
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+#'     within_ids = list(
+#'         letters = c('_a', '_b'),
+#'         numbers =  c('_1', '_2')
+#'     )
+#' )
+#'\donttest{
+#' # same as above, but now including between-subject factor 'grouping2'
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+#'     within_ids = list(
+#'         letters = c('_a', '_b'),
+#'         numbers =  c('_1', '_2')
+#'     ),
+#'     between_vars = 'grouping2'
+#' )
+#'}
+#' # same as above, but renaming factors and values for display
+#' plot_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+#'     within_ids = list(
+#'         letters = c('_a', '_b'),
+#'         numbers =  c('_1', '_2')
+#'     ),
+#'     between_vars = 'grouping2',
+#'     factor_names = c(numbers = 'session (first vs. second)'),
+#'     value_names = c(
+#'         '_1' = 'first',
+#'         '_2' = 'second',
+#'         '1' = 'group 1',
+#'         '2' = 'group 2'
+#'     )
+#' )
+#'\donttest{
+#' # In real datasets, these could of course be more meaningful. For example, let's
+#' # say participants rated the attractiveness of pictures with low or high levels
+#' # of frightening and low or high levels of disgusting qualities. So there are
+#' # four types of ratings:
+#' # 'low disgusting, low frightening' pictures
+#' # 'low disgusting, high frightening' pictures
+#' # 'high disgusting, low frightening' pictures
+#' # 'high disgusting, high frightening' pictures
+#'
+#' # this could be meaningfully assigned e.g. as below
+#' pic_ratings = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
+#'     rating_fright_high_disgust_low = c(-14.1, 58.5,-25.5, 42.2,-13, 4.4, 55.5,-28.5, 25.6,-37.1),
+#'     rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     rating_fright_high_disgust_high = c(8.024,-14.162, 3.1,-2.1,-1.5, 0.91, 11.53, 18.37, 0.3,-0.59)
+#' )
+#' head(pic_ratings) # see what we have
+#'
+#' # the same logic applies as for the examples above, but now the
+#' # within-subject differences can be more meaningfully specified, e.g.
+#' # 'disgust_low' vs. 'disgust_high' for levels of disgustingness, while
+#' # 'fright_low' vs. 'fright_high' for levels of frighteningness
+#' plot_neat(
+#'     pic_ratings,
+#'     values = c(
+#'         'rating_fright_low_disgust_low',
+#'         'rating_fright_high_disgust_low',
+#'         'rating_fright_low_disgust_high',
+#'         'rating_fright_high_disgust_high'
+#'     ),
+#'     within_ids = list(
+#'         disgustingness = c('disgust_low', 'disgust_high'),
+#'         frighteningness =  c('fright_low', 'fright_high')
+#'     )
+#' )
+#'
+#' # now let's say the ratings were done in two separate groups
+#' pic_ratings = data.frame(
+#'     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'     group_id = c(1, 2, 1, 2, 2, 1, 1, 1, 2, 1),
+#'     rating_fright_low_disgust_low = c(36.2, 45.2, 41, 24.6, 30.5, 28.2, 40.9, 45.1, 31, 16.9),
+#'     rating_fright_high_disgust_low = c(-14.1, 58.5,-25.5, 42.2,-13, 4.4, 55.5,-28.5, 25.6,-37.1),
+#'     rating_fright_low_disgust_high = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     rating_fright_high_disgust_high = c(8.024,-14.162, 3.1,-2.1,-1.5, 0.91, 11.53, 18.37, 0.3,-0.59)
+#' )
+#'
+#' # now include the 'group_id' factor in the plot
+#' plot_neat(
+#'     'pic_ratings',
+#'     values = c(
+#'         'rating_fright_low_disgust_low',
+#'         'rating_fright_high_disgust_low',
+#'         'rating_fright_low_disgust_high',
+#'         'rating_fright_high_disgust_high'
+#'     ),
+#'     within_ids = list(
+#'         disgustingness = c('disgust_low', 'disgust_high'),
+#'         frighteningness =  c('fright_low', 'fright_high')
+#'     ),
+#'     between_vars = 'group_id'
+#' )
+#'}
 #' @export
 
 plot_neat = function(data_per_subject,
@@ -110,7 +312,7 @@ plot_neat = function(data_per_subject,
                      panels = NULL,
                      type = 'line',
                      dodge = NULL,
-                     bar_colors = c('#555555', '#AAAAAA'),
+                     bar_colors = c('#333333', '#AAAAAA'),
                      row_number = 1,
                      method = mean,
                      eb_method = stats::sd) {
@@ -124,9 +326,9 @@ plot_neat = function(data_per_subject,
         match.call(),
         list(
             val_arg(data_per_subject, c('df')),
-            val_arg(values, c('char'), 1),
-            val_arg(between_vars, c('null', 'char'), 1),
+            val_arg(values, c('char')),
             val_arg(within_ids, c('null', 'char', 'list'), 1),
+            val_arg(between_vars, c('null', 'char')),
             val_arg(factor_names, c('null', 'char')),
             val_arg(value_names, c('null', 'char')),
             val_arg(y_title, c('null', 'char'), 1),
@@ -141,12 +343,14 @@ plot_neat = function(data_per_subject,
         )
     )
     val_wi_id(match.call(), within_ids, values)
+    if (!is.null(between_vars)) {
+        between_vars = paste(between_vars, collapse = ',')
+    }
     name_taken('within_factor', data_wide)
     name_taken('neat_unique_values', data_wide)
     name_taken('neat_unique_id', data_wide)
     id_col = 'neat_unique_id'
     data_wide[[id_col]] = as.character(seq.int(nrow(data_wide)))
-    values = to_c(values)
     if (length(values) > 1) {
         data_reshaped = stats::reshape(
             data_wide,
@@ -226,7 +430,7 @@ plot_neat = function(data_per_subject,
     }
     if (type == 'line') {
         the_plot = ggplot2::ggplot(data = to_plot, aes(x = to_plot[[p_mid]],
-                                                       y = x.main,
+                                                       y = to_plot$x.main,
                                                        group = to_plot[[p_close]])) +
             geom_line(aes(linetype = to_plot[[p_close]]),
                       position = position_dodge(dodge)) +
@@ -239,7 +443,7 @@ plot_neat = function(data_per_subject,
     } else {
         color_gen = grDevices::colorRampPalette(bar_colors)
         the_plot = ggplot2::ggplot(data = to_plot, aes(x = to_plot[[p_mid]],
-                                                       y = x.main,
+                                                       y = to_plot$x.main,
                                                        fill = to_plot[[p_close]])) +
             geom_bar(stat = "identity", position = position_dodge(dodge)) +
             theme_bw() + scale_fill_manual(values = color_gen(length(unique(to_plot[[p_close]]))),
@@ -248,8 +452,8 @@ plot_neat = function(data_per_subject,
     }
     if (!is.null(eb_method)) {
         the_plot = the_plot + geom_errorbar(aes(
-            ymin = x.main - x.eb,
-            ymax = x.main + x.eb,
+            ymin = to_plot$x.main - to_plot$x.eb,
+            ymax = to_plot$x.main + to_plot$x.eb,
             width = 0.2
         ),
         position = position_dodge(dodge))

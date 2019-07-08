@@ -29,5 +29,5 @@ mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), ci = .80 )
 
 }
 \seealso{
-\code{\link{se}}
+\code{\link{se}}, \code{\link{plot_neat}}
 }

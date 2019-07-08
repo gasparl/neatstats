@@ -7,7 +7,7 @@
 #'  Otherwise returns the confidence interval (i.e., both limits).
 #'@param ci Numeric; confidence level for returned CI.
 #'@return Distance of limit or confidence interval (as named vector).
-#' @seealso \code{\link{se}}
+#' @seealso \code{\link{se}}, \code{\link{plot_neat}}
 #' @examples
 #' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE )
 #' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE, ci = .80 )

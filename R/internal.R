@@ -199,7 +199,7 @@ transp = function(to_transpose, headers) {
     return(tdat)
 }
 
-mains_ebs = function(data_long = this_data, method, eb_method, g_by) {
+mains_ebs = function(data_long, method, eb_method, g_by) {
     fact_names = to_c(g_by)
     g_by_text = paste0('with(data = data_long, list(',
                        g_by,
@@ -357,7 +357,7 @@ val_arg = function(arg_val,
     }
 }
 
-val_wi_id = function(func_used, id_arg, vals_arg) {
+val_wi_id = function(func_used, id_arg, val_cols) {
     if (is.list(id_arg)) {
         arg_name = deparse(substitute(arg_val))
         func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
@@ -369,7 +369,6 @@ val_wi_id = function(func_used, id_arg, vals_arg) {
             )
         } else {
             feedback = ''
-            val_cols = to_c(vals_arg)
             vals_num = length(val_cols)
             w_facts_num = length(id_arg)
             if (2 ** w_facts_num > vals_num) {

@@ -20,5 +20,5 @@ se( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ) )
 
 }
 \seealso{
-\code{\link{mean_ci}}
+\code{\link{mean_ci}}, \code{\link{plot_neat}}
 }
