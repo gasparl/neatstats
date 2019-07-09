@@ -8,9 +8,9 @@ One main point is that all functions use data frames with single row per subject
 
 Just run:
 
-```
+```R
 install.packages("devtools") # if "devtools" package is not yet installed
-library(devtools)
+library("devtools")
 install_github("gasparl/neatstats")
 ```
 
@@ -25,5 +25,5 @@ For details about each function, see [the manual](https://github.com/gasparl/nea
 ### Support
 
 * If you have any question about statistics, ask a statistician (not me).
-* If you run into an error despite carefully following the [documentation](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats.pdf"), open an issue or email me.
-* If you have sound reason to believe that some of the presented statistics (or functions) are really not optimal and/or could be improved in some plausible way, email me.
+* If you run into an error despite carefully following the [documentation](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats.pdf"), [open a new issue](https://github.com/gasparl/neatstats/issues "Issues") or [email me](mailto:lkcsgaspar@gmail.com).
+* If you have sound reason to believe that some of the presented statistics (or functions) are really not optimal and/or could be improved in some plausible way, [email me](mailto:lkcsgaspar@gmail.com).
