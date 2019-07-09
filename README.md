@@ -21,3 +21,9 @@ Then load with: `library("neatStats")`
 See the [EXAMPLE.md](https://github.com/gasparl/neatstats/blob/master/EXAMPLE.md "EXAMPLE.md") for an example pipeline for every step from raw data to reportable statistics.
 
 For details about each function, see [the manual](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats.pdf") (or enter `help(xy)` or `?xy` in R for any specific function).
+
+### Support
+
+* If you have any question about statistics, ask a statistician (not me).
+* If you run into an error despite carefully following the [documentation](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats.pdf"), open an issue or email me.
+* If you have sound reason to believe that some of the presented statistics (or functions) are really not optimal and/or could be improved in some plausible way, email me.
