@@ -333,6 +333,10 @@ This will produce a table as follows. (Well, this table here is formatted with M
 
 This is not so nice though: let's modify rounding of RTs to zero, and convert error rates to percentages. (For the latter, you need to use a vector input, so in this case the original column values, e.g. `subjects_merged$er_green_negative`, multiplied manually by `100`.)
 
+Also, here I set `to_clipboard = TRUE`, which puts the table on your clipboard with plain format. This you can copy into Excel, and from that to Word, and you have the table. (Unfortunately Word doesn't produce nice table when copied there directly.)
+
+(Note: you can also add new names for each column by the `aggr_neat`'s `new_name` parameter, but I didn't; it may be clearer to keep the original names here, and just rename them in the final table in Word.)
+
 ```R
 table_neat(
     list(
