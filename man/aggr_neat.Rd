@@ -37,9 +37,9 @@ written simply as \code{method = "correct"}. The complementary ratio, of
 include only \code{"correct"} and \code{"incorrent"} elements, and
 calculate their ratio; see below.)}
 
-\item{group_by}{The name of the column in the \code{dat} data frame,
-containing the vector of factors by which the statistics are grouped. (Can
-be given either with or without quotes.)}
+\item{group_by}{String, or vector of strings: the name(s) of the column(s) in
+the \code{dat} data frame, containing the vector(s) of factors by which the
+statistics are grouped.}
 
 \item{filt}{An expression to filter, by column values, the entire \code{dat}
 data frame before performing the aggregation. The expression should use
@@ -55,7 +55,8 @@ input variable name is used).}
 \item{round_to}{Number of digits after the decimal point to round to, when using \code{"+sd"} in \code{method}.}
 }
 \value{
-A data frame with the statistics per group.
+A data frame with the statistics per group, with a single column
+  (\code{"aggr_group"}) indicating the grouping.
 }
 \description{
 Returns aggregated values per group for given variable. Serves
@@ -71,22 +72,25 @@ aggr_neat(mtcars, wt)
 aggr_neat(mtcars, wt, new_name = 'weight')
 
 # grouped by cyl (Number of cylinders)
-aggr_neat(mtcars, wt, group_by = cyl)
+aggr_neat(mtcars, wt, group_by = 'cyl')
+
+# grouped by cyl and gear
+aggr_neat(mtcars, wt, group_by = c('cyl', 'gear'))
 
 # prefix for group names
-aggr_neat(mtcars, wt, group_by = cyl, prefix = 'cyl')
+aggr_neat(mtcars, wt, group_by = 'cyl', prefix = 'cyl')
 
 # filter to only have cyl larger than  4
-aggr_neat(mtcars, wt, group_by = cyl, filt = cyl > 4)
+aggr_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
 
 # filter to only have hp (Gross horsepower) smaller than  200
-aggr_neat(mtcars, wt, group_by = cyl, filt = hp < 200)
+aggr_neat(mtcars, wt, group_by = 'cyl', filt = hp < 200)
 
 # combine two filters above, and add prefix
 aggr_neat(
     mtcars,
     wt,
-    group_by = cyl,
+    group_by = 'cyl',
     filt = (hp < 200 & cyl > 4),
     prefix = 'filtered'
 )
@@ -94,17 +98,17 @@ aggr_neat(
 # add SD (and round output numbers to 2)
 aggr_neat(mtcars,
           wt,
-          group_by = cyl,
+          group_by = 'cyl',
           method = 'mean+sd',
           round_to = 2)
 
 # now medians instead of means
-aggr_neat(mtcars, wt, group_by = cyl, method = median)
+aggr_neat(mtcars, wt, group_by = 'cyl', method = median)
 
 # with SD
 aggr_neat(mtcars,
           wt,
-          group_by = cyl,
+          group_by = 'cyl',
           method = 'median+sd',
           round_to = 1)
 
@@ -115,13 +119,19 @@ aggr_neat(mtcars, gear, method = '4')
 aggr_neat(mtcars, gear, method = '4, 5')
 
 # same ratio calculated per each cyl
-aggr_neat(mtcars, gear, group_by = cyl, method = '4, 5')
+aggr_neat(mtcars, gear, group_by = 'cyl', method = '4, 5')
+
+# per each cyl and per vs (engine type)
+aggr_neat(mtcars,
+          gear,
+          group_by = c('cyl', 'vs'),
+          method = '4, 5')
 
 # ratio of gear 3 per gear 3 and 5
 aggr_neat(
     mtcars,
     gear,
-    group_by = cyl,
+    group_by = 'cyl',
     method = '3',
     filt = gear \%in\% c(3, 5)
 )
@@ -130,7 +140,7 @@ aggr_neat(
 aggr_neat(
     mtcars,
     gear,
-    group_by = cyl,
+    group_by = 'cyl',
     method = function(v) {
         c(my_mean = mean(v), my_median = median(v))
     }
@@ -140,7 +150,7 @@ aggr_neat(
 aggr_neat(
     mtcars,
     gear,
-    group_by = cyl,
+    group_by = 'cyl',
     method = function(v) {
         c(mean = mean(v),
           median = median(v),

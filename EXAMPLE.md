@@ -90,7 +90,7 @@ for (file_name in filenames) {
     rts = aggr_neat(
         subject_data,
         rt,
-        group_by = 'color, valence',
+        group_by = c('color', 'valence'),
         method = mean,
         prefix = 'rt'
     )
@@ -98,7 +98,7 @@ for (file_name in filenames) {
     ers = aggr_neat(
         subject_data,
         response,
-        group_by = 'color, valence',
+        group_by = c('color', 'valence'),
         method = 'incorrect',
         prefix = 'er',
         filt = (response %in% c('correct', 'incorrect'))
@@ -149,6 +149,8 @@ plot_neat(
 )
 ```
 
+![Mean+sd plot.](example_images/example_image_1.tiff)
+
 All seems as expected. But how sure are we about these apparent differences? Even before statistical comparisons, we can take a look at the CIs of the means.
 
 ```R
@@ -168,6 +170,8 @@ plot_neat(
     eb_method = mean_ci
 )
 ```
+
+![Mean+ci plot.](example_images/example_image_2.tiff)
 
 Seems convincing. Still, we can also look at medians and median absolute deviation to control for outliers and see whether the picture changes then.
 
@@ -189,6 +193,8 @@ plot_neat(
     eb_method = mad
 )
 ```
+
+![Median+mad plot.](example_images/example_image_3.tiff)
 
 Pretty much the same.
 
@@ -266,7 +272,6 @@ anova_neat(
 )
 ```
 
-
 My output is:
 > F(1,22) = 29273.60, p < .001, ηp2 = .999, 90% CI [.999, .999]. ((Intercept))  
 > F(1,22) = 2.26, p = .147, ηp2 = .093, 90% CI [0, .295], BF01 = 3.52. (color)  
@@ -275,10 +280,13 @@ My output is:
 
 Interaction significant as expected.
 
+Now to explore the interaction in the full vision group, you could do various t-tests (4 in "parallel" and even 2 "crosswise", why not), but perhaps what's interesting is to check whether there is a significant difference between red and green in case of either negative or positive words.
 
-
+First, for convenience, I create a new data frame with only full vision group.
 
 subjects_fullv = subjects_merged[subjects_merged$condition == 'fullvision', ]
+
+Now test red vs. green for negative words.
 
 t_neat(subjects_fullv$rt_green_negative,
        subjects_fullv$rt_red_negative,
@@ -287,14 +295,15 @@ t_neat(subjects_fullv$rt_green_negative,
        
 > t(22) = 7.13, p < .001, d = 1.49, 95% CI [0.88, 2.08], BF10 = 4.44 × 10^4.
 
+Now red vs. green for positive words.
+
 t_neat(subjects_fullv$rt_green_positive,
        subjects_fullv$rt_red_positive,
        pair = T)
        
 > t(22) = –6.55, p < .001, d = –1.37, 95% CI [–1.93, –0.79], BF10 = 1.35 × 10^4.
 
-
-table to show basic data
+Both significant. All left to do is print a nice table to show means and SDs as customary.
 
 ```R
 table_neat(
@@ -312,10 +321,15 @@ table_neat(
 )
 ```
 
+This will produce a table as follows. (Well, this table here is formatted with Markdown notation, but the names and numbers are verbatim.)
+
 | aggr_group | rt_green_negative | rt_green_positive | rt_red_negative | rt_red_positive | er_green_negative | er_green_positive | er_red_negative | er_red_positive |
 |------------|-------------------|-------------------|-----------------|-----------------|-------------------|-------------------|-----------------|-----------------|
 | colorblind | 431.25±18.05      | 396.72±20.79      | 437.00±28.63    | 400.26±29.69    | 0.15±0.07         | 0.11±0.06         | 0.14±0.06       | 0.10±0.05       |
 | fullvision | 486.54±28.94      | 391.66±24.29      | 430.74±20.27    | 435.68±24.70    | 0.16±0.06         | 0.10±0.05         | 0.16±0.07       | 0.14±0.05       |
+
+
+This is not so nice though: let's modify rounding of RTs to zero, and convert error rates to percentages. (For the latter, you need to use a vector input, so in this case the original column values, e.g. `subjects_merged$er_green_negative`, multiplied manually by `100`.)
 
 ```R
 table_neat(
@@ -338,3 +352,5 @@ table_neat(
 |------------|:-----------------:|------------------:|-----------------|-----------------|-----------------------------------------|-----------------------------------------|---------------------------------------|---------------------------------------|
 | colorblind |       431±18      |            397±21 | 437±29          | 400±30          | 14.57±6.69                              | 10.61±5.51                              | 14.13±5.97                            | 10.14±4.92                            |
 | fullvision |       487±29      |            392±24 | 431±20          | 436±25          | 16.46±6.26                              | 10.38±5.22                              | 15.55±6.91                            | 13.58±5.26                            |
+
+Voila, all done.

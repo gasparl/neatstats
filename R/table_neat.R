@@ -8,8 +8,10 @@
 #'   calculated. The \code{group_by}, \code{method}, and \code{prefix}
 #'   parameters are ignored when they are given in the \code{\link{table_neat}}
 #'   function; see Details.
-#' @param group_by A vector of factors by which the statistics are grouped.
-#'   (Overwrites \code{group_by} in \code{\link{aggr_neat}}; see Details.)
+#' @param group_by String, or vector of strings: the name(s) of the column(s) in
+#'   the \code{dat} given data frame, containing the vector(s) of factors by
+#'   which the statistics are grouped. (Overwrites \code{group_by} in
+#'   \code{\link{aggr_neat}}; see Details.)
 #' @param group_per String, "rows" or "columns". If set to "columns" (or just
 #'   "c" or "col", etc.), each column contains statistics for one group.
 #'   Otherwise (default), each row contains statistics for one group.
@@ -57,7 +59,7 @@
 #'     aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
 #'     aggr_neat(mtcars, hp, round_to = 0)
 #' ),
-#' group_by = cyl)
+#' group_by = 'cyl')
 #'
 #' # same as above, but with medians, and with groups per columns
 #' table_neat(
@@ -66,7 +68,7 @@
 #'         aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
 #'         aggr_neat(mtcars, hp, round_to = 0)
 #'     ),
-#'     group_by = cyl,
+#'     group_by = 'cyl',
 #'     method = 'median+sd',
 #'     group_per = 'columns'
 #' )
@@ -164,7 +166,7 @@
 #'     rts = aggr_neat(
 #'         subject_data,
 #'         rt,
-#'         group_by = 'color, valence',
+#'         group_by = c('color', 'valence'),
 #'         method = mean,
 #'         prefix = 'rt'
 #'     )
@@ -173,7 +175,7 @@
 #'     ers = aggr_neat(
 #'         subject_data,
 #'         response,
-#'         group_by = 'color, valence',
+#'         group_by = c('color', 'valence'),
 #'         method = 'incorrect',
 #'         prefix = 'er',
 #'         filt = (response %in% c('correct', 'incorrect'))
@@ -219,13 +221,13 @@ table_neat = function(values_list,
                       ), 1)))
         return(transp(values_list, transpose))
     }
-    group_by = deparse(substitute(group_by))
     tryCatch({
         pkg.globals$my_unique_grouping_var = group_by
         pkg.globals$my_unique_method = method
         validate_args(match.call(),
                       list(
                           val_arg(values_list, c('list')),
+                          val_arg(group_by, c('null', 'char')),
                           val_arg(group_per, c('char'), 1),
                           val_arg(to_clipboard, c('bool'), 1),
                           val_arg(method, c('function', 'char'), 1)

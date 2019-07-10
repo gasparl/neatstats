@@ -14,8 +14,10 @@ calculated. The \code{group_by}, \code{method}, and \code{prefix}
 parameters are ignored when they are given in the \code{\link{table_neat}}
 function; see Details.}
 
-\item{group_by}{A vector of factors by which the statistics are grouped.
-(Overwrites \code{group_by} in \code{\link{aggr_neat}}; see Details.)}
+\item{group_by}{String, or vector of strings: the name(s) of the column(s) in
+the \code{dat} given data frame, containing the vector(s) of factors by
+which the statistics are grouped. (Overwrites \code{group_by} in
+\code{\link{aggr_neat}}; see Details.)}
 
 \item{group_per}{String, "rows" or "columns". If set to "columns" (or just
 "c" or "col", etc.), each column contains statistics for one group.
@@ -76,7 +78,7 @@ table_neat(list(
     aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
     aggr_neat(mtcars, hp, round_to = 0)
 ),
-group_by = cyl)
+group_by = 'cyl')
 
 # same as above, but with medians, and with groups per columns
 table_neat(
@@ -85,7 +87,7 @@ table_neat(
         aggr_neat(mtcars, wt, new_name = 'weight', round_to = 2),
         aggr_neat(mtcars, hp, round_to = 0)
     ),
-    group_by = cyl,
+    group_by = 'cyl',
     method = 'median+sd',
     group_per = 'columns'
 )
@@ -183,7 +185,7 @@ for (file_name in filenames) {
     rts = aggr_neat(
         subject_data,
         rt,
-        group_by = 'color, valence',
+        group_by = c('color', 'valence'),
         method = mean,
         prefix = 'rt'
     )
@@ -192,7 +194,7 @@ for (file_name in filenames) {
     ers = aggr_neat(
         subject_data,
         response,
-        group_by = 'color, valence',
+        group_by = c('color', 'valence'),
         method = 'incorrect',
         prefix = 'er',
         filt = (response \%in\% c('correct', 'incorrect'))

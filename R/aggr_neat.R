@@ -28,9 +28,9 @@
 #'   "incorrent, tooslow"}. (Hint: filter to get ratios of subgroups, e.g. to
 #'   include only \code{"correct"} and \code{"incorrent"} elements, and
 #'   calculate their ratio; see below.)
-#' @param group_by The name of the column in the \code{dat} data frame,
-#'   containing the vector of factors by which the statistics are grouped. (Can
-#'   be given either with or without quotes.)
+#' @param group_by String, or vector of strings: the name(s) of the column(s) in
+#'   the \code{dat} data frame, containing the vector(s) of factors by which the
+#'   statistics are grouped.
 #' @param filt An expression to filter, by column values, the entire \code{dat}
 #'   data frame before performing the aggregation. The expression should use
 #'   column names alone; see Examples.
@@ -40,7 +40,8 @@
 #'   be \code{"aggr_value"} (or, if used with \code{\link{table_neat}}, the
 #'   input variable name is used).
 #' @param round_to Number of digits after the decimal point to round to, when using \code{"+sd"} in \code{method}.
-#' @return A data frame with the statistics per group.
+#' @return A data frame with the statistics per group, with a single column
+#'   (\code{"aggr_group"}) indicating the grouping.
 #' @seealso \code{\link{table_neat}} to create full tables using multiple
 #'   variables
 #' @examples
@@ -53,22 +54,25 @@
 #' aggr_neat(mtcars, wt, new_name = 'weight')
 #'
 #' # grouped by cyl (Number of cylinders)
-#' aggr_neat(mtcars, wt, group_by = cyl)
+#' aggr_neat(mtcars, wt, group_by = 'cyl')
+#'
+#' # grouped by cyl and gear
+#' aggr_neat(mtcars, wt, group_by = c('cyl', 'gear'))
 #'
 #' # prefix for group names
-#' aggr_neat(mtcars, wt, group_by = cyl, prefix = 'cyl')
+#' aggr_neat(mtcars, wt, group_by = 'cyl', prefix = 'cyl')
 #'
 #' # filter to only have cyl larger than  4
-#' aggr_neat(mtcars, wt, group_by = cyl, filt = cyl > 4)
+#' aggr_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
 #'
 #' # filter to only have hp (Gross horsepower) smaller than  200
-#' aggr_neat(mtcars, wt, group_by = cyl, filt = hp < 200)
+#' aggr_neat(mtcars, wt, group_by = 'cyl', filt = hp < 200)
 #'
 #' # combine two filters above, and add prefix
 #' aggr_neat(
 #'     mtcars,
 #'     wt,
-#'     group_by = cyl,
+#'     group_by = 'cyl',
 #'     filt = (hp < 200 & cyl > 4),
 #'     prefix = 'filtered'
 #' )
@@ -76,17 +80,17 @@
 #' # add SD (and round output numbers to 2)
 #' aggr_neat(mtcars,
 #'           wt,
-#'           group_by = cyl,
+#'           group_by = 'cyl',
 #'           method = 'mean+sd',
 #'           round_to = 2)
 #'
 #' # now medians instead of means
-#' aggr_neat(mtcars, wt, group_by = cyl, method = median)
+#' aggr_neat(mtcars, wt, group_by = 'cyl', method = median)
 #'
 #' # with SD
 #' aggr_neat(mtcars,
 #'           wt,
-#'           group_by = cyl,
+#'           group_by = 'cyl',
 #'           method = 'median+sd',
 #'           round_to = 1)
 #'
@@ -97,13 +101,19 @@
 #' aggr_neat(mtcars, gear, method = '4, 5')
 #'
 #' # same ratio calculated per each cyl
-#' aggr_neat(mtcars, gear, group_by = cyl, method = '4, 5')
+#' aggr_neat(mtcars, gear, group_by = 'cyl', method = '4, 5')
+#'
+#' # per each cyl and per vs (engine type)
+#' aggr_neat(mtcars,
+#'           gear,
+#'           group_by = c('cyl', 'vs'),
+#'           method = '4, 5')
 #'
 #' # ratio of gear 3 per gear 3 and 5
 #' aggr_neat(
 #'     mtcars,
 #'     gear,
-#'     group_by = cyl,
+#'     group_by = 'cyl',
 #'     method = '3',
 #'     filt = gear %in% c(3, 5)
 #' )
@@ -112,7 +122,7 @@
 #' aggr_neat(
 #'     mtcars,
 #'     gear,
-#'     group_by = cyl,
+#'     group_by = 'cyl',
 #'     method = function(v) {
 #'         c(my_mean = mean(v), my_median = median(v))
 #'     }
@@ -122,7 +132,7 @@
 #' aggr_neat(
 #'     mtcars,
 #'     gear,
-#'     group_by = cyl,
+#'     group_by = 'cyl',
 #'     method = function(v) {
 #'         c(mean = mean(v),
 #'           median = median(v),
@@ -146,6 +156,7 @@ aggr_neat = function(dat,
                   list(
                       val_arg(dat, c('df')),
                       val_arg(method, c('function', 'char'), 1),
+                      val_arg(group_by, c('null', 'char')),
                       val_arg(prefix, c('char', 'null'), 1),
                       val_arg(new_name, c('char', 'null'), 1),
                       val_arg(round_to, c('num'), 1)
@@ -174,7 +185,7 @@ aggr_neat = function(dat,
         if (!is.null(pkg.globals$my_unique_grouping_var)) {
             group_by = pkg.globals$my_unique_grouping_var
         } else {
-            group_by = "NULL"
+            group_by = NULL
         }
         if (is.null(new_name)) {
             val_name = values
@@ -182,17 +193,14 @@ aggr_neat = function(dat,
             val_name = new_name
         }
     } else {
-        group_by = deparse(substitute(group_by))
         if (is.null(new_name)) {
             val_name = 'aggr_value'
         } else {
             val_name = new_name
         }
     }
-    if (group_by != "NULL") {
-        group_by = gsub(pattern = "\\(|\\)|'|\"",
-                        replacement = '',
-                        x = group_by)
+    if (!is.null(group_by)) {
+        group_by = paste(group_by, collapse = ',')
         group_by = eval(parse(text = paste0(
             'with(data = dat, list(',
             group_by,
