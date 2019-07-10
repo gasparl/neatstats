@@ -151,7 +151,7 @@ plot_neat(
 
 ![Mean+sd plot.](example_images/example_image_1.png)
 
-All seems as expected. But how sure are we about these apparent differences? Even before statistical comparisons, we can take a look at the CIs of the means.
+All seems as expected. But how sure are we about these apparent differences? Even before statistical comparisons, we can take a look at the 95% CIs of the means.
 
 ```R
 plot_neat(
