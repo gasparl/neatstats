@@ -242,9 +242,9 @@ anova_neat(
 ```
 
 My output is:
-> F(1,36) = 41775.29, p < .001, ηp2 = .999, 90% CI [.999, .999]. ((Intercept))
-> F(1,36) = 1.35, p = .253, ηp2 = .036, 90% CI [0, .173], BF01 = 2.86. (color)
-> F(1,36) = 68.31, p < .001, ηp2 = .655, 90% CI [.481, .744], BF10 = 1.48 × 10^13. (valence)
+> F(1,36) = 41775.29, p < .001, ηp2 = .999, 90% CI [.999, .999]. ((Intercept))  
+> F(1,36) = 1.35, p = .253, ηp2 = .036, 90% CI [0, .173], BF01 = 2.86. (color)  
+> F(1,36) = 68.31, p < .001, ηp2 = .655, 90% CI [.481, .744], BF10 = 1.48 × 10^13. (valence)  
 > F(1,36) = 0.08, p = .780, ηp2 = .002, 90% CI [0, .074], BF01 = 4.06. (color × valence)
 
 As expected, no significant interaction. BF also has substantial evidence here for equivalence. (If you are not convinced; just change `filenames = 1:60` in the beginning to `filenames = 1:100` or similar, and rerun the analysis with this increased sample.)
@@ -268,9 +268,9 @@ anova_neat(
 
 
 My output is:
-> F(1,22) = 29273.60, p < .001, ηp2 = .999, 90% CI [.999, .999]. ((Intercept))
-> F(1,22) = 2.26, p = .147, ηp2 = .093, 90% CI [0, .295], BF01 = 3.52. (color)
-> F(1,22) = 73.98, p < .001, ηp2 = .771, 90% CI [.588, .840], BF10 = 7.59 × 10^5. (valence)
+> F(1,22) = 29273.60, p < .001, ηp2 = .999, 90% CI [.999, .999]. ((Intercept))  
+> F(1,22) = 2.26, p = .147, ηp2 = .093, 90% CI [0, .295], BF01 = 3.52. (color)  
+> F(1,22) = 73.98, p < .001, ηp2 = .771, 90% CI [.588, .840], BF10 = 7.59 × 10^5. (valence)  
 > F(1,22) = 65.91, p < .001, ηp2 = .750, 90% CI [.555, .825], BF10 = 2.58 × 10^13. (color × valence)
 
 Interaction significant as expected.
