@@ -58,7 +58,7 @@
 #'@param type Strong: \code{"line"} (default) or \code{"bar"}. The former gives
 #'  line plot, the latter gives bar plot.
 #'@param dodge Number. Specifies the amount by which the adjacent bars or dots
-#'  \code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
+#'  '\code{\link[ggplot2:position_dodge]{dodge}}' each other (i.e., are
 #'  displaced compared to each other). (Default is \code{0.1} for \code{line}
 #'  plots, and \code{0.9} for \code{bar} plots.)
 #'@param bar_colors Vector of strings, specifying colors from which all colors

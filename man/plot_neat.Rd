@@ -76,7 +76,7 @@ default, the third given factor is used.)}
 line plot, the latter gives bar plot.}
 
 \item{dodge}{Number. Specifies the amount by which the adjacent bars or dots
-\code{\link[ggplot2:position_dodge]{'dodge'}} each other (i.e., are
+'\code{\link[ggplot2:position_dodge]{dodge}}' each other (i.e., are
 displaced compared to each other). (Default is \code{0.1} for \code{line}
 plots, and \code{0.9} for \code{bar} plots.)}
 

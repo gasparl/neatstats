@@ -284,23 +284,28 @@ Now to explore the interaction in the full vision group, you could do various t-
 
 First, for convenience, I create a new data frame with only full vision group.
 
+```R
 subjects_fullv = subjects_merged[subjects_merged$condition == 'fullvision', ]
+```
 
 Now test red vs. green for negative words.
 
+```R
 t_neat(subjects_fullv$rt_green_negative,
        subjects_fullv$rt_red_negative,
        pair = T)
-       
-       
+```
+
 > t(22) = 7.13, p < .001, d = 1.49, 95% CI [0.88, 2.08], BF10 = 4.44 × 10^4.
 
 Now red vs. green for positive words.
 
+```R
 t_neat(subjects_fullv$rt_green_positive,
        subjects_fullv$rt_red_positive,
        pair = T)
-       
+```
+
 > t(22) = –6.55, p < .001, d = –1.37, 95% CI [–1.93, –0.79], BF10 = 1.35 × 10^4.
 
 Both significant. All left to do is print a nice table to show means and SDs as customary.
