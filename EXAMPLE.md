@@ -63,7 +63,7 @@ filenames = 1:60
 
 The function above will simulate data from participants who complete a task with positive and negative words (e.g. "happy", "peaceful" or "terror", "evil") displayed in green or red, classifying each word with key presses according to valence (positive vs. negative). The hypotheses are that (1) negative words have slower responses in general, and (2) positive words displayed in red and negative words displayed in green have slower responses. Error rates should follow similar pattern (i.e. more incorrect responses are expected in cases where slower responses are expected). What's more, this crazy experiment took color-blind participants in one group, in addition to a group with full color vision. In the former case, color effects should be absent: no Valence x Color interaction in this group.
 
-You can check how the hypothetical data looks like:
+You can check how a hypothetical (randomly generated) participant data looks like:
 ```R
 head(next_subject())
 ```
