@@ -68,7 +68,7 @@ You can check how a hypothetical (randomly generated) participant data looks lik
 head(next_subject())
 ```
 
-To illustrate a real case, let's say you have data files from an experiment all files start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(script_path())`, if the files are there. Then you can collect all file names with `file_names = list.files(pattern = "^color_exp.*txt$")`.
+To illustrate a real case, let's say you have data files from an experiment, and the file names start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(script_path())`, if the files are there. Then you can collect all file names with `filenames = list.files(pattern = "^color_exp.*txt$")`. (Here for the simulation I just have the `filenames` assigned as numbers, see above.)
 
 Now loop through all data files to collect the data.
 
