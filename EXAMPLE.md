@@ -149,7 +149,7 @@ plot_neat(
 )
 ```
 
-![Mean+sd plot.](example_images/example_image_1.tiff)
+![Mean+sd plot.](example_images/example_image_1.png)
 
 All seems as expected. But how sure are we about these apparent differences? Even before statistical comparisons, we can take a look at the CIs of the means.
 
@@ -171,7 +171,7 @@ plot_neat(
 )
 ```
 
-![Mean+ci plot.](example_images/example_image_2.tiff)
+![Mean+ci plot.](example_images/example_image_2.png)
 
 Seems convincing. Still, we can also look at medians and median absolute deviation to control for outliers and see whether the picture changes then.
 
@@ -194,7 +194,7 @@ plot_neat(
 )
 ```
 
-![Median+mad plot.](example_images/example_image_3.tiff)
+![Median+mad plot.](example_images/example_image_3.png)
 
 Pretty much the same.
 
