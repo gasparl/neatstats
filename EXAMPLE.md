@@ -68,16 +68,16 @@ You can check how the hypothetical data looks like:
 head(next_subject())
 ```
 
-To illustrate a real case, let's say you have data files from an experiment all files start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(paste0(script_path()))`, if the files are there. Then you can collect all file names with `file_names = list.files(pattern = "^color_exp.*txt$")`.
-
-The following line just removes the `subjects_merged` if already exists (in case the script below was already run):
-```R
-if (exists("subjects_merged")) { rm(subjects_merged) }
-```
+To illustrate a real case, let's say you have data files from an experiment all files start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(script_path())`, if the files are there. Then you can collect all file names with `file_names = list.files(pattern = "^color_exp.*txt$")`.
 
 Now loop through all data files to collect the data.
 
 ```R
+# first, just remove the `subjects_merged` if already exists
+# (in case the loop below has already been run before)
+if (exists("subjects_merged")) { rm(subjects_merged) }
+
+# now the loop
 for (file_name in filenames) {
     subject_data = next_subject(file_name)
     # with real data, this would be e.g.:
@@ -94,7 +94,7 @@ for (file_name in filenames) {
         method = mean,
         prefix = 'rt'
     )
-    # same with error rates
+    # same with error rates; get ratio of 'incorrect'
     ers = aggr_neat(
         subject_data,
         response,
@@ -294,7 +294,9 @@ t_neat(subjects_fullv$rt_green_positive,
 > t(22) = –6.55, p < .001, d = –1.37, 95% CI [–1.93, –0.79], BF10 = 1.35 × 10^4.
 
 
-# table to show basic data
+table to show basic data
+
+```R
 table_neat(
     list(
         aggr_neat(subjects_merged, rt_green_negative),
@@ -308,7 +310,14 @@ table_neat(
     ),
     group_by = 'condition'
 )
+```
 
+| aggr_group | rt_green_negative | rt_green_positive | rt_red_negative | rt_red_positive | er_green_negative | er_green_positive | er_red_negative | er_red_positive |
+|------------|-------------------|-------------------|-----------------|-----------------|-------------------|-------------------|-----------------|-----------------|
+| colorblind | 431.25±18.05      | 396.72±20.79      | 437.00±28.63    | 400.26±29.69    | 0.15±0.07         | 0.11±0.06         | 0.14±0.06       | 0.10±0.05       |
+| fullvision | 486.54±28.94      | 391.66±24.29      | 430.74±20.27    | 435.68±24.70    | 0.16±0.06         | 0.10±0.05         | 0.16±0.07       | 0.14±0.05       |
+
+```R
 table_neat(
     list(
         aggr_neat(subjects_merged, rt_green_negative, round_to = 0),
@@ -323,3 +332,9 @@ table_neat(
     group_by = 'condition',
     to_clipboard = TRUE
 )
+```
+
+| aggr_group | rt_green_negative | rt_green_positive | rt_red_negative | rt_red_positive | subjects_merged$er_green_negative * 100 | subjects_merged$er_green_positive * 100 | subjects_merged$er_red_negative * 100 | subjects_merged$er_red_positive * 100 |
+|------------|:-----------------:|------------------:|-----------------|-----------------|-----------------------------------------|-----------------------------------------|---------------------------------------|---------------------------------------|
+| colorblind |       431±18      |            397±21 | 437±29          | 400±30          | 14.57±6.69                              | 10.61±5.51                              | 14.13±5.97                            | 10.14±4.92                            |
+| fullvision |       487±29      |            392±24 | 431±20          | 436±25          | 16.46±6.26                              | 10.38±5.22                              | 15.55±6.91                            | 13.58±5.26                            |
