@@ -429,27 +429,35 @@ plot_neat = function(data_per_subject,
         }
     }
     if (type == 'line') {
-        the_plot = ggplot2::ggplot(data = to_plot, aes(x = to_plot[[p_mid]],
-                                                       y = to_plot$x.main,
-                                                       group = to_plot[[p_close]])) +
+        the_plot = ggplot2::ggplot(data = to_plot, aes(
+            x = to_plot[[p_mid]],
+            y = to_plot$x.main,
+            group = to_plot[[p_close]]
+        )) +
             geom_line(aes(linetype = to_plot[[p_close]]),
                       position = position_dodge(dodge)) +
             geom_point(aes(shape = to_plot[[p_close]]),
                        position = position_dodge(dodge))  +
-            theme_bw()  +
-            labs(x = re_n(p_mid, factor_names), y = y_title) +
             scale_shape_discrete(name = re_n(p_close, factor_names)) +
             scale_linetype_discrete(name = re_n(p_close, factor_names))
     } else {
         color_gen = grDevices::colorRampPalette(bar_colors)
-        the_plot = ggplot2::ggplot(data = to_plot, aes(x = to_plot[[p_mid]],
-                                                       y = to_plot$x.main,
-                                                       fill = to_plot[[p_close]])) +
+        the_plot = ggplot2::ggplot(data = to_plot, aes(
+            x = to_plot[[p_mid]],
+            y = to_plot$x.main,
+            fill = to_plot[[p_close]]
+        )) +
             geom_bar(stat = "identity", position = position_dodge(dodge)) +
-            theme_bw() + scale_fill_manual(values = color_gen(length(unique(to_plot[[p_close]]))),
-                                           name = re_n(p_close, factor_names)) +
-            labs(x = re_n(p_mid, factor_names), y = y_title)
+            scale_fill_manual(values = color_gen(length(unique(to_plot[[p_close]]))),
+                              name = re_n(p_close, factor_names))
     }
+    the_plot = the_plot + theme_bw() +
+        labs(x = re_n(p_mid, factor_names), y = y_title) +
+        theme(panel.grid.major.x = element_blank()) +
+        theme(
+            panel.grid.major.y = element_line(color = "#d5d5d5"),
+            panel.grid.minor.y = element_line(color = "#d5d5d5")
+        )
     if (!is.null(eb_method)) {
         the_plot = the_plot + geom_errorbar(aes(
             ymin = to_plot$x.main - to_plot$x.eb,
