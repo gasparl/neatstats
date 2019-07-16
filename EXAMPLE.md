@@ -128,7 +128,7 @@ for (file_name in filenames) {
 
 Ta-da! The data is ready for analysis.
 
-At this point you might want to list column names, for convenient copy-pasting: `names(subjects_merged)`. (But here I already copied them for the functions below.)
+At this point you might want to list column names, for convenient copy-pasting (and quick overview of the content): `str(subjects_merged)`. (But here I already copied them for the functions below.)
 
 Now let's plot all the data.
 

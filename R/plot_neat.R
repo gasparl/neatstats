@@ -471,3 +471,45 @@ plot_neat = function(data_per_subject,
     }
     return(the_plot)
 }
+
+
+plot_dens = function(dat, m1, m2, y_label, x_label, thres) {
+    the_plot = ggplot(data = dat, aes(
+        x = vals,
+        group = facts,
+        fill = facts
+    )) + geom_density(alpha = 0.4) +
+        theme_classic() +
+        theme(
+            text = element_text(family = "serif"),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            axis.line.y = element_blank(),
+            axis.line.x = element_line()
+        ) +
+        scale_fill_grey(start = 0.8, end = 0.0) +
+        geom_vline(
+            xintercept = c(m1, m2) ,
+            color = "#b3b3b3",
+            linetype = "dashed",
+            size = 0.5
+        )  +
+        ylab(y_label) + xlab(x_label) +
+        annotate(
+            geom = 'segment',
+            y = Inf,
+            yend = Inf,
+            x = -Inf,
+            xend = Inf
+        )
+    if (!is.null(thres)) {
+        the_plot = the_plot +
+            geom_vline(
+                xintercept = c(thres) ,
+                color = "#8f8f8f",
+                linetype = "solid",
+                size = 0.5
+            )
+    }
+    return(the_plot)
+}
