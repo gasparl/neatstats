@@ -7,7 +7,9 @@
 t_neat(var1, var2, pair = FALSE, greater = NULL, ci = NULL,
   bf_added = TRUE, auc_added = FALSE, r_added = TRUE,
   for_table = FALSE, test_title = "Descriptives:", round_descr = 2,
-  round_auc = 3, auc_greater = "1")
+  round_auc = 3, auc_greater = "1", plot_densities = FALSE,
+  y_label = "density estimate", x_label = "values",
+  factor_name = NULL, var_names = c("1", "2"))
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -52,6 +54,22 @@ have greater values for 'cases' as opposed to 'controls': "1" (default;
 \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
 (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
 confused with one-sided tests; see Details.}
+
+\item{plot_densities}{Logical. If \code{TRUE}, creates a density plot (i.e.,
+\code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
+variables.}
+
+\item{y_label}{String or \code{NULL}; the label for the \code{y} axis.
+(Default: \code{"density estimate"}.)}
+
+\item{x_label}{String or \code{NULL}; the label for the \code{x} axis.
+(Default: \code{"values"}.)}
+
+\item{factor_name}{String or \code{NULL}; factor legend title. (Default:
+\code{NULL}.)}
+
+\item{var_names}{A vector of two strings; the variable names to be displayed
+in the legend. (Default: \code{c("1", "2")}.)}
 }
 \value{
 Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
@@ -66,6 +84,9 @@ Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
  with the \code{\link{roc_neat}} function. The other is
  '\code{best_thresholds}', which contains the best threshold value(s) for
  classification, along with corresponding specificity and sensitivity.
+ Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
+ well as returned as a \code{\link[ggplot2]{ggplot}} object, named
+ \code{density_plot}.
 }
 \description{
 Welch's \code{\link[stats:t.test]{t-test}} results

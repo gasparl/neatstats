@@ -35,6 +35,18 @@
 #'  \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
 #'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
 #'  confused with one-sided tests; see Details.
+#'@param plot_densities Logical. If \code{TRUE}, creates a density plot (i.e.,
+#'  \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
+#'  variables.
+#'@param y_label String or \code{NULL}; the label for the \code{y} axis.
+#'  (Default: \code{"density estimate"}.)
+#'@param x_label String or \code{NULL}; the label for the \code{x} axis.
+#'  (Default: \code{"values"}.)
+#'@param factor_name String or \code{NULL}; factor legend title. (Default:
+#'  \code{NULL}.)
+#'@param var_names A vector of two strings; the variable names to be displayed
+#'  in the legend. (Default: \code{c("1", "2")}.)
+#'
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of
 #' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
@@ -75,6 +87,9 @@
 #'  with the \code{\link{roc_neat}} function. The other is
 #'  '\code{best_thresholds}', which contains the best threshold value(s) for
 #'  classification, along with corresponding specificity and sensitivity.
+#'  Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
+#'  well as returned as a \code{\link[ggplot2]{ggplot}} object, named
+#'  \code{density_plot}.
 #'
 #'@note The Welch's t-test is calculated via
 #'\code{\link[stats:t.test]{stats::t.test}}.
@@ -139,7 +154,12 @@ t_neat = function(var1,
                   test_title = "Descriptives:",
                   round_descr = 2,
                   round_auc = 3,
-                  auc_greater = '1') {
+                  auc_greater = '1',
+                  plot_densities = FALSE,
+                  y_label = "density estimate",
+                  x_label = "values",
+                  factor_name = NULL,
+                  var_names = c("1", "2")) {
     validate_args(
         match.call(),
         list(
@@ -155,7 +175,12 @@ t_neat = function(var1,
             val_arg(test_title, c('char'), 1),
             val_arg(round_descr, c('num'), 1),
             val_arg(round_auc, c('num'), 1),
-            val_arg(auc_greater, c('char'), 1, c('1', '2'))
+            val_arg(auc_greater, c('char'), 1, c('1', '2')),
+            val_arg(plot_densities, c('bool'), 1),
+            val_arg(y_label, c('null', 'char'), 1),
+            val_arg(x_label, c('null', 'char'), 1),
+            val_arg(factor_name, c('null', 'char'), 1),
+            val_arg(var_names, c('char'), 0)
         )
     )
     greater = toString(greater)
@@ -282,30 +307,92 @@ t_neat = function(var1,
         )
         max_acc = as.numeric(pROC::coords(the_roc, x = "best", ret = "accuracy"))[1]
         best_coords = pROC::coords(the_roc, x = "best")
-        invisible(list(
-            stats = c(
-                t = as.numeric(t),
-                p = pvalue,
-                d = as.numeric(d_orig),
-                bf = as.numeric(bf),
-                auc = pROC::auc(the_roc),
-                accuracy = max_acc
-            ),
-            roc_obj = the_roc,
-            best_thresholds = best_coords
-        ))
+        the_auc = pROC::auc(the_roc)
+        if (class(best_coords) == "matrix") {
+            plot_thres = best_coords["threshold",]
+        } else {
+            plot_thres = best_coords["threshold"]
+        }
+        plot_thres = plot_thres[!plot_thres %in% c(-Inf, Inf)]
     } else {
-        invisible(list(
-            stats = c(
-                t = as.numeric(t),
-                p = pvalue,
-                d = as.numeric(d_orig),
-                bf = as.numeric(bf),
-                auc = NULL,
-                accuracy = NULL
-            ),
-            roc_obj = NULL,
-            best_thresholds = NULL
-        ))
+        the_auc = NULL
+        max_acc = NULL
+        the_roc = NULL
+        best_coords = NULL
+        plot_thres = NULL
     }
+    if (plot_densities == TRUE) {
+        the_plot = plot_dens(
+            v1 = var1,
+            v2 = var2,
+            y_label = y_label,
+            x_label = x_label,
+            thres = plot_thres,
+            factor_name = factor_name,
+            var_names = var_names
+        )
+        plot(the_plot)
+    } else {
+        the_plot = NULL
+    }
+    invisible(list(
+        stats = c(
+            t = as.numeric(t),
+            p = pvalue,
+            d = as.numeric(d_orig),
+            bf = as.numeric(bf),
+            auc = the_auc,
+            accuracy = max_acc
+        ),
+        roc_obj = the_roc,
+        best_thresholds = best_coords,
+        density_plot = the_plot
+    ))
+}
+
+## density plot
+
+plot_dens = function(v1, v2, y_label, x_label, thres, factor_name, var_names) {
+    dens_dat = data.frame(vals = c(v1, v2),
+                          facts = c(rep(var_names[1], length(v1)),
+                                    rep(var_names[2], length(v2))))
+    dens_dat$facts =  factor(dens_dat$facts, levels = var_names)
+    the_plot = ggplot(data = dens_dat, aes(
+        x = vals,
+        group = facts,
+        fill = facts
+    )) + geom_density(alpha = 0.4) +
+        theme_classic() +
+        theme(
+            text = element_text(family = "serif"),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            axis.line.y = element_blank(),
+            axis.line.x = element_line()
+        ) +
+        scale_fill_grey(name = factor_name, start = 0.2, end = 0.8) +
+        geom_vline(
+            xintercept = c(mean(v1), mean(v2)),
+            color = "#777777",
+            linetype = "dashed",
+            size = 0.5
+        )  +
+        ylab(y_label) + xlab(x_label) +
+        annotate(
+            geom = 'segment',
+            y = Inf,
+            yend = Inf,
+            x = -Inf,
+            xend = Inf
+        )
+    if (!is.null(thres)) {
+        the_plot = the_plot +
+            geom_vline(
+                xintercept = c(thres) ,
+                color = "#8f8f8f",
+                linetype = "solid",
+                size = 0.5
+            )
+    }
+    return(the_plot)
 }
