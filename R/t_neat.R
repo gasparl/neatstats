@@ -37,7 +37,10 @@
 #'  confused with one-sided tests; see Details.
 #'@param plot_densities Logical. If \code{TRUE}, creates a density plot (i.e.,
 #'  \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
-#'  variables.
+#'  variables. When \code{auc_added} is \code{TRUE} (and the AUC is at least
+#'  .5), the best threshold value for classification (maximal differentiation
+#'  accuracy) is added to the plot as vertical line. (In case of multiple best
+#'  thresholds with identical overall accuracy, all are added.)
 #'@param y_label String or \code{NULL}; the label for the \code{y} axis.
 #'  (Default: \code{"density estimate"}.)
 #'@param x_label String or \code{NULL}; the label for the \code{x} axis.
@@ -75,7 +78,7 @@
 #'values for males. (Or, easier, just add the expected larger values as
 #'\code{var1}.)
 #'
-#'@return Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
+#'@return Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
 #'  specified via the corresponding parameters) in APA style. Furthermore, when
 #'  assigned, returns a list, that contains a named vector '\code{stats}' with
 #'  the following elements: \code{t} (t value), \code{p} (p value), \code{d}
@@ -331,7 +334,7 @@ t_neat = function(var1,
             factor_name = factor_name,
             var_names = var_names
         )
-        plot(the_plot)
+        graphics::plot(the_plot)
     } else {
         the_plot = NULL
     }
@@ -358,9 +361,8 @@ plot_dens = function(v1, v2, y_label, x_label, thres, factor_name, var_names) {
                                     rep(var_names[2], length(v2))))
     dens_dat$facts =  factor(dens_dat$facts, levels = var_names)
     the_plot = ggplot(data = dens_dat, aes(
-        x = vals,
-        group = facts,
-        fill = facts
+        x = dens_dat$vals,
+        fill = dens_dat$facts
     )) + geom_density(alpha = 0.4) +
         theme_classic() +
         theme(

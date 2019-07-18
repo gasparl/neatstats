@@ -57,7 +57,10 @@ confused with one-sided tests; see Details.}
 
 \item{plot_densities}{Logical. If \code{TRUE}, creates a density plot (i.e.,
 \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
-variables.}
+variables. When \code{auc_added} is \code{TRUE} (and the AUC is at least
+.5), the best threshold value for classification (maximal differentiation
+accuracy) is added to the plot as vertical line. (In case of multiple best
+thresholds with identical overall accuracy, all are added.)}
 
 \item{y_label}{String or \code{NULL}; the label for the \code{y} axis.
 (Default: \code{"density estimate"}.)}
@@ -72,7 +75,7 @@ variables.}
 in the legend. (Default: \code{c("1", "2")}.)}
 }
 \value{
-Prints t-test statistics (including Cohen'd with CI, BF, and AUC, as
+Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
  specified via the corresponding parameters) in APA style. Furthermore, when
  assigned, returns a list, that contains a named vector '\code{stats}' with
  the following elements: \code{t} (t value), \code{p} (p value), \code{d}

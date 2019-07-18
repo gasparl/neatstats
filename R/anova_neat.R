@@ -27,7 +27,7 @@
 #'  the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
 #'  rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
 #'  's2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
-#'  must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+#'  must be unambiguous. E.g., for values \code{apple_a} and \code{apple_b}, do
 #'  not set levels \code{c('a','b')}, because \code{'a'} is also found in
 #'  \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 #'  make sure the values are correctly distinguished.) See also Examples.
@@ -99,7 +99,7 @@
 #'  parameter is set to \code{FALSE}.)
 #'
 #'  Confidence intervals are calculated, using the F value, via
-#'  \code{\link[MBESS:conf.limits.ncf]{MBESS::conf.limits.ncf}}, coverting
+#'  \code{\link[MBESS:conf.limits.ncf]{MBESS::conf.limits.ncf}}, converting
 #'  noncentrality parameters to partial eta squared as \code{ncp/(ncp+
 #'  df_nom+df_denom+1)} (Smithson, 2003).
 #'

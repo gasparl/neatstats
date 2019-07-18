@@ -26,7 +26,7 @@ in the \code{\link{table_neat}} function for summary tables.) If the string
 does not end with \code{"+sd"}, a ratio for the occurrences of given
 elements will be calculated. The elements must be specified simply divided
 by commas. The number of occurrences of these elements will be the
-numerator (divident), while the entire column length (i.e., number of all
+numerator (dividend), while the entire column length (i.e., number of all
 elements) will be the denominator (divisor). For example, if a column
 contains elements \code{"correct"}, \code{"incorrent"}, \code{"tooslow"},
 the ratio of \code{"correct"} to all other elements (i.e., including

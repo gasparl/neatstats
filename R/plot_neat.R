@@ -24,7 +24,7 @@
 #'  the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
 #'  rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
 #'  's2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
-#'  must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+#'  must be unambiguous. E.g., for values \code{apple_a} and \code{apple_b}, do
 #'  not set levels \code{c('a','b')}, because \code{'a'} is also found in
 #'  \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 #'  make sure the values are correctly distinguished.) See also Examples.
@@ -62,10 +62,14 @@
 #'  displaced compared to each other). (Default is \code{0.1} for \code{line}
 #'  plots, and \code{0.9} for \code{bar} plots.)
 #'@param bar_colors Vector of strings, specifying colors from which all colors
-#'  for any number of differring adjacent bars are interpolated. (If the number
+#'  for any number of differing adjacent bars are interpolated. (If the number
 #'  of given colors equal the number of different bars, the precise colors will
 #'  correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-#'  color gradient from dark grey to light grey.
+#'  color gradient from dark gray to light gray.
+#'@param line_colors Vector of strings, specifying colors from which all colors
+#'  for any number of differing vertically aligned dots and corresponding lines
+#'  are interpolated. The default \code{c('#444444', '#000000')} gives a color
+#'  gradient from dark gray to black.
 #'@param row_number Number. In case of multiple panels, the number of rows in
 #'  which the panels should be arranged. For example, with the default
 #'  \code{row_number = 1}, all panels will be displayed in one vertically
@@ -129,7 +133,7 @@
 #'     factor_names = c(grouping1 = 'experimental condition', grouping2 = 'gender')
 #' )
 #'\donttest{
-#' # same, but with different (lighter) grey scale bars
+#' # same, but with different (lighter) gray scale bars
 #' plot_neat(
 #'     dat_1,
 #'     values = 'value_1_a',
@@ -313,6 +317,7 @@ plot_neat = function(data_per_subject,
                      type = 'line',
                      dodge = NULL,
                      bar_colors = c('#333333', '#AAAAAA'),
+                     line_colors = c('#444444', '#000000'),
                      row_number = 1,
                      method = mean,
                      eb_method = stats::sd) {
@@ -337,6 +342,7 @@ plot_neat = function(data_per_subject,
             val_arg(type, c('char'), 1, c('bar', 'line')),
             val_arg(dodge, c('null', 'num')),
             val_arg(bar_colors, c('char'), 0),
+            val_arg(line_colors, c('char'), 0),
             val_arg(row_number, c('num'), 1),
             val_arg(method, c('function'), 1),
             val_arg(eb_method, c('null', 'function'), 1)
@@ -429,27 +435,58 @@ plot_neat = function(data_per_subject,
         }
     }
     if (type == 'line') {
+        color_gen = grDevices::colorRampPalette(line_colors)
+        palcolors = color_gen(length(unique(to_plot[[p_close]])))
         the_plot = ggplot2::ggplot(data = to_plot, aes(
             x = to_plot[[p_mid]],
             y = to_plot$x.main,
             group = to_plot[[p_close]]
         )) +
-            geom_line(aes(linetype = to_plot[[p_close]]),
+            geom_line(aes(linetype = to_plot[[p_close]], color = to_plot[[p_close]]),
                       position = position_dodge(dodge)) +
-            geom_point(aes(shape = to_plot[[p_close]]),
+            geom_point(aes(shape = to_plot[[p_close]], color = to_plot[[p_close]]),
                        position = position_dodge(dodge))  +
             scale_shape_discrete(name = re_n(p_close, factor_names)) +
-            scale_linetype_discrete(name = re_n(p_close, factor_names))
+            scale_linetype_discrete(name = re_n(p_close, factor_names)) +
+            scale_color_manual(values = palcolors,
+                              name = re_n(p_close, factor_names))
+        if (!is.null(eb_method)) {
+            the_plot = the_plot + geom_errorbar(
+                aes(
+                    ymin = to_plot$x.main - to_plot$x.eb,
+                    ymax = to_plot$x.main + to_plot$x.eb,
+                    width = 0.2,
+                    color = to_plot[[p_close]]
+                ),
+                position = position_dodge(dodge)
+            )
+        }
     } else {
         color_gen = grDevices::colorRampPalette(bar_colors)
-        the_plot = ggplot2::ggplot(data = to_plot, aes(
-            x = to_plot[[p_mid]],
-            y = to_plot$x.main,
-            fill = to_plot[[p_close]]
-        )) +
-            geom_bar(stat = "identity", position = position_dodge(dodge)) +
-            scale_fill_manual(values = color_gen(length(unique(to_plot[[p_close]]))),
+        palcolors = color_gen(length(unique(to_plot[[p_close]])))
+        the_plot = ggplot2::ggplot(data = to_plot,
+                                   aes(
+                                       x = to_plot[[p_mid]],
+                                       y = to_plot$x.main,
+                                       fill = to_plot[[p_close]]
+                                   )) +
+            geom_bar(stat = "identity",
+                     position = position_dodge(dodge)) +
+            scale_fill_manual(values = palcolors,
                               name = re_n(p_close, factor_names))
+        if (!is.null(eb_method)) {
+            the_plot = the_plot + geom_errorbar(
+                aes(
+                    ymin = to_plot$x.main - to_plot$x.eb,
+                    ymax = to_plot$x.main + to_plot$x.eb,
+                    width = 0.2
+                ),
+                position = position_dodge(dodge)
+            )
+        }
+    }
+    if (length(fact_names) == 3) {
+        the_plot = the_plot + facet_wrap(~ to_plot[[fact_names[3]]], nrow = row_number)
     }
     the_plot = the_plot + theme_bw() +
         labs(x = re_n(p_mid, factor_names), y = y_title) +
@@ -458,16 +495,5 @@ plot_neat = function(data_per_subject,
             panel.grid.major.y = element_line(color = "#d5d5d5"),
             panel.grid.minor.y = element_line(color = "#d5d5d5")
         )
-    if (!is.null(eb_method)) {
-        the_plot = the_plot + geom_errorbar(aes(
-            ymin = to_plot$x.main - to_plot$x.eb,
-            ymax = to_plot$x.main + to_plot$x.eb,
-            width = 0.2
-        ),
-        position = position_dodge(dodge))
-    }
-    if (length(fact_names) == 3) {
-        the_plot = the_plot + facet_wrap(~ to_plot[[fact_names[3]]], nrow = row_number)
-    }
     return(the_plot)
 }

@@ -7,7 +7,8 @@
 plot_neat(data_per_subject, values, within_ids = NULL,
   between_vars = NULL, factor_names = NULL, value_names = NULL,
   y_title = NULL, reverse = FALSE, panels = NULL, type = "line",
-  dodge = NULL, bar_colors = c("#333333", "#AAAAAA"), row_number = 1,
+  dodge = NULL, bar_colors = c("#333333", "#AAAAAA"),
+  line_colors = c("#444444", "#000000"), row_number = 1,
   method = mean, eb_method = stats::sd)
 }
 \arguments{
@@ -34,7 +35,7 @@ strings within each within-subject factor, and thus they will be assigned
 the appropriate level. For example, \code{values = 'rt_s1_neg, rt_s1_pos,
 rt_s2_neg, rt_s2_pos'} could have \code{within_ids = list( session = c('s1',
 's2'), valence =  c('pos', 'neg')}. (Note: the strings for distinguishing
-must be unambigous. E.g., for values \code{apple_a} and \code{apple_b}, do
+must be unambiguous. E.g., for values \code{apple_a} and \code{apple_b}, do
 not set levels \code{c('a','b')}, because \code{'a'} is also found in
 \code{apple_b}. In this case, you could choose levels \code{c('_a','_b')} to
 make sure the values are correctly distinguished.) See also Examples.}
@@ -81,10 +82,15 @@ displaced compared to each other). (Default is \code{0.1} for \code{line}
 plots, and \code{0.9} for \code{bar} plots.)}
 
 \item{bar_colors}{Vector of strings, specifying colors from which all colors
-for any number of differring adjacent bars are interpolated. (If the number
+for any number of differing adjacent bars are interpolated. (If the number
 of given colors equal the number of different bars, the precise colors will
 correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-color gradient from dark grey to light grey.}
+color gradient from dark gray to light gray.}
+
+\item{line_colors}{Vector of strings, specifying colors from which all colors
+for any number of differing vertically aligned dots and corresponding lines
+are interpolated. The default \code{c('#444444', '#000000')} gives a color
+gradient from dark gray to black.}
 
 \item{row_number}{Number. In case of multiple panels, the number of rows in
 which the panels should be arranged. For example, with the default
@@ -156,7 +162,7 @@ plot_neat(
     factor_names = c(grouping1 = 'experimental condition', grouping2 = 'gender')
 )
 \donttest{
-# same, but with different (lighter) grey scale bars
+# same, but with different (lighter) gray scale bars
 plot_neat(
     dat_1,
     values = 'value_1_a',

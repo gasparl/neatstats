@@ -27,7 +27,7 @@
 #'   \code{\link{aggr_neat}}) and then transposes them using, by default, the
 #'   \code{"aggr_group"} column values for new headers (corresponding to the
 #'   output of \code{\link{aggr_neat}}; see Examples). However, a string given
-#'   as agrument for the \code{transpose} parameter can also specify a custom
+#'   as argument for the \code{transpose} parameter can also specify a custom
 #'   column name.
 #' @details The \code{values}, \code{round_to}, and \code{new_name} arguments
 #'   given in the \code{\link{aggr_neat}} function are always applied. However,

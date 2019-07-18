@@ -1,7 +1,7 @@
 Package: neatStats
 Title: An R Package for Neat and Painless Statistical Reporting
-Version: 0.2.1
-Date: 2019-07-10
+Version: 0.3.1
+Date: 2019-07-18
 Authors@R: person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830"))
 Description: This package focuses on user-friendly, clear and simple
@@ -11,7 +11,8 @@ Description: This package focuses on user-friendly, clear and simple
   statistics is covered for basic experimental designs.
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.4.0)
-Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2, grDevices, stats
+Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2, 
+  grDevices, stats, graphics
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
