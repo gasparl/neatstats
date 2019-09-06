@@ -171,6 +171,10 @@ aggr_neat = function(dat,
     } else {
         dat$neat_unique_values = eval(parse(text = values))
     }
+    if (anyNA(dat$neat_unique_values)) {
+        message("Rows with NA values omitted.")
+        dat = dat[!is.na(dat$neat_unique_values),]
+    }
     filt = deparse(substitute(filt))
     if (filt != "NULL") {
         filt = trimws(filt, whitespace = "['\"]")
@@ -180,7 +184,6 @@ aggr_neat = function(dat,
             ',])'
         )))
     }
-
     if (!is.null(pkg.globals$my_unique_method)) {
         method = pkg.globals$my_unique_method
         prefix = NULL
@@ -213,17 +216,16 @@ aggr_neat = function(dat,
     }
     if (is.function(method) == TRUE) {
         aggred = do.call(data.frame,
-                         stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method, na.rm = TRUE))
+                         stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method))
     } else if (endsWith(method, '+sd') == TRUE) {
         func_name = strsplit(method, '+', fixed = TRUE)[[1]][1]
         method = eval(parse(text = func_name))
-        aggred = stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method, na.rm = TRUE)
+        aggred = stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method)
 
         aggred = do.call(data.frame,
                          stats::aggregate(
                              dat$neat_unique_values,
                              by = group_by,
-                             na.rm = TRUE,
                              FUN = function(x) {
                                  stats::setNames(c(ro(method(x), round_to), ro(stats::sd(x), round_to)), c(func_name, 'sd'))
                              }
@@ -236,7 +238,6 @@ aggr_neat = function(dat,
         aggred = stats::aggregate(
             dat$neat_unique_values,
             by = group_by,
-            na.rm = TRUE,
             FUN = function(x) {
                 sum(x %in% nume) / length(x)
             }

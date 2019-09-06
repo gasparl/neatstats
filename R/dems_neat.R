@@ -66,9 +66,9 @@ dems_neat = function(data_per_subject,
                   stats::aggregate(s_dat$age, by = list(s_dat$neat_cond), function(x)
                       c(
                           count = length(x),
-                          mean = mean(x),
-                          sd = stats::sd(x)
-                      ), na.rm = TRUE))
+                          mean = mean(x, na.rm = TRUE),
+                          sd = stats::sd(x, na.rm = TRUE)
+                      )))
     names(age)[names(age) == "Group.1"] <- "neat_cond"
     age_gend = merge(age, gender, by = 'neat_cond')
 
