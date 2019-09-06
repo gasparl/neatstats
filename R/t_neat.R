@@ -49,6 +49,8 @@
 #'  \code{NULL}.)
 #'@param var_names A vector of two strings; the variable names to be displayed
 #'  in the legend. (Default: \code{c("1", "2")}.)
+#'@param reverse Logical. If \code{TRUE}, reverses the order of variable names
+#'  displayed in the legend.
 #'
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of
@@ -162,7 +164,8 @@ t_neat = function(var1,
                   y_label = "density estimate",
                   x_label = "values",
                   factor_name = NULL,
-                  var_names = c("1", "2")) {
+                  var_names = c("1", "2"),
+                  reverse = FALSE) {
     validate_args(
         match.call(),
         list(
@@ -183,7 +186,8 @@ t_neat = function(var1,
             val_arg(y_label, c('null', 'char'), 1),
             val_arg(x_label, c('null', 'char'), 1),
             val_arg(factor_name, c('null', 'char'), 1),
-            val_arg(var_names, c('char'), 0)
+            val_arg(var_names, c('char'), 0),
+            val_arg(reverse, c('bool'), 1)
         )
     )
     greater = toString(greater)
@@ -332,7 +336,8 @@ t_neat = function(var1,
             x_label = x_label,
             thres = plot_thres,
             factor_name = factor_name,
-            var_names = var_names
+            var_names = var_names,
+            reverse = reverse
         )
         graphics::plot(the_plot)
     } else {
@@ -355,15 +360,28 @@ t_neat = function(var1,
 
 ## density plot
 
-plot_dens = function(v1, v2, y_label, x_label, thres, factor_name, var_names) {
+plot_dens = function(v1,
+                     v2,
+                     y_label,
+                     x_label,
+                     thres,
+                     factor_name,
+                     var_names,
+                     reverse) {
     dens_dat = data.frame(vals = c(v1, v2),
                           facts = c(rep(var_names[1], length(v1)),
                                     rep(var_names[2], length(v2))))
-    dens_dat$facts =  factor(dens_dat$facts, levels = var_names)
-    the_plot = ggplot(data = dens_dat, aes(
-        x = dens_dat$vals,
-        fill = dens_dat$facts
-    )) + geom_density(alpha = 0.4) +
+    if (reverse == TRUE) {
+        dens_dat$facts =  factor(dens_dat$facts, levels = c(var_names[2], var_names[1]))
+        start_color = 0.8
+        end_color = 0.2
+    } else {
+        dens_dat$facts =  factor(dens_dat$facts, levels = var_names)
+        start_color = 0.2
+        end_color = 0.8
+    }
+    the_plot = ggplot(data = dens_dat, aes(x = dens_dat$vals,
+                                           fill = dens_dat$facts)) + geom_density(alpha = 0.4, trim = FALSE) +
         theme_classic() +
         theme(
             text = element_text(family = "serif"),
@@ -372,7 +390,9 @@ plot_dens = function(v1, v2, y_label, x_label, thres, factor_name, var_names) {
             axis.line.y = element_blank(),
             axis.line.x = element_line()
         ) +
-        scale_fill_grey(name = factor_name, start = 0.2, end = 0.8) +
+        scale_fill_grey(name = factor_name,
+                        start = start_color,
+                        end = end_color) +
         geom_vline(
             xintercept = c(mean(v1), mean(v2)),
             color = "#777777",

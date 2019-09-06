@@ -9,7 +9,7 @@ t_neat(var1, var2, pair = FALSE, greater = NULL, ci = NULL,
   for_table = FALSE, test_title = "Descriptives:", round_descr = 2,
   round_auc = 3, auc_greater = "1", plot_densities = FALSE,
   y_label = "density estimate", x_label = "values",
-  factor_name = NULL, var_names = c("1", "2"))
+  factor_name = NULL, var_names = c("1", "2"), reverse = FALSE)
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -73,6 +73,9 @@ thresholds with identical overall accuracy, all are added.)}
 
 \item{var_names}{A vector of two strings; the variable names to be displayed
 in the legend. (Default: \code{c("1", "2")}.)}
+
+\item{reverse}{Logical. If \code{TRUE}, reverses the order of variable names
+displayed in the legend.}
 }
 \value{
 Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as

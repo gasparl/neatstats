@@ -68,7 +68,7 @@
 #'  color gradient from dark gray to light gray.
 #'@param line_colors Vector of strings, specifying colors from which all colors
 #'  for any number of differing vertically aligned dots and corresponding lines
-#'  are interpolated. The default \code{c('#444444', '#000000')} gives a color
+#'  are interpolated. The default \code{c('#555555', '#000000')} gives a color
 #'  gradient from dark gray to black.
 #'@param row_number Number. In case of multiple panels, the number of rows in
 #'  which the panels should be arranged. For example, with the default
@@ -317,7 +317,7 @@ plot_neat = function(data_per_subject,
                      type = 'line',
                      dodge = NULL,
                      bar_colors = c('#333333', '#AAAAAA'),
-                     line_colors = c('#444444', '#000000'),
+                     line_colors = c('#555555', '#000000'),
                      row_number = 1,
                      method = mean,
                      eb_method = stats::sd) {

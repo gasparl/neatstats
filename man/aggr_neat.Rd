@@ -24,14 +24,14 @@ calculated along with the standard deviation, displayed in a single column,
 rounded as set in the \code{round_to} argument. (This is primarily for use
 in the \code{\link{table_neat}} function for summary tables.) If the string
 does not end with \code{"+sd"}, a ratio for the occurrences of given
-elements will be calculated. The elements must be specified simply divided
-by commas. The number of occurrences of these elements will be the
-numerator (dividend), while the entire column length (i.e., number of all
-elements) will be the denominator (divisor). For example, if a column
-contains elements \code{"correct"}, \code{"incorrent"}, \code{"tooslow"},
-the ratio of \code{"correct"} to all other elements (i.e., including
-elements \code{"correct"}, \code{"incorrent"}, and \code{"tooslow"}) can be
-written simply as \code{method = "correct"}. The complementary ratio, of
+elements will be calculated. Multiple elements can by given as a vector of
+strings. The number of occurrences of these elements will be the numerator
+(dividend), while the entire column length (i.e., number of all elements)
+will be the denominator (divisor). For example, if a column contains
+elements \code{"correct"}, \code{"incorrent"}, \code{"tooslow"}, the ratio
+of \code{"correct"} to all other elements (i.e., including elements
+\code{"correct"}, \code{"incorrent"}, and \code{"tooslow"}) can be written
+simply as \code{method = "correct"}. The complementary ratio, of
 \code{"incorrent"} and \code{"tooslow"}, can be written as \code{method =
 "incorrent, tooslow"}. (Hint: filter to get ratios of subgroups, e.g. to
 include only \code{"correct"} and \code{"incorrent"} elements, and
@@ -45,14 +45,16 @@ statistics are grouped.}
 data frame before performing the aggregation. The expression should use
 column names alone; see Examples.}
 
-\item{prefix}{\code{NULL} (default) or string. String specifies a prefix for each group type under the \code{group} column.}
+\item{prefix}{\code{NULL} (default) or string. String specifies a prefix for
+each group type under the \code{group} column.}
 
 \item{new_name}{\code{NULL} (default) or string. String specifies new name
 for the variable to be used as column title. If \code{NULL}, the name will
 be \code{"aggr_value"} (or, if used with \code{\link{table_neat}}, the
 input variable name is used).}
 
-\item{round_to}{Number of digits after the decimal point to round to, when using \code{"+sd"} in \code{method}.}
+\item{round_to}{Number of digits after the decimal point to round to, when
+using \code{"+sd"} in \code{method}.}
 }
 \value{
 A data frame with the statistics per group, with a single column

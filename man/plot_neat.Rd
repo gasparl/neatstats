@@ -8,7 +8,7 @@ plot_neat(data_per_subject, values, within_ids = NULL,
   between_vars = NULL, factor_names = NULL, value_names = NULL,
   y_title = NULL, reverse = FALSE, panels = NULL, type = "line",
   dodge = NULL, bar_colors = c("#333333", "#AAAAAA"),
-  line_colors = c("#444444", "#000000"), row_number = 1,
+  line_colors = c("#555555", "#000000"), row_number = 1,
   method = mean, eb_method = stats::sd)
 }
 \arguments{
@@ -89,7 +89,7 @@ color gradient from dark gray to light gray.}
 
 \item{line_colors}{Vector of strings, specifying colors from which all colors
 for any number of differing vertically aligned dots and corresponding lines
-are interpolated. The default \code{c('#444444', '#000000')} gives a color
+are interpolated. The default \code{c('#555555', '#000000')} gives a color
 gradient from dark gray to black.}
 
 \item{row_number}{Number. In case of multiple panels, the number of rows in

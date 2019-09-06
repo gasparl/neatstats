@@ -68,7 +68,7 @@ You can check how a hypothetical (randomly generated) participant data looks lik
 head(next_subject())
 ```
 
-To illustrate a real case, let's say you have data files from an experiment, and the file names start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(script_path())`, if the files are there. Then you can collect all file names with `filenames = list.files(pattern = "^color_exp.*txt$")`. (Here for the simulation I just have the `filenames` assigned as numbers, see above.)
+To illustrate a real case, let's say you have data files from an experiment, and the file names start as "color_exp", and they are all ".txt". You can collect all of them from a given folder. First, you need to set the right path with `setwd("whatever/path")`. You could set the path to the script's directory with `setwd(path_neat())`, if the files are there. Then you can collect all file names with `filenames = list.files(pattern = "^color_exp.*txt$")`. (Here for the simulation I just have the `filenames` assigned as numbers, see above.)
 
 Now loop through all data files to collect the data.
 
@@ -82,10 +82,10 @@ for (file_name in filenames) {
     subject_data = next_subject(file_name)
     # with real data, this would be e.g.:
     # subject_data = read.table(file_name, stringsAsFactors=F, fill=T, header=T)
-    
+
     # print current file name - just to monitor the process
     cat(file_name, ' ')
-    
+
     # now aggregate rt data per type
     rts = aggr_neat(
         subject_data,
@@ -111,7 +111,7 @@ for (file_name in filenames) {
         condition = subject_data$condition[1],
         subject_line
     )
-    
+
     # merge aggregated subject data
     if (!exists("subjects_merged")) {
         # if doesn't yet exist, create first line
