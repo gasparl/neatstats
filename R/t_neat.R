@@ -191,6 +191,23 @@ t_neat = function(var1,
         )
     )
     greater = toString(greater)
+    if (anyNA(var1) || anyNA(var2)) {
+        if (pair == TRUE) {
+            message("NA values omitted pairwise.")
+            if (anyNA(var1)) {
+                var2 = var2[!is.na(var1)]
+                var1 = var1[!is.na(var1)]
+            }
+            if (anyNA(var2)) {
+                var1 = var1[!is.na(var2)]
+                var2 = var2[!is.na(var2)]
+            }
+        } else {
+            var1 = var1[!is.na(var1)]
+            var2 = var2[!is.na(var2)]
+            message("NA values omitted.")
+        }
+    }
     descr_1 = paste0(ro(mean(var1), round_descr),
                      "CHAR_PLUSMIN",
                      ro(stats::sd(var1), round_descr))

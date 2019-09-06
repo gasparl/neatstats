@@ -110,8 +110,18 @@ corr_neat = function(var1,
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
     r = edges(the_cor$estimate, round_r, no_null = TRUE)
-    lower = edges(the_cor$conf.int[1], round_r, no_null = TRUE)
-    upper = edges(the_cor$conf.int[2], round_r, no_null = TRUE)
+    lower = tryCatch({
+        edges(the_cor$conf.int[1], round_r, no_null = TRUE)
+    },
+    error = function(e) {
+        return("NA")
+    })
+    upper = tryCatch({
+        edges(the_cor$conf.int[2], round_r, no_null = TRUE)
+    },
+    error = function(e) {
+        return("NA")
+    })
     p_value = the_cor$p.value
     df = the_cor$parameter
     out = paste0("r(",
