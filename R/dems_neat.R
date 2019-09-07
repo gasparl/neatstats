@@ -46,6 +46,7 @@ dems_neat = function(data_per_subject,
             data_per_subject$gender == '2') == FALSE) {
         stop('The "gender" column must only contain the values 1 (male) or 2 (female).')
     }
+    s_dat$age = as.numeric(as.character(s_dat$age))
     if (is.null(group_by)) {
         s_dat$neat_cond = 0
     } else if (class(group_by) == "character") {
@@ -53,13 +54,14 @@ dems_neat = function(data_per_subject,
     } else {
         s_dat$neat_cond = group_by
     }
+    s_dat$gender = factor(s_dat$gender, levels = c(1, 2))
     gender = as.data.frame.matrix(stats::xtabs(~ neat_cond + gender, s_dat))
     if (!'1' %in% colnames(gender)) {
         gender = data.frame('1' = 0, gender)
     } else if (!'2' %in% colnames(gender)) {
         gender[['2']] = 0
     }
-    gender$ratio = gender[[1]] / (gender[[1]] + gender[[2]]) * 100
+    gender$ratio = gender[['1']] / (gender[['1']] + gender[['2']]) * 100
     gender$neat_cond = row.names(gender)
 
     age = do.call(data.frame,
