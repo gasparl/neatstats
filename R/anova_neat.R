@@ -3,7 +3,8 @@
 #'@description \code{\link[ez:ezANOVA]{Analysis of variance}} (ANOVA) F-test
 #'  results with appropriate \code{\link[stats:oneway.test]{Welch}}'s and
 #'  epsilon corrections where applicable (unless specified otherwise), including
-#'  partial eta squared effect sizes with confidence intervals (CIs), and
+#'  partial eta squared effect sizes with confidence intervals (CIs),
+#'  generalized eta squared, and
 #'  \code{\link[bayestestR:bayesfactor_inclusion]{inclusion Bayes factor based
 #'  on matched models}} (BFs).
 #'@param data_per_subject Data frame or name of data frame as string. Should
@@ -79,14 +80,15 @@
 #'test.
 #'
 #'@return Prints ANOVA statistics (including, for each model, F-test with
-#'  partial eta squared and its CI, and BF, as specified via the corresponding
-#'  parameters) in APA style. Furthermore, when assigned, returns a list with up
-#'  to three elements. First, '\code{stat_list}', a list of named vectors per
-#'  each effect (main or interaction). Each vector contains the following
-#'  elements: \code{F} (F value), \code{p} (p value), \code{petas} (partial eta
-#'  squared), \code{epsilon} (epsilon used for correction), and \code{bf}
-#'  (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second, the
-#'  \code{\link[ez]{ezANOVA}} object, named \code{ez_anova} (calculated even
+#'  partial eta squared and its CI, generalized eta squared, and BF, as
+#'  specified via the corresponding parameters) in APA style. Furthermore, when
+#'  assigned, returns a list with up to three elements. First,
+#'  '\code{stat_list}', a list of named vectors per each effect (main or
+#'  interaction). Each vector contains the following elements: \code{F} (F
+#'  value), \code{p} (p value), \code{petas} (partial eta squared), \code{getas}
+#'  (generalized eta squared), \code{epsilon} (epsilon used for correction), and
+#'  \code{bf} (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second,
+#'  the \code{\link[ez]{ezANOVA}} object, named \code{ez_anova} (calculated even
 #'  when \code{\link[stats]{oneway.test}} is printed). Third, when
 #'  \code{bf_added} is not \code{FALSE}, the \code{\link[BayesFactor]{anovaBF}}
 #'  object, named \code{bf_models}; including all models on which the inclusion
@@ -103,6 +105,9 @@
 #'  noncentrality parameters to partial eta squared as \code{ncp/(ncp+
 #'  df_nom+df_denom+1)} (Smithson, 2003).
 #'
+#'  Generalized eta squared is to facilitate potential subsequent
+#'  meta-analytical comparisons (see Lakens, 2013).
+#'
 #'  The inclusion Bayes factor based on matched models is calculated via
 #'  \code{\link[bayestestR:bayesfactor_inclusion]{bayestestR::bayesfactor_inclusion}},
 #'   (with \code{match_models = TRUE}, and using an
@@ -117,6 +122,10 @@
 #'Kelley, K. (2007). Methods for the behavioral, educational, and social
 #'sciences: An R package. Behavior Research Methods, 39(4), 979-984.
 #'\doi{https://doi.org/10.3758/BF03192993}
+#'
+#'Lakens, D. (2013). Calculating and reporting effect sizes to facilitate
+#'cumulative science: A practical primer for t-tests and ANOVAs. Frontiers in
+#'Psychology, 4. https://doi.org/10.3389/fpsyg.2013.00863
 #'
 #'Lakens, D. (2014). Calculating confidence intervals for Cohen's d and
 #'eta-squared using SPSS, R, and Stata [Blog post]. Retrieved from
@@ -485,7 +494,6 @@ anova_apa = function(ezANOVA_out,
                      e_correction = '') {
     levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
     ezANOVA_out$ANOVA$'p<.05' = NULL
-    ezANOVA_out$ANOVA$ges = NULL
     if ((!is.null(levene)) && (is.null(welch))) {
         if ('Levene' %in%  ezANOVA_out$ANOVA$Effect) {
             stop(
@@ -566,6 +574,8 @@ anova_apa = function(ezANOVA_out,
         }
         np2 = sub('.', '', ro(petas, 3))
         the_ci = paste0(", ", ro(ci * 100, 0), "% CI [")
+        getas = ezANOVA_out$ANOVA$ges[indx]
+        nG2 = sub('.', '', ro(getas, 3))
 
         if (f_name == 'Levene') {
             out = paste0(
@@ -586,6 +596,8 @@ anova_apa = function(ezANOVA_out,
                 ", ",
                 upper,
                 "]",
+                ", CHAR_ETAG2 = ",
+                nG2,
                 bf_out,
                 levene_post
             )
@@ -608,6 +620,8 @@ anova_apa = function(ezANOVA_out,
                 ", ",
                 upper,
                 "]",
+                ", CHAR_ETAG2 = ",
+                nG2,
                 bf_out,
                 " (",
                 f_name,
@@ -621,6 +635,7 @@ anova_apa = function(ezANOVA_out,
             p = pvalue,
             epsilon = eps_added,
             petas = as.numeric(petas),
+            getas = as.numeric(getas),
             bf = as.numeric(bf_val)
         )
     }

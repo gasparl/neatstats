@@ -21,7 +21,7 @@ prnt = function(...) {
     to_print = gsub('-', 'CHAR_MINUS', paste0(...))
     to_print = sub("e\\+0*", " CHAR_X 10^", to_print)
     to_print = gsub("p = 0.", "p = .", to_print)
-    to_print = gsub("p = .000", "p < .001", to_print)
+    to_print = gsub(" = .000", " < .001", to_print)
     change_pairs = list(
         c('CHAR_MINUS', '\u2013'),
         c('CHAR_PLUSMIN', '\u00b1'),
