@@ -85,12 +85,13 @@
 #'  assigned, returns a list, that contains a named vector '\code{stats}' with
 #'  the following elements: \code{t} (t value), \code{p} (p value), \code{d}
 #'  (Cohen's d), \code{bf} (Bayes factor), \code{auc} (AUC), \code{accuracy}
-#'  (accuracy using the most optimal classification threshold). The latter two
-#'  is \code{NULL} when \code{auc_added} is \code{FALSE}. When \code{auc_added}
-#'  is \code{TRUE}, there are also two additional elements of the list. One is
-#'  '\code{roc_obj}', which is a \code{\link[pROC]{roc}} object, to be used e.g.
-#'  with the \code{\link{roc_neat}} function. The other is
-#'  '\code{best_thresholds}', which contains the best threshold value(s) for
+#'  (overall accuracy using the most optimal classification threshold), and
+#'  \code{youden} (Youden's index: \code{specificity + sensitivity - 1}). The
+#'  latter three are \code{NULL} when \code{auc_added} is \code{FALSE}. When
+#'  \code{auc_added} is \code{TRUE}, there are also two additional elements of
+#'  the list. One is '\code{roc_obj}', which is a \code{\link[pROC]{roc}}
+#'  object, to be used e.g. with the \code{\link{roc_neat}} function. The other
+#'  is '\code{best_thresholds}', which contains the best threshold value(s) for
 #'  classification, along with corresponding specificity and sensitivity.
 #'  Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
 #'  well as returned as a \code{\link[ggplot2]{ggplot}} object, named
@@ -330,6 +331,7 @@ t_neat = function(var1,
             for_table = for_table
         )
         max_acc = as.numeric(pROC::coords(the_roc, x = "best", ret = "accuracy"))[1]
+        maxyouden = as.numeric(pROC::coords(the_roc, x = "best", ret = "youden"))[1]-1
         best_coords = pROC::coords(the_roc, x = "best")
         the_auc = pROC::auc(the_roc)
         if (class(best_coords) == "matrix") {
@@ -341,6 +343,7 @@ t_neat = function(var1,
     } else {
         the_auc = NULL
         max_acc = NULL
+        maxyouden = NULL
         the_roc = NULL
         best_coords = NULL
         plot_thres = NULL
@@ -367,7 +370,8 @@ t_neat = function(var1,
             d = as.numeric(d_orig),
             bf = as.numeric(bf),
             auc = the_auc,
-            accuracy = max_acc
+            accuracy = max_acc,
+            youden = maxyouden
         ),
         roc_obj = the_roc,
         best_thresholds = best_coords,

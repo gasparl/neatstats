@@ -424,9 +424,19 @@ plot_neat = function(data_per_subject,
     if (reverse == TRUE) {
         fact_names[c(1, 2)] = fact_names[c(2, 1)]
     }
+    if (!is.null(within_vars)) {
+        if (length(within_ids) > 1) {
+            for (fact_n in names(within_ids)) {
+                to_plot[[fact_n]] = factor(to_plot[[fact_n]], levels = within_ids[[fact_n]])
+            }
+        } else if (is.character(within_ids)) {
+            to_plot[[within_ids]] = factor(to_plot[[within_ids]], levels = values)
+        } else {
+            to_plot[['within_factor']] = factor(to_plot[['within_factor']], levels = values)
+        }
+    }
     p_close = fact_names[1]
     p_mid = fact_names[2]
-
     if (is.null(dodge)) {
         if (type == 'bar') {
             dodge = 0.9

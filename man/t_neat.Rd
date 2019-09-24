@@ -83,12 +83,13 @@ Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
  assigned, returns a list, that contains a named vector '\code{stats}' with
  the following elements: \code{t} (t value), \code{p} (p value), \code{d}
  (Cohen's d), \code{bf} (Bayes factor), \code{auc} (AUC), \code{accuracy}
- (accuracy using the most optimal classification threshold). The latter two
- is \code{NULL} when \code{auc_added} is \code{FALSE}. When \code{auc_added}
- is \code{TRUE}, there are also two additional elements of the list. One is
- '\code{roc_obj}', which is a \code{\link[pROC]{roc}} object, to be used e.g.
- with the \code{\link{roc_neat}} function. The other is
- '\code{best_thresholds}', which contains the best threshold value(s) for
+ (overall accuracy using the most optimal classification threshold), and
+ \code{youden} (Youden's index: \code{specificity + sensitivity - 1}). The
+ latter three are \code{NULL} when \code{auc_added} is \code{FALSE}. When
+ \code{auc_added} is \code{TRUE}, there are also two additional elements of
+ the list. One is '\code{roc_obj}', which is a \code{\link[pROC]{roc}}
+ object, to be used e.g. with the \code{\link{roc_neat}} function. The other
+ is '\code{best_thresholds}', which contains the best threshold value(s) for
  classification, along with corresponding specificity and sensitivity.
  Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
  well as returned as a \code{\link[ggplot2]{ggplot}} object, named
