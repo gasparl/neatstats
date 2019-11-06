@@ -16,5 +16,5 @@
 #' @export
 ro = function(num, round_to = 2) {
     value = as.numeric(num)
-    return(format(round(num, round_to), nsmall = round_to))
+    return(format(round(value, round_to), nsmall = round_to))
 }

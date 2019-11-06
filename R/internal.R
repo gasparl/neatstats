@@ -59,7 +59,8 @@ bf_neat = function(bf) {
             bf2 = to_exp(bf)
             bf_dir = paste0(", BF10 = ", bf2)
         }
-        return(paste0(bf_dir, ". (BFplain = ", ro(bf, 4), ")"))
+        return(paste0(bf_dir, "."))
+        # return(paste0(bf_dir, ". (BFplain = ", ro(bf, 4), ")"))
     }
 }
 

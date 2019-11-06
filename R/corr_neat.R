@@ -17,6 +17,8 @@
 #'  CI.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
 #'  from the printed text.
+#'@param sb_correction Logical. If \code{TRUE}, applies Spearman-Brown
+#'  correction (\code{2 * r / (1+r)}) to the correlation (including CI).
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of
 #' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
@@ -36,7 +38,21 @@
 #'The Bayes factor is calculated via
 #'\code{\link[BayesFactor:correlationBF]{BayesFactor::correlationBF}}.
 #'
-#' @seealso \code{\link{t_neat}}
+#'@references
+#'
+#'Brown, W. (1910). Some experimental results in the correlation of mental
+#'abilities. British Journal of Psychology, 1904-1920, 3(3), 296-322.
+#'\doi{https://doi.org/10.1111/j.2044-8295.1910.tb00207.x}
+#'
+#'Eisinga, R., Grotenhuis, M. te, & Pelzer, B. (2013). The reliability of a
+#'two-item scale: Pearson, Cronbach, or Spearman-Brown? International Journal of
+#'Public Health, 58(4), 637-642. \doi{https://doi.org/10.1007/s00038-012-0416-3}
+#'
+#'Spearman, C. (1910). Correlation calculated from faulty data. British Journal
+#'of Psychology, 1904-1920, 3(3), 271-295.
+#'\doi{https://doi.org/10.1111/j.2044-8295.1910.tb00206.x}
+#'
+#'@seealso \code{\link{t_neat}}
 #' @examples
 #' # assign two variables
 #' v1 = c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 )
@@ -58,7 +74,8 @@ corr_neat = function(var1,
                      bf_added = TRUE,
                      direction = NULL,
                      round_r = 3,
-                     for_table = FALSE) {
+                     for_table = FALSE,
+                     sb_correction = FALSE) {
     validate_args(
         match.call(),
         list(
@@ -109,15 +126,23 @@ corr_neat = function(var1,
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    r = edges(the_cor$estimate, round_r, no_null = TRUE)
+    r_raw = the_cor$estimate
+    low_raw = the_cor$conf.int[1]
+    upp_raw = the_cor$conf.int[2]
+    if (sb_correction == TRUE) {
+        r_raw = (2 * r_raw) / (1 + r_raw)
+        low_raw = (2 * low_raw) / (1 + low_raw)
+        upp_raw = (2 * upp_raw) / (1 + upp_raw)
+    }
+    r = edges(r_raw, round_r, no_null = TRUE)
     lower = tryCatch({
-        edges(the_cor$conf.int[1], round_r, no_null = TRUE)
+        edges(low_raw, round_r, no_null = TRUE)
     },
     error = function(e) {
         return("NA")
     })
     upper = tryCatch({
-        edges(the_cor$conf.int[2], round_r, no_null = TRUE)
+        edges(upp_raw, round_r, no_null = TRUE)
     },
     error = function(e) {
         return("NA")

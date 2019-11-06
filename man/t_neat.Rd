@@ -8,7 +8,7 @@ t_neat(var1, var2, pair = FALSE, greater = NULL, ci = NULL,
   bf_added = TRUE, auc_added = FALSE, r_added = TRUE,
   for_table = FALSE, test_title = "Descriptives:", round_descr = 2,
   round_auc = 3, auc_greater = "1", plot_densities = FALSE,
-  y_label = "density estimate", x_label = "values",
+  y_label = "density estimate", x_label = "\\nvalues",
   factor_name = NULL, var_names = c("1", "2"), reverse = FALSE)
 }
 \arguments{

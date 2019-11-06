@@ -415,6 +415,10 @@ plot_neat = function(data_per_subject,
         to_plot[i] = lapply(to_plot[i], as.character)
         for (v_name in names(value_names)) {
             to_plot[to_plot == v_name] = value_names[v_name]
+            values[values == v_name] = value_names[v_name]
+            for (fact_n in names(within_ids)) {
+                within_ids[[fact_n]][within_ids[[fact_n]] == v_name] = value_names[v_name]
+            }
         }
     }
     if (!is.null(panels) &&

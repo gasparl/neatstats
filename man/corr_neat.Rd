@@ -5,7 +5,7 @@
 \title{Correlation Statistics}
 \usage{
 corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = NULL,
-  round_r = 3, for_table = FALSE)
+  round_r = 3, for_table = FALSE, sb_correction = FALSE)
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -28,6 +28,9 @@ CI.}
 
 \item{for_table}{Logical. If \code{TRUE}, omits the confidence level display
 from the printed text.}
+
+\item{sb_correction}{Logical. If \code{TRUE}, applies Spearman-Brown
+correction (\code{2 * r / (1+r)}) to the correlation (including CI).}
 }
 \value{
 Prints correlation statistics (including CI and BF) in APA style.
@@ -70,6 +73,19 @@ corr_neat(v1, v2, direction = 'pos', for_table = TRUE)
 results = corr_neat(v1, v2, direction = 'pos')
 
 results['p'] # get precise p value
+}
+\references{
+Brown, W. (1910). Some experimental results in the correlation of mental
+abilities. British Journal of Psychology, 1904-1920, 3(3), 296-322.
+\doi{https://doi.org/10.1111/j.2044-8295.1910.tb00207.x}
+
+Eisinga, R., Grotenhuis, M. te, & Pelzer, B. (2013). The reliability of a
+two-item scale: Pearson, Cronbach, or Spearman-Brown? International Journal of
+Public Health, 58(4), 637-642. \doi{https://doi.org/10.1007/s00038-012-0416-3}
+
+Spearman, C. (1910). Correlation calculated from faulty data. British Journal
+of Psychology, 1904-1920, 3(3), 271-295.
+\doi{https://doi.org/10.1111/j.2044-8295.1910.tb00206.x}
 }
 \seealso{
 \code{\link{t_neat}}

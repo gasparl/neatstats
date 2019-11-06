@@ -163,7 +163,7 @@ t_neat = function(var1,
                   auc_greater = '1',
                   plot_densities = FALSE,
                   y_label = "density estimate",
-                  x_label = "values",
+                  x_label = "\nvalues",
                   factor_name = NULL,
                   var_names = c("1", "2"),
                   reverse = FALSE) {
@@ -191,6 +191,14 @@ t_neat = function(var1,
             val_arg(reverse, c('bool'), 1)
         )
     )
+    if (is.null(ci)) {
+        if (is.null(greater)) {
+            ci = 0.95
+        }
+        else {
+            ci = 0.90
+        }
+    }
     greater = toString(greater)
     if (anyNA(var1) || anyNA(var2)) {
         if (pair == TRUE) {
@@ -219,10 +227,9 @@ t_neat = function(var1,
         cat("Correlation: ")
         corr_neat(var1, var2, ci = 0.95, bf_added = FALSE)
     }
-    prnt(test_title, " MCHAR_PLUSMINSD = ", descr_1, " vs. ", descr_2)
     if (greater == "1") {
         message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
-        ttest = stats::t.test(var1, var2, paired = pair, alternative = "greater")
+        ttest = stats::t.test(var1, var2, paired = pair, alternative = "greater", conf.level = ci)
         if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
                 var1,
@@ -233,7 +240,7 @@ t_neat = function(var1,
         }
     } else if (greater == "2") {
         message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
-        ttest = stats::t.test(var1, var2, paired = pair, alternative = "less")
+        ttest = stats::t.test(var1, var2, paired = pair, alternative = "less", conf.level = ci)
         if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
                 var1,
@@ -243,16 +250,10 @@ t_neat = function(var1,
             )[1])
         }
     } else {
-        ttest = stats::t.test(var1, var2, paired = pair)
+        ttest = stats::t.test(var1, var2, paired = pair, conf.level = ci)
         if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
         }
-        if (is.null(ci)) {
-            ci = 0.95
-        }
-    }
-    if (is.null(ci)) {
-        ci = 0.90
     }
     if (bf_added == TRUE) {
         bf_out = bf_neat(bf)
@@ -294,6 +295,24 @@ t_neat = function(var1,
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
+    mean_dif = ro(mean(var2) - mean(var1), round_descr)
+    ci_r_low = ro(ttest$conf.int[1], round_descr)
+    ci_r_upp = ro(ttest$conf.int[2], round_descr)
+    prnt(
+        test_title,
+        " MCHAR_PLUSMINSD = ",
+        descr_1,
+        " vs. ",
+        descr_2,
+        " (raw mean difference: ",
+        mean_dif,
+        ci_disp,
+        " [",
+        ci_r_low,
+        ", ",
+        ci_r_upp,
+        "])"
+    )
     out = paste0(
         "t(",
         df,
@@ -404,13 +423,8 @@ plot_dens = function(v1,
     the_plot = ggplot(data = dens_dat, aes(x = dens_dat$vals,
                                            fill = dens_dat$facts)) + geom_density(alpha = 0.4, trim = FALSE) +
         theme_classic() +
-        theme(
-            text = element_text(family = "serif"),
-            axis.text.y = element_blank(),
-            axis.ticks.y = element_blank(),
-            axis.line.y = element_blank(),
-            axis.line.x = element_line()
-        ) +
+        theme(text = element_text(family = "serif", size = 17),
+              panel.border = element_rect(fill = NA)) +
         scale_fill_grey(name = factor_name,
                         start = start_color,
                         end = end_color) +
@@ -420,14 +434,7 @@ plot_dens = function(v1,
             linetype = "dashed",
             size = 0.5
         )  +
-        ylab(y_label) + xlab(x_label) +
-        annotate(
-            geom = 'segment',
-            y = Inf,
-            yend = Inf,
-            x = -Inf,
-            xend = Inf
-        )
+        ylab(y_label) + xlab(x_label)
     if (!is.null(thres)) {
         the_plot = the_plot +
             geom_vline(
