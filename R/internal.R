@@ -418,7 +418,9 @@ val_wi_id = function(func_used, id_arg, val_cols) {
                                 val_name,
                                 '" for factor "',
                                 fact_name,
-                                '". (Try different naming for level specification, ',
+                                '". (This means that the specified factor name text is ambiguous,',
+                                ' see "within_ids" in documentation e.g. by entering ?anova_neat.',
+                                ' Try different naming for level specification, ',
                                 'or change column names.)'
                             )
                         }
