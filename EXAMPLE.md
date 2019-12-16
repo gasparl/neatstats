@@ -452,4 +452,4 @@ table_neat(
 
 ### That's all
 
-This is of course a single specific case, but I think it is fairly easy to generalize to most typical designs used in psychological science.
+You have everything you need to report from this (hypothetical) experiment. This is of course a single specific case, but I think it is fairly easy to generalize to most typical designs used in psychological science.
