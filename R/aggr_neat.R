@@ -172,7 +172,6 @@ aggr_neat = function(dat,
         dat$neat_unique_values = eval(parse(text = values))
     }
     if (anyNA(dat$neat_unique_values)) {
-        message("Rows with NA values omitted.")
         dat = dat[!is.na(dat$neat_unique_values),]
     }
     filt = deparse(substitute(filt))

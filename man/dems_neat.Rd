@@ -4,7 +4,7 @@
 \alias{dems_neat}
 \title{Demographics}
 \usage{
-dems_neat(data_per_subject, group_by = NULL, percent = TRUE,
+dems_neat(data_per_subject, group_by = NULL, percent = FALSE,
   round_perc = 0)
 }
 \arguments{
@@ -17,7 +17,7 @@ female), either as numbers or as strings, or \code{NA}.}
 \item{group_by}{A vector of factors by which the statistics are grouped,
 typically a column from the data frame provided as \code{data_per_subject}.}
 
-\item{percent}{Logical. If \code{TRUE} (default), gender ratios (and the
+\item{percent}{Logical. If \code{TRUE}, gender ratios (and the
 "unknown" ratios based on \code{NA} values) are presented as percentage. If
 \code{FALSE}, they are presented as counts (i.e., numbers of subjects).}
 
