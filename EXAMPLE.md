@@ -319,7 +319,7 @@ The output is:
 
 Without going into details, the three-way interaction is significant. (To note, the statistics are as close to as possible to reportable format, but italics, subscripts, and superscripts are not well supported as console outputs - hence these have to be adjusted when preparing a manuscript.)
 
-You follow up (as preregistered of course) with two separate ANOVAs to show the absence of Color x Valence interaction `separate` condition, and its presence in the `mixed` condition. Here I do not omit BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fracional digits) due to its inherent random sampling process. My specific out put is:
+You follow up (as preregistered of course) with two separate ANOVAs to show the absence of Color x Valence interaction `separate` condition, and its presence in the `mixed` condition.
 
 ```R
 anova_neat(
@@ -337,7 +337,7 @@ anova_neat(
 )
 ```
 
-My output is:
+Here I did not omit BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fractional digits) due to its inherent random sampling process. My specific out put is:
 >F(1,88) = 13114.19, p < .001, ηp2 = .993, 90% CI [.991, .995], ηG2 = .990. ((Intercept))  
 >F(1,88) = 0.72, p = .398, ηp2 = .008, 90% CI [0, .064], ηG2 = .001, BF01 = 6.25. (color)  
 >F(1,88) = 117.52, p < .001, ηp2 = .572, 90% CI [.456, .650], ηG2 = .107, BF10 = 2.15 × 10^16. (valence)  
