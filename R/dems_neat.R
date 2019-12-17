@@ -61,6 +61,21 @@ dems_neat = function(data_per_subject,
                       val_arg(percent, c('bool'), 1),
                       val_arg(round_perc, c('num'), 1)
                   ))
+    if (!'age' %in% names(data_per_subject)) {
+        if (!'gender' %in% names(data_per_subject)) {
+            stop(
+                'The data frame must contain the columns "gender" and "age", but neither was found among the column names.'
+            )
+        } else {
+            stop(
+                'The data frame must contain the columns "gender" and "age". Column name "age" was not found.'
+            )
+        }
+    } else if (!'gender' %in% names(data_per_subject)) {
+        stop(
+            'The data frame must contain the columns "gender" and "age". Column name "gender" was not found.'
+        )
+    }
     if (all(data_per_subject$gender == '1' |
             data_per_subject$gender == '2'|
             is.na(data_per_subject$gender)) == FALSE) {

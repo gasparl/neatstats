@@ -347,10 +347,37 @@ anova_neat = function(data_per_subject,
             val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none'))
         )
     )
-    val_wi_id(match.call(), within_ids, values)
+    cols_notfound = c()
     if (!is.null(between_vars)) {
+        for (colname in between_vars) {
+            if (!colname %in% names(data_per_subject)) {
+                cols_notfound = c(cols_notfound, colname)
+            }
+        }
         between_vars = paste(between_vars, collapse = ',')
     }
+    for (colname in values) {
+        if (!colname %in% names(data_per_subject)) {
+            cols_notfound = c(cols_notfound, colname)
+        }
+    }
+    if (length(cols_notfound) > 0) {
+        if (length(cols_notfound) ==  1) {
+            stop(
+                'The column "',
+                cols_notfound,
+                '" was not found in the data frame. Perhaps check for spelling mistakes.'
+            )
+        } else {
+            stop(
+                'The following columns were not found in the data frame: "',
+                paste(cols_notfound,
+                      collapse = '", "'),
+                '". Perhaps check for spelling mistakes.'
+            )
+        }
+    }
+    val_wi_id(match.call(), within_ids, values)
     if (is.null(e_correction)){
         e_correction = ''
     }
