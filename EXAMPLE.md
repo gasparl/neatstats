@@ -19,7 +19,7 @@ In this simplified case, each file contains the following data columns:
 
 (The values for _subject_num_, _condition_, _age_, and _gender_ are of course constant for each participant, i.e., have same value in every row.)
 
-The script that is presented in detail below, is available in full, with only brief inline comments, at https://osf.io/49sq5/ (as "example_analysis.R").
+The script that is below presented step by step and described in detail, is also available with only brief inline comments at https://osf.io/49sq5/ (as "example_analysis.R").
 
 ### Processing the data
 
@@ -363,7 +363,7 @@ My output is:
  >F(1,86) = 106.02, p < .001, ηp2 = .552, 90% CI [.432, .635], ηG2 = .117, BF10 = 4.15 × 10^12. (valence)  
  >F(1,86) = 106.33, p < .001, ηp2 = .553, 90% CI [.433, .635], ηG2 = .121, BF10 = 7.01 × 10^17. (color × valence)  
 
-Interaction significant as expected. Now to explore the interaction in the `mixed` condition, we could do various _t_-tests (4 in "parallel" and even 2 "crosswise"), but perhaps what's interesting is to check whether there is a significant difference between red and green in case of either positive or negative words.
+Interaction significant as expected. Now to explore the interaction in the `mixed` condition, we could do various _t_-tests (four in "parallel" and even two "crosswise"), but perhaps what's interesting is to check whether there is a significant difference between red and green in case of either positive or negative words.
 
 First, for convenience, I create a new data frame with only `mixed` condition.
 
@@ -377,12 +377,13 @@ Now test red versus green for positive words.
 t_neat(subjects_mx$rt_green_positive,
        subjects_mx$rt_red_positive,
        pair = TRUE)
-       
 ```
 
 >Correlation: r(85) = .613, 95% CI [.462, .729], p < .001.  
 >Descriptives: M±SD = 538.72±51.31 vs. 574.93±56.86 (raw mean difference: 36.20, 95% CI [–46.40, –26.01])  
 >t(86) = –7.06, p < .001, d = –0.76, 95% CI [–0.99, –0.52], BF10 = 2.45 × 10^7.  
+
+(Along with descriptives, in case of paired samples, `t_neat()` by default also prints the correlation between the two tested variables.)
 
 Now red versus green for negative words.
 
