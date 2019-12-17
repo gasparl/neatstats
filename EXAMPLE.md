@@ -207,24 +207,30 @@ data_final = subjects_merged[subjects_merged$er_overall < 0.20, ]
 
 Next, we can calculate number of exclusions by adding a column `remains` to `subjects_merged` with the value `'remained'` wherever the `subject_id` (in `subjects_merged`) is not in the `final_data`, and the value `'excluded'` otherwise.
 
+```R
 subjects_merged$remains = ifelse(subjects_merged$subject_id %in% data_final$subject_id,
                                  'remained',
                                  'excluded')
+```
 
 Thus we can list number of exclusions and number of remaining participants per condition using another aggregation.
 
+```R
 aggr_neat(
     dat = subjects_merged,
     values = subject_id,
     group_by = c('condition', 'remains'),
     method = length
 )
+```
 
 This shows three exclusions in the 'mixed' condition, and two in the 'separate' condition, leaving 87 and 89, respectively.
 
 Moving on to the first (descriptive) statistics, the `dems_neat()` gives the average age, and number of males (or percentage, if so set), using (automatically) the `age` and `gender` columns.
 
+```R
 dems_neat(data_final, group_by = 'condition')
+```
 
 The console output is:
 
