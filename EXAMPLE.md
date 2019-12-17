@@ -160,7 +160,7 @@ The `aggr_neat()` function returns the value names (e.g., `rt_green_negative`) a
 ```R
 subject_line = table_neat(list(rts, ers), transpose = TRUE)
 ```
-    
+
 There is however still some additional information we want to add to this row, although these will be single values. For one, we would like to get the overall ER (regardless of stimulus type), because we want to exclude participants with generally very high ER (they may not have been paying attention or had undisclosed vision problems, etc.). For this too, we can use the `aggr_neat()` function, only omitting the `group_by` argument, and appending, at the end, `$aggr_value`, in order to access the single value returned under this column. To note, the same value can also be quite easily obtained without `aggr_neat()`, by writing, for example, `nrow(subject_data[subject_data$response == 'incorrect',]) / nrow(subject_data[subject_data$response %in% c('correct', 'incorrect'),])`. But again, using `aggr_neat()` might be clearer.
 
 ```R
@@ -226,7 +226,7 @@ aggr_neat(
 
 This shows three exclusions in the 'mixed' condition, and two in the 'separate' condition, leaving 87 and 89, respectively.
 
-Moving on to the first (descriptive) statistics, the `dems_neat()` gives the average age, and number of males (or percentage, if so set), using (automatically) the `age` and `gender` columns.
+Moving on to the first (descriptive) statistics, the `dems_neat()` gives the average age, and number of males (or percentage, if so set), using (automatically) the `age` and `gender` columns. (There is no missing age or gender data in the example data; but otherwise the missing numbers would be displayed as well.)
 
 ```R
 dems_neat(data_final, group_by = 'condition')
@@ -282,7 +282,7 @@ plot_neat(
 
 Seems convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) 
 
-The main method could be replaced as well, for example, by setting `method = median` to get medians instead of means to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
+The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
 
 The plots could be repeated for error rates by simply replacing "rt_" with "er_" in the four variable names for the `values` parameter. Similarly, all the tests below would be the same for ERs (except for changing the variable input), but these are omitted here for brevity.
 
@@ -306,7 +306,7 @@ anova_neat(
 )
 ```
 
-While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fracional digits) due to its inherent random sampling process. My specific out put is:
+The output is:
 
 >F(1,174) = 29507.56, p < .001, ηp2 = .994, 90% CI [.993, .995], ηG2 = .991. ((Intercept))  
 >F(1,174) = 27.03, p < .001, ηp2 = .134, 90% CI [.065, .213], ηG2 = .094. (condition)  
@@ -319,7 +319,7 @@ While the rest of the numbers will always be identical for the same data, the BF
 
 Without going into details, the three-way interaction is significant. (To note, the statistics are as close to as possible to reportable format, but italics, subscripts, and superscripts are not well supported as console outputs - hence these have to be adjusted when preparing a manuscript.)
 
-You follow up (as preregistered of course) with two separate ANOVAs to show the absence of Color x Valence interaction `separate` condition, and its presence in the `mixed` condition.
+You follow up (as preregistered of course) with two separate ANOVAs to show the absence of Color x Valence interaction `separate` condition, and its presence in the `mixed` condition. Here I do not omit BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fracional digits) due to its inherent random sampling process. My specific out put is:
 
 ```R
 anova_neat(
