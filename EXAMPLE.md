@@ -102,7 +102,7 @@ for (file_name in filenames) {
 }
 ```
 
-A preliminary side note: to test the code within the loop in detail, we can assign a single file name to the `file_name` variable (e.g., as `file_name = 'expsim_color_valence_mixed_1.txt'`), and then proceed to execute the following lines one by one and check the corresponding results.
+A preliminary note: to test the code within the loop in detail, we can assign a single file name to the `file_name` variable (e.g., as `file_name = 'expsim_color_valence_mixed_1.txt'`), and then proceed to execute the following lines one by one and check the corresponding results.
 
 The `cat(file_name, fill = TRUE)` line just prints the present file name to the console, to let you know which file is currently being processed. This is especially useful when the script is stopped due to an error: in that case you know which file caused the error.
 
@@ -274,7 +274,7 @@ plot_neat(
 
 ![Mean+ci plot.](example_images/example_image_2.png)
 
-Seems convincing. (Although, as another side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) 
+Seems convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) 
 
 The main method could be replaced as well, for example, by setting `method = median` to get medians instead of means to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
 
