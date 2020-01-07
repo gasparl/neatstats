@@ -40,7 +40,7 @@ If you are using anything other than RStudio, you need to give the full path man
 To collect all file names in the directory, you can use the `list.files()` function. Since all result file names start with "expsim_color_valence_", and end with ".txt", you can specify this pattern to make sure that no other files that may be in this folder are collected.
 
 ```R
-filenames = list.files(pattern = "^color_exp.*txt$")
+filenames = list.files(pattern = "^expsim_color_valence_.*txt$")
 ```
 
 Now that you have the list of all the file names (in the `filenames` variable), you can loop through it, and, for each file name, read in the data from the corresponding file and extract the data that you need. The data from the participants will be merged together in one data frame, named `subjects_merged`, which will contain in each of its row the extracted data of a single participant: namely, condition, age, gender, as well as the mean (aggregated) RTs and error rates for each stimulus type (detailed explanation will follow later).

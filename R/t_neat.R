@@ -295,7 +295,7 @@ t_neat = function(var1,
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    mean_dif = ro(mean(var2) - mean(var1), round_descr)
+    mean_dif = ro(mean(var1) - mean(var2), round_descr)
     ci_r_low = ro(ttest$conf.int[1], round_descr)
     ci_r_upp = ro(ttest$conf.int[2], round_descr)
     prnt(
