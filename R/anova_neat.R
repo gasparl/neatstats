@@ -529,6 +529,7 @@ anova_apa = function(ezANOVA_out,
         }
         levene_post = ''
         levene$'p<.05' = NULL
+        levene$ges = NA
         levene = data.frame(Effect = "Levene", levene)
         if (round(levene$p, 3) < 0.05) {
             levene_pre = "Levene's test indicates unequal variances (p < 0.05): "
@@ -623,8 +624,6 @@ anova_apa = function(ezANOVA_out,
                 ", ",
                 upper,
                 "]",
-                ", CHAR_ETAG2 = ",
-                nG2,
                 bf_out,
                 levene_post
             )
@@ -646,8 +645,7 @@ anova_apa = function(ezANOVA_out,
                 lower,
                 ", ",
                 upper,
-                "]",
-                ", CHAR_ETAG2 = ",
+                "], CHAR_ETAG2 = ",
                 nG2,
                 bf_out,
                 " (",

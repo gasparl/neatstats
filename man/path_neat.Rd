@@ -18,7 +18,7 @@ Gives, in RStudio, the path to the script file in which it is
   executed.
 }
 \examples{
-\donttest{
+\dontrun{
 setwd( path_neat() ) # sets working directory to the script's path, e.g. "C:/script_folder/"
 }
 

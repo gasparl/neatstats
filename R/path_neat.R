@@ -6,7 +6,7 @@
 #' @return Script file's path as string. If \code{subdir} is given, it is
 #'   appended to the original path.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' setwd( path_neat() ) # sets working directory to the script's path, e.g. "C:/script_folder/"
 #' }
 #'
