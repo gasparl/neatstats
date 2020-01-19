@@ -25,5 +25,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Gáspár Lukács \email{lkcsgaspar@gmail.com} (0000-0001-9401-4830)
 
+Other contributors:
+\itemize{
+  \item Bennett Kleinberg \email{bennettkleinberg@gmail.com} (0000-0003-1658-9086) [contributor]
+}
+
 }
 \keyword{internal}
