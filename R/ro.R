@@ -15,6 +15,10 @@
 #' ro( 12.3, 4 ) # returns "12.3000"
 #' @export
 ro = function(num, round_to = 2) {
-    value = as.numeric(num)
+    if (is.numeric(num)) {
+        value = num
+    } else {
+        value = as.numeric(as.character(num))
+    }
     return(format(round(value, round_to), nsmall = round_to))
 }

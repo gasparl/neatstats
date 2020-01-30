@@ -264,7 +264,7 @@ validate_args = function(func_used, evaled_args) {
             strsplit(func_used, "\\(")[[1]][1],
             ') for detailed function info.'
         )
-        stop(feedback, call. = F)
+        stop(feedback, call. = FALSE)
     }
 }
 
@@ -439,7 +439,7 @@ val_wi_id = function(func_used, id_arg, val_cols) {
                 gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
                 ') for detailed function info.'
             )
-            stop(feedback, call. = F)
+            stop(feedback, call. = FALSE)
         }
     }
 }
