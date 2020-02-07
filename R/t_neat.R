@@ -266,9 +266,10 @@ t_neat = function(var1,
     pvalue = ttest$p.value
     n1 = length(var1)
     n2 = length(var2)
+    t_eq = stats::t.test(var1, var2, paired = pair, var.equal = TRUE)$statistic
     if (pair == TRUE) {
         sm = quiet(MBESS::ci.sm(
-            ncp = ttest$statistic,
+            ncp = t_eq,
             N = n1,
             conf.level = ci
         ))
@@ -279,7 +280,7 @@ t_neat = function(var1,
         upper = ro(sm$Upper.Conf.Limit.Standardized.Mean, 2)
     } else {
         the_smd = MBESS::ci.smd(
-            ncp = t,
+            ncp = t_eq,
             n.1 = n1,
             n.2 = n2,
             conf.level = ci
