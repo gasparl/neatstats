@@ -18,9 +18,12 @@ Gives, in RStudio, the path to the script file in which it is
   executed.
 }
 \examples{
-\dontrun{
-setwd( path_neat() ) # sets working directory to the script's path, e.g. "C:/script_folder/"
-}
 
+# assuming the given script is at path "C:/script_folder/"
+path_neat('') # returns "C:/script_folder/"
 path_neat('my_subdir/misc/') # returns "C:/script_folder/my_subdir/misc/"
+
+# Note: the returned string can be used as argument for base::setwd()
+# e.g. setwd( path_neat() ) # sets working directory to the script's path
+
 }
