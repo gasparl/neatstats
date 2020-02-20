@@ -23,7 +23,7 @@ The script that is below presented step by step and described in detail, is also
 
 ### Processing the data
 
-First load the library. (If not yet installed, see https://github.com/gasparl/neatstats/)
+First load the library. (If not yet installed, just run `install.packages("neatStats")`)
 
 ```R
 library('neatStats')
