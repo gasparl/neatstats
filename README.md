@@ -9,9 +9,7 @@ One main point is that all functions use data frames with single row per subject
 Just run:
 
 ```R
-install.packages("devtools") # if "devtools" package is not yet installed
-library("devtools")
-install_github("gasparl/neatstats")
+install.packages("neatStats")
 ```
 
 Then load with: `library("neatStats")`
