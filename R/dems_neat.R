@@ -27,7 +27,8 @@
 #'     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
 #'     gender = c(2, 2, 1, 2, 1, 2, 2, 2, 1, 1),
 #'     age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
-#'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+#'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     stringsAsFactors = TRUE
 #' )
 #'
 #' # print demographics (age and gender) per "conditions":
@@ -39,7 +40,8 @@
 #'     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
 #'     gender = c(2, 2, NA, NA, 1, 1, 1, 2, NA, NA),
 #'     age = c(6, 7, 8.5, 6, 5, 16, NA, 16, 45, 77),
-#'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+#'     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+#'     stringsAsFactors = TRUE
 #' )
 #' # again print demographics per "conditions":
 #' dems_neat(dat, group_by = dat$conditions)
@@ -76,21 +78,21 @@ dems_neat = function(data_per_subject,
             'The data frame must contain the columns "gender" and "age". Column name "gender" was not found.'
         )
     }
+    data_per_subject$gender = as.character(data_per_subject$gender)
     if (all(data_per_subject$gender == '1' |
             data_per_subject$gender == '2'|
             is.na(data_per_subject$gender)) == FALSE) {
         stop('The "gender" column must only contain the values 1 (male) or 2 (female).')
     }
     s_dat$age = as.numeric(as.character(s_dat$age))
-
     if (is.null(group_by)) {
         s_dat$neat_cond = 0
     } else if (class(group_by) == "character") {
-        s_dat$neat_cond = s_dat[[group_by]]
+        s_dat$neat_cond = as.factor(as.character(s_dat[[group_by]]))
     } else {
-        s_dat$neat_cond = group_by
+        s_dat$neat_cond = as.factor(as.character(group_by))
     }
-    s_dat$gender = factor(s_dat$gender, levels = c(1, 2))
+    s_dat$gender = factor(s_dat$gender, levels = c('1', '2'))
     gender = as.data.frame.matrix(stats::xtabs(~ neat_cond + gender, s_dat))
     if (!'1' %in% colnames(gender)) {
         gender = data.frame('1' = 0, gender)

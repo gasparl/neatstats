@@ -41,7 +41,8 @@ dat = data.frame(
     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
     gender = c(2, 2, 1, 2, 1, 2, 2, 2, 1, 1),
     age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
-    measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+    measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+    stringsAsFactors = TRUE
 )
 
 # print demographics (age and gender) per "conditions":
@@ -53,7 +54,8 @@ dat = data.frame(
     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
     gender = c(2, 2, NA, NA, 1, 1, 1, 2, NA, NA),
     age = c(6, 7, 8.5, 6, 5, 16, NA, 16, 45, 77),
-    measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85)
+    measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+    stringsAsFactors = TRUE
 )
 # again print demographics per "conditions":
 dems_neat(dat, group_by = dat$conditions)

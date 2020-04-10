@@ -27,7 +27,8 @@ prnt = function(...) {
         c('CHAR_PLUSMIN', '\u00b1'),
         c('CHAR_X', '\u00d7'),
         c('CHAR_ETA', '\u03b7'),
-        c('CHAR_EPS', '\u03b5')
+        c('CHAR_EPS', '\u03b5'),
+        c('CHAR_INF', '\u221e')
     )
     Encoding(to_print) = "UTF-8"
     for (pair in change_pairs) {

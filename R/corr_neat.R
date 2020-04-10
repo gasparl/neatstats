@@ -92,6 +92,7 @@ corr_neat = function(var1,
     if (direction != "" &&
         substr("negative", 1, nchar(direction)) == direction) {
         message("One-sided test! Negative correlation expected.")
+        direction = 'neg'
         the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "l",
@@ -102,6 +103,7 @@ corr_neat = function(var1,
     } else if (direction != "" &
                substr("positive", 1, nchar(direction)) == direction) {
         message("One-sided test! Positive correlation expected.")
+        direction = 'pos'
         the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "g",

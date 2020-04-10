@@ -299,6 +299,13 @@ t_neat = function(var1,
     mean_dif = ro(mean(var1) - mean(var2), round_descr)
     ci_r_low = ro(ttest$conf.int[1], round_descr)
     ci_r_upp = ro(ttest$conf.int[2], round_descr)
+    if (greater == "1") {
+        ci_r_upp = 'CHAR_INF'
+        upper = 'CHAR_INF'
+    } else if (greater == "2") {
+        ci_r_low = 'CHAR_MINUSCHAR_INF'
+        lower = 'CHAR_MINUSCHAR_INF'
+    }
     prnt(
         test_title,
         " MCHAR_PLUSMINSD = ",
