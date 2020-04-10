@@ -2,7 +2,7 @@
 #'
 #' @description Creates a neat means (or similar descriptives) and standard
 #'   deviations table, using \code{\link{aggr_neat}} functions as arguments.
-#'   Alternatively, simply transposes data frames using first column as headers.
+#'   Alternatively, merges and transposes data frames into rows.
 #' @param values_list Data frames as returned from the \code{\link{aggr_neat}}
 #'   function: variables from which the statistics for the table are to be
 #'   calculated. The \code{group_by}, \code{method}, and \code{prefix}
@@ -24,12 +24,12 @@
 #'   \code{"mean+sd"} (to calculate means and standard deviations table).
 #' @param transpose Logical (default: \code{FALSE}) or string. If \code{TRUE} or
 #'   string, ignores all other parameters (except \code{values_list}), but
-#'   merges the given list of data frames (as returned from the
-#'   \code{\link{aggr_neat}}) and then transposes them using, by default, the
-#'   \code{"aggr_group"} column values for new headers (corresponding to the
-#'   output of \code{\link{aggr_neat}}; see Examples). However, a string given
-#'   as argument for the \code{transpose} parameter can also specify a custom
-#'   column name.
+#'   merges all values from given list of data frames (as returned from the
+#'   \code{\link{aggr_neat}}) and transposes them into a single row, using, by
+#'   default, the \code{"aggr_group"} column values for new headers
+#'   (corresponding to the output of \code{\link{aggr_neat}}; see Examples).
+#'   However, a string given as argument for the \code{transpose} parameter can
+#'   also specify a custom column name.
 #' @details The \code{values}, \code{round_to}, and \code{new_name} arguments
 #'   given in the \code{\link{aggr_neat}} function are always applied. However,
 #'   the \code{prefix} parameter will be overwritten as \code{NULL}. If
