@@ -35,6 +35,7 @@
 #'  \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
 #'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
 #'  confused with one-sided tests; see Details.
+#'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@param plot_densities Logical. If \code{TRUE}, creates a density plot (i.e.,
 #'  \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
 #'  variables. When \code{auc_added} is \code{TRUE} (and the AUC is at least
@@ -161,6 +162,7 @@ t_neat = function(var1,
                   round_descr = 2,
                   round_auc = 3,
                   auc_greater = '1',
+                  hush = FALSE,
                   plot_densities = FALSE,
                   y_label = "density estimate",
                   x_label = "\nvalues",
@@ -183,6 +185,7 @@ t_neat = function(var1,
             val_arg(round_descr, c('num'), 1),
             val_arg(round_auc, c('num'), 1),
             val_arg(auc_greater, c('char'), 1, c('1', '2')),
+            val_arg(hush, c('bool'), 1),
             val_arg(plot_densities, c('bool'), 1),
             val_arg(y_label, c('null', 'char'), 1),
             val_arg(x_label, c('null', 'char'), 1),
@@ -225,10 +228,12 @@ t_neat = function(var1,
                      ro(stats::sd(var2), round_descr))
     if (pair == TRUE & r_added == TRUE) {
         cat("Correlation: ")
-        corr_neat(var1, var2, ci = 0.95, bf_added = FALSE)
+        corr_neat(var1, var2, ci = 0.95, bf_added = FALSE, hush = hush)
     }
     if (greater == "1") {
-        message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
+        if (hush == FALSE) {
+            message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
+        }
         ttest = stats::t.test(var1, var2, paired = pair, alternative = "greater", conf.level = ci)
         if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
@@ -239,7 +244,9 @@ t_neat = function(var1,
             )[1])
         }
     } else if (greater == "2") {
-        message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
+        if (hush == FALSE) {
+            message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
+        }
         ttest = stats::t.test(var1, var2, paired = pair, alternative = "less", conf.level = ci)
         if (bf_added == TRUE) {
             bf = as.vector(BayesFactor::ttestBF(
@@ -306,39 +313,41 @@ t_neat = function(var1,
         ci_r_low = 'CHAR_MINUSCHAR_INF'
         lower = 'CHAR_MINUSCHAR_INF'
     }
-    prnt(
-        test_title,
-        " MCHAR_PLUSMINSD = ",
-        descr_1,
-        " vs. ",
-        descr_2,
-        " (raw mean difference: ",
-        mean_dif,
-        ci_disp,
-        " [",
-        ci_r_low,
-        ", ",
-        ci_r_upp,
-        "])"
-    )
-    out = paste0(
-        "t(",
-        df,
-        ") = ",
-        ro(t, 2),
-        ", p = ",
-        ro(pvalue, 3),
-        ", ",
-        d,
-        ci_disp,
-        " [",
-        lower,
-        ", ",
-        upper,
-        "]",
-        bf_out
-    )
-    prnt(out)
+    if (hush == FALSE) {
+        prnt(
+            test_title,
+            " MCHAR_PLUSMINSD = ",
+            descr_1,
+            " vs. ",
+            descr_2,
+            " (raw mean difference: ",
+            mean_dif,
+            ci_disp,
+            " [",
+            ci_r_low,
+            ", ",
+            ci_r_upp,
+            "])"
+        )
+        out = paste0(
+            "t(",
+            df,
+            ") = ",
+            ro(t, 2),
+            ", p = ",
+            ro(pvalue, 3),
+            ", ",
+            d,
+            ci_disp,
+            " [",
+            lower,
+            ", ",
+            upper,
+            "]",
+            bf_out
+        )
+        prnt(out)
+    }
     if (auc_added == TRUE) {
         if (auc_greater == "2") {
             auc_dir = ">" # v2 expected larger
@@ -351,12 +360,14 @@ t_neat = function(var1,
             levels = c(0, 1),
             direction =  auc_dir
         ) # v1 larger
-        show_auc(
-            theroc = the_roc,
-            ci = ci,
-            round_to = round_auc,
-            for_table = for_table
-        )
+        if (hush == FALSE) {
+            show_auc(
+                theroc = the_roc,
+                ci = ci,
+                round_to = round_auc,
+                for_table = for_table
+            )
+        }
         max_acc = as.numeric(pROC::coords(the_roc, x = "best", ret = "accuracy"))[1]
         maxyouden = as.numeric(pROC::coords(the_roc, x = "best", ret = "youden"))[1]-1
         best_coords = pROC::coords(the_roc, x = "best")

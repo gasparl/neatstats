@@ -58,6 +58,7 @@
 #'  larger than \code{.75}, while Huynh-Feldt correction is applied when
 #'  Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
 #'  is larger than \code{.75} (see Girden, 1992).
+#'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
 #'@details
 #'
@@ -326,7 +327,8 @@ anova_neat = function(data_per_subject,
                       bf_added = TRUE,
                       test_title = "--- neat ANOVA ---",
                       welch = TRUE,
-                      e_correction = NULL) {
+                      e_correction = NULL,
+                      hush = FALSE) {
     if (class(data_per_subject) == "character") {
         data_wide = eval(parse(text = data_per_subject))
         data_per_subject = data_wide
@@ -344,7 +346,8 @@ anova_neat = function(data_per_subject,
             val_arg(bf_added, c('bool'), 1),
             val_arg(test_title, c('char'), 1),
             val_arg(welch, c('bool'), 1),
-            val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none'))
+            val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none')),
+            val_arg(hush, c('bool'), 1)
         )
     )
     cols_notfound = c()
@@ -540,14 +543,20 @@ anova_apa = function(ezANOVA_out,
     }
     ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
     ezANOVA_out$ANOVA$Effect = as.character(ezANOVA_out$ANOVA$Effect)
-    prnt(test_title)
+    if (hush == FALSE) {
+        prnt(test_title)
+    }
     mauchly = ezANOVA_out$"Mauchly's Test for Sphericity"
     if (!is.null(mauchly)) {
-        prnt("- Mauchly's sphericity test:")
+        if (hush == FALSE) {
+            prnt("- Mauchly's sphericity test:")
+        }
         eps_p_corrs = get_e_corrs(mauchly,
                                   ezANOVA_out$"Sphericity Corrections",
-                                  e_correction)
-        prnt("- ANOVA:")
+                                  e_correction, hush)
+        if (hush == FALSE) {
+            prnt("- ANOVA:")
+        }
     } else {
         eps_p_corrs = NULL
     }
@@ -653,7 +662,9 @@ anova_apa = function(ezANOVA_out,
                 ")"
             )
         }
-        prnt(out)
+        if (hush == FALSE) {
+            prnt(out)
+        }
         s_name = gsub(" CHAR_X ", "_", f_name)
         stat_list[[s_name]] = c(
             F = as.numeric(F_val),

@@ -104,7 +104,7 @@ edges = function(the_num, round_to, no_null = FALSE) {
     }
 }
 
-get_e_corrs = function(mauchly, e_corrects, e_correction) {
+get_e_corrs = function(mauchly, e_corrects, e_correction, hush) {
     e_corrs_list = list()
     for (indx in 1:length(e_corrects$Effect)) {
         s_name = e_corrects$Effect[indx]
@@ -151,9 +151,9 @@ get_e_corrs = function(mauchly, e_corrects, e_correction) {
         } else {
             m_corr = '.'
         }
-
-        prnt(m_name, ': W = ', ro(m_w, 3), ', p = ',  ro(m_pval, 3), m_corr)
-
+        if (hush == FALSE) {
+            prnt(m_name, ': W = ', ro(m_w, 3), ', p = ',  ro(m_pval, 3), m_corr)
+        }
     }
     return(spher_real_corrs)
 }

@@ -24,6 +24,7 @@
 #'  and displayed. (\code{FALSE} by default.)
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
 #'  from the printed text.
+#'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@details The Bayes factor (BF) is always calculated with the default r-scale
 #'  of \code{0.707}. BF supporting null hypothesis is denoted as BF01, while
 #'  that supporting alternative hypothesis is denoted as BF10. When the BF is
@@ -95,7 +96,8 @@ props_neat = function(case1,
                       ci = NULL,
                       bf_added = TRUE,
                       h_added = FALSE,
-                      for_table = FALSE) {
+                      for_table = FALSE,
+                      hush = FALSE) {
     validate_args(
         match.call(),
         list(
@@ -107,7 +109,8 @@ props_neat = function(case1,
             val_arg(ci, c('null','num'), 1),
             val_arg(bf_added, c('bool'), 1),
             val_arg(h_added, c('bool'), 1),
-            val_arg(for_table, c('bool'), 1)
+            val_arg(for_table, c('bool'), 1),
+            val_arg(hush, c('bool'), 1)
         )
     )
     greater = toString(greater)
@@ -120,10 +123,14 @@ props_neat = function(case1,
     z_norm = -0.862 + sqrt(0.743 - 2.404 * log(exact_res$p.value))
     p_se = abs(p_diff / z_norm)
     if (greater == "1") {
-        message("One-sided exact-test (with 90% CI default)! H1: first is greater than second.")
+        if (hush == FALSE) {
+            message("One-sided exact-test (with 90% CI default)! H1: first is greater than second.")
+        }
         exact_res = Exact::exact.test(matr, to.plot = FALSE, alternative = "greater")
     } else if (greater == "2") {
-        message("One-sided exact-test (with 90% CI default)! H1: second is greater than first.")
+        if (hush == FALSE) {
+            message("One-sided exact-test (with 90% CI default)! H1: second is greater than first.")
+        }
         exact_res = Exact::exact.test(matr, to.plot = FALSE, alternative = "less")
     } else {
         if (is.null(ci)) {
@@ -191,7 +198,9 @@ props_neat = function(case1,
         h_out,
         bf_out
     )
-    prnt(out)
+    if (hush == FALSE) {
+        prnt(out)
+    }
     invisible(c(
         z = as.numeric(z),
         p = pvalue,

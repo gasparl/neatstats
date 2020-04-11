@@ -19,6 +19,7 @@
 #'  from the printed text.
 #'@param sb_correction Logical. If \code{TRUE}, applies Spearman-Brown
 #'  correction (\code{2 * r / (1+r)}) to the correlation (including CI).
+#'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@details
 #' The Bayes factor (BF) is always calculated with the default r-scale of
 #' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
@@ -75,7 +76,8 @@ corr_neat = function(var1,
                      direction = NULL,
                      round_r = 3,
                      for_table = FALSE,
-                     sb_correction = FALSE) {
+                     sb_correction = FALSE,
+                     hush = FALSE) {
     validate_args(
         match.call(),
         list(
@@ -85,13 +87,16 @@ corr_neat = function(var1,
             val_arg(bf_added, c('bool'), 1),
             val_arg(direction, c('null', 'char'), 1),
             val_arg(round_r, c('num'), 1),
-            val_arg(for_table, c('bool'), 1)
+            val_arg(for_table, c('bool'), 1),
+            val_arg(hush, c('bool'), 1)
         )
     )
     direction = toString(direction)
     if (direction != "" &&
         substr("negative", 1, nchar(direction)) == direction) {
-        message("One-sided test! Negative correlation expected.")
+        if (hush == FALSE) {
+            message("One-sided test! Negative correlation expected.")
+        }
         direction = 'neg'
         the_cor = stats::cor.test(var1,
                            var2,
@@ -102,7 +107,9 @@ corr_neat = function(var1,
         }
     } else if (direction != "" &
                substr("positive", 1, nchar(direction)) == direction) {
-        message("One-sided test! Positive correlation expected.")
+        if (hush == FALSE) {
+            message("One-sided test! Positive correlation expected.")
+        }
         direction = 'pos'
         the_cor = stats::cor.test(var1,
                            var2,
@@ -164,7 +171,9 @@ corr_neat = function(var1,
                  ", p = ",
                  ro(p_value, 3),
                  bf_out)
-    prnt(out)
+    if (hush == FALSE) {
+        prnt(out)
+    }
     invisible(c(
         r = as.numeric(the_cor$estimate),
         p = p_value,
