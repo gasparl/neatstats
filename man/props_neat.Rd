@@ -5,7 +5,8 @@
 \title{Difference of Two Proportions}
 \usage{
 props_neat(case1, case2, n1, n2, greater = NULL, ci = NULL,
-  bf_added = TRUE, h_added = FALSE, for_table = FALSE)
+  bf_added = TRUE, h_added = FALSE, for_table = FALSE,
+  hush = FALSE)
 }
 \arguments{
 \item{case1}{Number of 'cases' (as opposed to 'controls'; e.g. positive
@@ -34,6 +35,8 @@ and displayed. (\code{FALSE} by default.)}
 
 \item{for_table}{Logical. If \code{TRUE}, omits the confidence level display
 from the printed text.}
+
+\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 }
 \value{
 Prints exact test statistics (including proportion difference with CI,

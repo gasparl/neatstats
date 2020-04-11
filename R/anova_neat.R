@@ -510,7 +510,8 @@ anova_neat = function(data_per_subject,
         bf_models = bf_models,
         test_title = test_title,
         welch = w_anova,
-        e_correction = e_correction
+        e_correction = e_correction,
+        hush = hush
     )
     invisible(to_return)
 }
@@ -521,7 +522,8 @@ anova_apa = function(ezANOVA_out,
                      bf_models = NULL,
                      test_title = "--- neat ANOVA ---",
                      welch = NULL,
-                     e_correction = '') {
+                     e_correction = '',
+                     hush = FALSE) {
     levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
     ezANOVA_out$ANOVA$'p<.05' = NULL
     if ((!is.null(levene)) && (is.null(welch))) {

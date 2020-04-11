@@ -7,7 +7,7 @@
 anova_neat(data_per_subject, values, within_ids = NULL,
   between_vars = NULL, ci = 0.9, bf_added = TRUE,
   test_title = "--- neat ANOVA ---", welch = TRUE,
-  e_correction = NULL)
+  e_correction = NULL, hush = FALSE)
 }
 \arguments{
 \item{data_per_subject}{Data frame or name of data frame as string. Should
@@ -69,6 +69,8 @@ sphericity test is significant and the Greenhouse-Geisser epsilon is not
 larger than \code{.75}, while Huynh-Feldt correction is applied when
 Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
 is larger than \code{.75} (see Girden, 1992).}
+
+\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 }
 \value{
 Prints ANOVA statistics (including, for each model, F-test with

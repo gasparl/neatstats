@@ -5,7 +5,8 @@
 \title{Correlation Statistics}
 \usage{
 corr_neat(var1, var2, ci = 0.95, bf_added = TRUE, direction = NULL,
-  round_r = 3, for_table = FALSE, sb_correction = FALSE)
+  round_r = 3, for_table = FALSE, sb_correction = FALSE,
+  hush = FALSE)
 }
 \arguments{
 \item{var1}{Numeric vector; numbers of the first variable.}
@@ -31,6 +32,8 @@ from the printed text.}
 
 \item{sb_correction}{Logical. If \code{TRUE}, applies Spearman-Brown
 correction (\code{2 * r / (1+r)}) to the correlation (including CI).}
+
+\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 }
 \value{
 Prints correlation statistics (including CI and BF) in APA style.
