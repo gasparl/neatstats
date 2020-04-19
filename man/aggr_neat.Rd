@@ -4,8 +4,16 @@
 \alias{aggr_neat}
 \title{Aggregation, descriptives}
 \usage{
-aggr_neat(dat, values, method = mean, group_by = NULL, filt = NULL,
-  prefix = NULL, new_name = NULL, round_to = 2)
+aggr_neat(
+  dat,
+  values,
+  method = mean,
+  group_by = NULL,
+  filt = NULL,
+  prefix = NULL,
+  new_name = NULL,
+  round_to = 2
+)
 }
 \arguments{
 \item{dat}{Data frame (or name of data frame as string).}

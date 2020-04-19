@@ -4,8 +4,7 @@
 \alias{dems_neat}
 \title{Demographics}
 \usage{
-dems_neat(data_per_subject, group_by = NULL, percent = FALSE,
-  round_perc = 0)
+dems_neat(data_per_subject, group_by = NULL, percent = FALSE, round_perc = 0)
 }
 \arguments{
 \item{data_per_subject}{Data frame from which demographics are to be

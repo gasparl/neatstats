@@ -368,8 +368,18 @@ t_neat = function(var1,
                 for_table = for_table
             )
         }
-        max_acc = as.numeric(pROC::coords(the_roc, x = "best", ret = "accuracy"))[1]
-        maxyouden = as.numeric(pROC::coords(the_roc, x = "best", ret = "youden"))[1]-1
+        youdn = pROC::coords(the_roc, x = "best", ret = "youden")
+        if (class(youdn) == "data.frame") {
+            maxyouden = as.numeric(youdn$youden[1])-1
+        } else {
+            maxyouden =as.numeric(youdn[1])-1
+        }
+        bestacc = pROC::coords(the_roc, x = "best", ret = "accuracy")
+        if (class(bestacc) == "data.frame") {
+            max_acc = as.numeric(bestacc$accuracy[1])
+        } else {
+            max_acc =as.numeric(bestacc[1])
+        }
         best_coords = pROC::coords(the_roc, x = "best")
         the_auc = pROC::auc(the_roc)
         if (class(best_coords) == "matrix") {

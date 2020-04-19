@@ -4,10 +4,18 @@
 \alias{anova_neat}
 \title{Comparison of Multiple Means: ANOVA}
 \usage{
-anova_neat(data_per_subject, values, within_ids = NULL,
-  between_vars = NULL, ci = 0.9, bf_added = TRUE,
-  test_title = "--- neat ANOVA ---", welch = TRUE,
-  e_correction = NULL, hush = FALSE)
+anova_neat(
+  data_per_subject,
+  values,
+  within_ids = NULL,
+  between_vars = NULL,
+  ci = 0.9,
+  bf_added = TRUE,
+  test_title = "--- neat ANOVA ---",
+  welch = TRUE,
+  e_correction = NULL,
+  hush = FALSE
+)
 }
 \arguments{
 \item{data_per_subject}{Data frame or name of data frame as string. Should

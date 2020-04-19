@@ -4,12 +4,24 @@
 \alias{plot_neat}
 \title{Plots of factors}
 \usage{
-plot_neat(data_per_subject, values, within_ids = NULL,
-  between_vars = NULL, factor_names = NULL, value_names = NULL,
-  y_title = NULL, reverse = FALSE, panels = NULL, type = "line",
-  dodge = NULL, bar_colors = c("#333333", "#AAAAAA"),
-  line_colors = c("#555555", "#000000"), row_number = 1,
-  method = mean, eb_method = stats::sd)
+plot_neat(
+  data_per_subject,
+  values,
+  within_ids = NULL,
+  between_vars = NULL,
+  factor_names = NULL,
+  value_names = NULL,
+  y_title = NULL,
+  reverse = FALSE,
+  panels = NULL,
+  type = "line",
+  dodge = NULL,
+  bar_colors = c("#333333", "#AAAAAA"),
+  line_colors = c("#555555", "#000000"),
+  row_number = 1,
+  method = mean,
+  eb_method = stats::sd
+)
 }
 \arguments{
 \item{data_per_subject}{Data frame or name of data frame as string. Should

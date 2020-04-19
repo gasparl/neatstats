@@ -23,11 +23,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Gáspár Lukács \email{lkcsgaspar@gmail.com} (0000-0001-9401-4830)
+\strong{Maintainer}: Gáspár Lukács \email{lkcsgaspar@gmail.com} (\href{https://orcid.org/0000-0001-9401-4830}{ORCID})
 
 Other contributors:
 \itemize{
-  \item Bennett Kleinberg \email{bennettkleinberg@gmail.com} (0000-0003-1658-9086) [contributor]
+  \item Bennett Kleinberg \email{bennettkleinberg@gmail.com} (\href{https://orcid.org/0000-0003-1658-9086}{ORCID}) [contributor]
 }
 
 }

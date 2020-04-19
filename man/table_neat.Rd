@@ -4,8 +4,14 @@
 \alias{table_neat}
 \title{Table, descriptives}
 \usage{
-table_neat(values_list, group_by = NULL, group_per = "rows",
-  to_clipboard = FALSE, method = "mean+sd", transpose = FALSE)
+table_neat(
+  values_list,
+  group_by = NULL,
+  group_per = "rows",
+  to_clipboard = FALSE,
+  method = "mean+sd",
+  transpose = FALSE
+)
 }
 \arguments{
 \item{values_list}{Data frames as returned from the \code{\link{aggr_neat}}
