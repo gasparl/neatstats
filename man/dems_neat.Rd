@@ -4,14 +4,26 @@
 \alias{dems_neat}
 \title{Demographics}
 \usage{
-dems_neat(data_per_subject, group_by = NULL, percent = FALSE, round_perc = 0)
+dems_neat(
+  data_per_subject,
+  group_by = NULL,
+  percent = FALSE,
+  round_perc = 0,
+  show_fem = NULL
+)
 }
 \arguments{
 \item{data_per_subject}{Data frame from which demographics are to be
-calculated. Must contain columns named precisely as "\code{age}" and as
-"\code{gender}". The \code{age} column must contain only numbers or
-\code{NA}, while \code{gender} column must contain only 1 (= male) or 2 (=
-female), either as numbers or as strings, or \code{NA}.}
+calculated. Must contain columns named as "\code{age}" and as
+"\code{gender}" (or, alternatively, "\code{sex}"). The \code{age} column
+must contain only numbers or \code{NA}, while \code{gender} column must
+contain only \code{1} (= male) or \code{2} (= female), either as numbers or
+as strings, or \code{NA}. Alternatively, male can be indicated, instead of
+\code{1}, with the string \code{male} (or its abbreviations, e.g.
+\code{m}), while in that case female can be indicated, instead of \code{2},
+with the string \code{female} (or its abbreviations, e.g. \code{f} or
+\code{fem} ). (Lettercases do not matter, e.g. \code{Male} or \code{MALE}
+are both evaluated same as \code{male}.)}
 
 \item{group_by}{A vector of factors by which the statistics are grouped,
 typically a column from the data frame provided as \code{data_per_subject}.}
@@ -22,15 +34,28 @@ typically a column from the data frame provided as \code{data_per_subject}.}
 
 \item{round_perc}{Number \code{\link[=ro]{to round}} to, when using
 percentages.}
+
+\item{show_fem}{Logical or \code{NULL}. If \code{TRUE}, the numbers of both
+male and female are displayed. If \code{FALSE}, only the number of males is
+displayed. If \code{NULL} (default), only the number of males is displayed
+when there are no unknown cases, but both numbers are displayed when there
+are any unknown cases.}
 }
 \description{
 Prints participant count, age mean and SD, and gender ratio,
   from given dataset.
 }
 \details{
-If \code{NA} values are found in either the \code{age} or
- \code{gender} column, the ratio (or count) of unknown cases will be displayed
- everywhere. Otherwise it will simply not be displayed anywhere.
+The function will first look for columns named precisely "\code{age}"
+and as "\code{gender}". If either is not found, the function looks for the
+same names but with any lettercase (e.g. "\code{AGE}" or "\code{Gender}"). If
+still no "\code{gender}" column is found, the function looks for "\code{sex}"
+column in the same manner. alternatively, "\code{sex}". (No columns found for
+either variable will result in error message.)
+
+If \code{NA} values are found in either the \code{age} or \code{gender}
+column, the ratio (or count) of unknown cases will be displayed everywhere.
+Otherwise it will simply not be displayed anywhere.
 }
 \examples{
 # below is an illustrative example dataset
