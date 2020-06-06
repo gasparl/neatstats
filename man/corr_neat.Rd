@@ -7,6 +7,7 @@
 corr_neat(
   var1,
   var2,
+  nonparametric = FALSE,
   ci = 0.95,
   bf_added = TRUE,
   direction = NULL,
@@ -20,6 +21,10 @@ corr_neat(
 \item{var1}{Numeric vector; numbers of the first variable.}
 
 \item{var2}{Numeric vector; numbers of the second variable.}
+
+\item{nonparametric}{Logical (\code{FALSE} by default). If \code{TRUE}, uses
+nonparametric tests (Spearman's rank correlation, including BFs; see
+Details).}
 
 \item{ci}{Numeric; confidence level for the returned CI, as implemented in
 \code{\link[stats]{cor.test}}.}
@@ -52,16 +57,21 @@ Prints correlation statistics (including CI and BF) in APA style.
 \description{
 \code{\link[stats:cor.test]{Pearson correlation}} results
  including confidence interval (CI) and correlation
- \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF).
+ \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF). For
+ non-parametric version, Spearman's \code{\link[stats:cor.test]{rank
+ correlation}} results along with corresponding rank-based BFs (as per van
+ Doorn et al., 2020).
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of
-\code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
-supporting alternative hypothesis is denoted as BF10. When the BF is smaller
-than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
-BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-scientific (exponential) form is reported for readability. (The original full
-BF number is available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) is calculated with the default r-scale of
+ \code{1/3} for parametric test, and with the default r-scale of \code{1} for
+ nonparametric test. BF supporting null hypothesis is denoted as BF01, while
+ that supporting alternative hypothesis is denoted as BF10. When the BF is
+ smaller than 1 (i.e., supports null hypothesis), the reciprocal is
+ calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than
+ or equal to 10000, scientific (exponential) form is reported for
+ readability. (The original full BF number is available in the returned named
+ vector as \code{bf}.)#'
 }
 \note{
 The correlation and CI is calculated via
@@ -97,6 +107,11 @@ Public Health, 58(4), 637-642. \doi{https://doi.org/10.1007/s00038-012-0416-3}
 Spearman, C. (1910). Correlation calculated from faulty data. British Journal
 of Psychology, 1904-1920, 3(3), 271-295.
 \doi{https://doi.org/10.1111/j.2044-8295.1910.tb00206.x}
+
+van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E.-J. (2020). Bayesian
+rank-based hypothesis testing for the rank sum test, the signed rank test, and
+Spearman’s rho. Journal of Applied Statistics, 1–23.
+\doi{https://doi.org/10.1080/02664763.2019.1709053}
 }
 \seealso{
 \code{\link{t_neat}}

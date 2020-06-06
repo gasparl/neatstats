@@ -26,4 +26,4 @@ For details about each function, see [the manual](https://github.com/gasparl/nea
 * If you run into an error despite carefully following the [documentation](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats.pdf"), [open a new issue](https://github.com/gasparl/neatstats/issues "Issues") or [email me](mailto:lkcsgaspar@gmail.com).
 * If you have sound reason to believe that some of the presented statistics (or functions) are really not optimal and/or could be improved in some plausible way, [email me](mailto:lkcsgaspar@gmail.com).
 
-![](http://cranlogs.r-pkg.org/badges/neatStats "neatStats CRAN download count")
+[![DOI](https://zenodo.org/badge/187226036.svg)](https://zenodo.org/badge/latestdoi/187226036) ![](http://cranlogs.r-pkg.org/badges/neatStats?color=8585ad "neatStats CRAN download count")

@@ -2,9 +2,15 @@
 #'
 #'@description \code{\link[stats:cor.test]{Pearson correlation}} results
 #'  including confidence interval (CI) and correlation
-#'  \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF).
+#'  \code{\link[BayesFactor:correlationBF]{Bayes factor}} (BF). For
+#'  non-parametric version, Spearman's \code{\link[stats:cor.test]{rank
+#'  correlation}} results along with corresponding rank-based BFs (as per van
+#'  Doorn et al., 2020).
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
+#'@param nonparametric Logical (\code{FALSE} by default). If \code{TRUE}, uses
+#'  nonparametric tests (Spearman's rank correlation, including BFs; see
+#'  Details).
 #'@param ci Numeric; confidence level for the returned CI, as implemented in
 #'  \code{\link[stats]{cor.test}}.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
@@ -20,14 +26,20 @@
 #'@param sb_correction Logical. If \code{TRUE}, applies Spearman-Brown
 #'  correction (\code{2 * r / (1+r)}) to the correlation (including CI).
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
-#'@details
-#' The Bayes factor (BF) is always calculated with the default r-scale of
-#' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
-#' supporting alternative hypothesis is denoted as BF10. When the BF is smaller
-#' than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
-#' BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-#' scientific (exponential) form is reported for readability. (The original full
-#' BF number is available in the returned named vector as \code{bf}.)
+#'@details The Bayes factor (BF) is calculated with the default r-scale of
+#'  \code{1/3} for parametric test, and with the default r-scale of \code{1} for
+#'  nonparametric test. BF supporting null hypothesis is denoted as BF01, while
+#'  that supporting alternative hypothesis is denoted as BF10. When the BF is
+#'  smaller than 1 (i.e., supports null hypothesis), the reciprocal is
+#'  calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than
+#'  or equal to 10000, scientific (exponential) form is reported for
+#'  readability. (The original full BF number is available in the returned named
+#'  vector as \code{bf}.)#'
+#'
+# For details about the nonparametric (Spearman's rank correlation) Bayes
+# factors, see van Doorn et al. (2020). The source code for the calculation is a
+# contribution by J. van Doorn; the original version is available via
+# https://osf.io/gny35/.
 #'
 #'@return Prints correlation statistics (including CI and BF) in APA style.
 #'  Furthermore, when assigned, returns a named vector with the following
@@ -53,6 +65,11 @@
 #'of Psychology, 1904-1920, 3(3), 271-295.
 #'\doi{https://doi.org/10.1111/j.2044-8295.1910.tb00206.x}
 #'
+#'van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E.-J. (2020). Bayesian
+#'rank-based hypothesis testing for the rank sum test, the signed rank test, and
+#'Spearman’s rho. Journal of Applied Statistics, 1–23.
+#'\doi{https://doi.org/10.1080/02664763.2019.1709053}
+#'
 #'@seealso \code{\link{t_neat}}
 #' @examples
 #' # assign two variables
@@ -71,6 +88,7 @@
 #' @export
 corr_neat = function(var1,
                      var2,
+                     nonparametric = FALSE,
                      ci = .95,
                      bf_added = TRUE,
                      direction = NULL,
@@ -83,6 +101,7 @@ corr_neat = function(var1,
         list(
             val_arg(var1, c('num'), 0),
             val_arg(var2, c('num'), 0),
+            val_arg(nonparametric, c('bool'), 1),
             val_arg(ci, c('num'), 1),
             val_arg(bf_added, c('bool'), 1),
             val_arg(direction, c('null', 'char'), 1),
@@ -91,6 +110,17 @@ corr_neat = function(var1,
             val_arg(hush, c('bool'), 1)
         )
     )
+    if (nonparametric == TRUE) {
+        corr_method = 'spearman'
+        if (bf_added == TRUE) {
+            rho_samps = spearmanGibbsSampler(var1, var2, progBar = (!hush))$rhoSamples
+            if (hush == FALSE) {
+                cat('', fill = TRUE)
+            }
+        }
+    } else {
+        corr_method = 'pearson'
+    }
     direction = toString(direction)
     if (direction != "" &&
         substr("negative", 1, nchar(direction)) == direction) {
@@ -101,9 +131,16 @@ corr_neat = function(var1,
         the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "l",
-                           conf.level = ci)
+                           conf.level = ci,
+                           method = corr_method)
         if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(-1, 0))[1])
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(rho_samps,
+                                               oneSided = "left",
+                                               priorParameter = 1)
+            } else {
+                bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(-1, 0))[1])
+            }
         }
     } else if (direction != "" &
                substr("positive", 1, nchar(direction)) == direction) {
@@ -114,14 +151,26 @@ corr_neat = function(var1,
         the_cor = stats::cor.test(var1,
                            var2,
                            alternative = "g",
-                           conf.level = ci)
+                           conf.level = ci,
+                           method = corr_method)
         if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(0, 1))[1])
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(rho_samps,
+                                               oneSided = "right",
+                                               priorParameter = 1)
+            } else {
+                bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(0, 1))[1])
+            }
         }
     } else {
-        the_cor = stats::cor.test(var1, var2, conf.level = ci)
+        the_cor = stats::cor.test(var1, var2, conf.level = ci, method = corr_method)
         if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::correlationBF(var1, var2))
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(rho_samps,
+                                               priorParameter = 1)
+            } else {
+                bf = as.vector(BayesFactor::correlationBF(var1, var2))
+            }
         }
     }
     if (bf_added == TRUE) {
@@ -136,8 +185,16 @@ corr_neat = function(var1,
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
     r_raw = the_cor$estimate
-    low_raw = the_cor$conf.int[1]
-    upp_raw = the_cor$conf.int[2]
+    if (nonparametric == TRUE) {
+        the_n = length(stats::na.omit(pmin(var1, var2)))
+        se <- 1 / ((the_n - 3) ** 0.5)
+        z_c <- stats::qnorm(1 - (1 - ci) / 2) * se
+        low_raw <- tanh(atanh(r_raw) - z_c)
+        upp_raw <- tanh(atanh(r_raw) + z_c)
+    } else {
+        low_raw = the_cor$conf.int[1]
+        upp_raw = the_cor$conf.int[2]
+    }
     if (sb_correction == TRUE) {
         r_raw = (2 * r_raw) / (1 + r_raw)
         low_raw = (2 * low_raw) / (1 + low_raw)
@@ -157,10 +214,15 @@ corr_neat = function(var1,
         return("NA")
     })
     p_value = the_cor$p.value
-    df = the_cor$parameter
-    out = paste0("r(",
-                 df,
-                 ") = ",
+    if (nonparametric == TRUE) {
+        outbegin = "rs = "
+    } else {
+        df = the_cor$parameter
+        outbegin = paste0("r(",
+                          df,
+                          ") = ")
+    }
+    out = paste0(outbegin,
                  r,
                  ci_disp,
                  " [",

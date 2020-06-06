@@ -1,11 +1,13 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.2.0
-Date: 2020-05-10
+Version: 1.3.0
+Date: 2020-06-06
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
   "Kleinberg", email = "bennettkleinberg@gmail.com", role = c("ctb"), comment =
-  c(ORCID = "0000-0003-1658-9086")))
+  c(ORCID = "0000-0003-1658-9086")), person("Johnny", "van Doorn", email =
+  "JohnnyDoorn@gmail.com", role = c("ctb"), comment = c(ORCID =
+  "0000-0003-0270-096X")))
 Description: User-friendly, clear and simple statistics, primarily for
   publication in psychological science. The main functions are wrappers for
   other packages, but there are various additions as well. Every relevant step
@@ -14,7 +16,7 @@ Description: User-friendly, clear and simple statistics, primarily for
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.6.0)
 Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2,
-  grDevices, stats, graphics
+  logspline, grDevices, stats, graphics
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8

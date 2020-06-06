@@ -1,14 +1,20 @@
 #'@title Difference of Two Means and Area Under the Curve
 #'
-#'@description Welch's \code{\link[stats:t.test]{t-test}} results
-#'  including Cohen's d with confidence interval (CI),
+#'@description Welch's \code{\link[stats:t.test]{t-test}} results including
+#'  Cohen's d with confidence interval (CI),
 #'  \code{\link[BayesFactor:ttestBF]{Bayes factor}} (BF), and
 #'  \code{\link[pROC:auc]{area under the receiver operating characteristic
-#'  curve}} (AUC).
+#'  curve}} (AUC). For non-parametric version,
+#'  \code{\link[stats:wilcox.test]{Wilcoxon test}} results (Mann–Whitney U test,
+#'  aka "Wilcoxon rank-sum test", for independent samples; Wilcoxon signed-rank
+#'  test for paired samples; along with corresponding rank-based BFs as per van
+#'  Doorn et al., 2020).
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
 #'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
 #'  paired samples. If \code{FALSE} (default) for independent samples.
+#'@param nonparametric Logical (\code{FALSE} by default). If \code{TRUE}, uses
+#'  nonparametric (rank-based, "Wilcoxon") t-tests (including BFs; see Details).
 #'@param greater \code{NULL} or string (or number); optionally specifies
 #'  one-sided tests (t and BF): either "1" (\code{var1} mean expected to be
 #'  greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
@@ -61,6 +67,13 @@
 #' BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
 #' scientific (exponential) form is reported for readability. (The original full
 #' BF number is available in the returned named vector as \code{bf}.)
+#'
+# For details about the nonparametric (rank-based, Wilcoxon) Bayes factors, see
+# van Doorn et al. (2020). The source code for the calculation is a contribution
+# by J. van Doorn; the original version is available via https://osf.io/gny35/.
+#'
+#'For simplicity, Cohen's d is reported for nonparametric tests too: you may
+#'however want to consider reporting alternative effect sizes in this case.
 #'
 #'The original \code{\link[pROC:auc]{pROC::auc}} function, by default, always
 #'returns an AUC greater than (or equal to) .5, assuming that the prediction
@@ -118,10 +131,11 @@
 #'\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
 #'object \code{\link[pROC:roc]{pROC::roc}}.
 #'
-#'@references Delacre, M., Lakens, D., & Leys, C. (2017). Why psychologists
-#'should by default use Welch's t-test instead of Student's t-test.
-#'International Review of Social Psychology, 30(1).
-#'\doi{http://doi.org/10.5334/irsp.82}
+#'@references 
+#'
+#'Delacre, M., Lakens, D., & Leys, C. (2017). Why psychologists should by
+#'default use Welch's t-test instead of Student's t-test. International Review
+#'of Social Psychology, 30(1). \doi{http://doi.org/10.5334/irsp.82}
 #'
 #'Kelley, K. (2007). Methods for the behavioral, educational, and social
 #'sciences: An R package. Behavior Research Methods, 39(4), 979-984.
@@ -131,6 +145,11 @@
 #'Muller, M. (2011). pROC: an open-source package for R and S+ to analyze and
 #'compare ROC curves. BMC bioinformatics, 12(1), 77.
 #'\doi{https://doi.org/10.1186/1471-2105-12-77}
+#'
+#'van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E.-J. (2020). Bayesian
+#'rank-based hypothesis testing for the rank sum test, the signed rank test, and
+#'Spearman’s rho. Journal of Applied Statistics, 1–23.
+#'\doi{https://doi.org/10.1080/02664763.2019.1709053}
 #'
 #' @seealso \code{\link{corr_neat}}, \code{\link{roc_neat}}
 #' @examples
@@ -152,6 +171,7 @@
 t_neat = function(var1,
                   var2,
                   pair = FALSE,
+                  nonparametric = FALSE,
                   greater = NULL,
                   ci = NULL,
                   bf_added = TRUE,
@@ -175,6 +195,7 @@ t_neat = function(var1,
             val_arg(var1, c('num'), 0),
             val_arg(var2, c('num'), 0),
             val_arg(pair, c('bool'), 1),
+            val_arg(nonparametric, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
             val_arg(ci, c('null', 'num'), 1),
             val_arg(bf_added, c('bool'), 1),
@@ -226,40 +247,129 @@ t_neat = function(var1,
     descr_2 = paste0(ro(mean(var2), round_descr),
                      "CHAR_PLUSMIN",
                      ro(stats::sd(var2), round_descr))
+    if (bf_added == TRUE &&
+        nonparametric == TRUE) {
+        if (pair == TRUE) {
+            delta_samps = signRankGibbsSampler(var1, var2, progBar = (!hush))$deltaSamples
+        } else {
+            delta_samps = rankSumGibbsSampler(var1, var2, progBar = (!hush))$deltaSamples
+        }
+        if (hush == FALSE) {
+            cat('', fill = TRUE)
+        }
+    }
     if (pair == TRUE & r_added == TRUE) {
-        cat("Correlation: ")
-        corr_neat(var1, var2, ci = 0.95, bf_added = FALSE, hush = hush)
+        if (nonparametric == TRUE) {
+            cat("Spearman's rank correlation: ")
+            corr_neat(var1,
+                      var2,
+                      nonparametric = TRUE,
+                      ci = 0.95,
+                      bf_added = FALSE,
+                      hush = hush)
+        } else {
+            cat("Pearson correlation: ")
+            corr_neat(var1,
+                      var2,
+                      ci = 0.95,
+                      bf_added = FALSE,
+                      hush = hush)
+        }
     }
     if (greater == "1") {
         if (hush == FALSE) {
             message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
         }
-        ttest = stats::t.test(var1, var2, paired = pair, alternative = "greater", conf.level = ci)
-        if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::ttestBF(
+        if (nonparametric == TRUE) {
+            ttest = stats::wilcox.test(
                 var1,
                 var2,
                 paired = pair,
-                nullInterval = c(0, Inf)
-            )[1])
+                alternative = "greater",
+                conf.level = ci,
+                conf.int = TRUE,
+                exact = TRUE
+            )
+        } else {
+            ttest = stats::t.test(
+                var1,
+                var2,
+                paired = pair,
+                alternative = "greater",
+                conf.level = ci
+            )
+        }
+        if (bf_added == TRUE) {
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(delta_samps,
+                                               oneSided = "right",
+                                               priorParameter = 1 / sqrt(2))
+            } else {
+                bf = as.vector(BayesFactor::ttestBF(
+                    var1,
+                    var2,
+                    paired = pair,
+                    nullInterval = c(0, Inf)
+                )[1])
+            }
         }
     } else if (greater == "2") {
         if (hush == FALSE) {
             message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
         }
-        ttest = stats::t.test(var1, var2, paired = pair, alternative = "less", conf.level = ci)
-        if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::ttestBF(
+        if (nonparametric == TRUE) {
+            ttest = stats::wilcox.test(
                 var1,
                 var2,
                 paired = pair,
-                nullInterval = c(0,-Inf)
-            )[1])
+                alternative = "less",
+                conf.level = ci,
+                conf.int = TRUE,
+                exact = TRUE
+            )
+        } else {
+            ttest = stats::t.test(
+                var1,
+                var2,
+                paired = pair,
+                alternative = "less",
+                conf.level = ci
+            )
+        }
+        if (bf_added == TRUE) {
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(delta_samps,
+                                               oneSided = "left",
+                                               priorParameter = 1 / sqrt(2))
+            } else {
+                bf = as.vector(BayesFactor::ttestBF(
+                    var1,
+                    var2,
+                    paired = pair,
+                    nullInterval = c(0, -Inf)
+                )[1])
+            }
         }
     } else {
-        ttest = stats::t.test(var1, var2, paired = pair, conf.level = ci)
+        if (nonparametric == TRUE) {
+            ttest = stats::wilcox.test(
+                var1,
+                var2,
+                paired = pair,
+                conf.level = ci,
+                conf.int = TRUE,
+                exact = TRUE
+            )
+        } else {
+            ttest = stats::t.test(var1, var2, paired = pair, conf.level = ci)
+        }
         if (bf_added == TRUE) {
-            bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
+            if (nonparametric == TRUE) {
+                bf = computeBayesFactorOneZero(delta_samps,
+                                               priorParameter = 1 / sqrt(2))
+            } else {
+                bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
+            }
         }
     }
     if (bf_added == TRUE) {
@@ -314,6 +424,17 @@ t_neat = function(var1,
         lower = 'CHAR_MINUSCHAR_INF'
     }
     if (hush == FALSE) {
+        if (nonparametric == TRUE) {
+            if (pair == TRUE) {
+                outbegin = "W = "
+            } else {
+                outbegin = "U = "
+            }
+        } else {
+            outbegin = paste0("t(",
+                              df,
+                              ") = ")
+        }
         prnt(
             test_title,
             " MCHAR_PLUSMINSD = ",
@@ -330,9 +451,7 @@ t_neat = function(var1,
             "])"
         )
         out = paste0(
-            "t(",
-            df,
-            ") = ",
+            outbegin,
             ro(t, 2),
             ", p = ",
             ro(pvalue, 3),

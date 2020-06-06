@@ -28,6 +28,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Bennett Kleinberg \email{bennettkleinberg@gmail.com} (\href{https://orcid.org/0000-0003-1658-9086}{ORCID}) [contributor]
+  \item Johnny van Doorn \email{JohnnyDoorn@gmail.com} (\href{https://orcid.org/0000-0003-0270-096X}{ORCID}) [contributor]
 }
 
 }
