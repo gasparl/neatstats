@@ -6,13 +6,21 @@ One main point is that all functions use data frames with single row per subject
 
 ### Installation in R
 
-Just run:
+To install from [CRAN](https://cran.r-project.org/ "The Comprehensive R Archive Network"), just run:
 
 ```R
 install.packages("neatStats")
 ```
 
 Then load with: `library("neatStats")`
+
+Alternatively, if you want to install the latest from this repository:
+
+```
+install.packages("devtools") # if "devtools" package is not yet installed
+library(devtools)
+install_github("gasparl/neatstats")
+```
 
 ### Usage
 
