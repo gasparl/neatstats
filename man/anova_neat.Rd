@@ -11,6 +11,7 @@ anova_neat(
   between_vars = NULL,
   ci = 0.9,
   bf_added = TRUE,
+  bf_sample = 10000,
   test_title = "--- neat ANOVA ---",
   welch = TRUE,
   e_correction = NULL,
@@ -57,6 +58,9 @@ Lakens, 2014; Steiger, 2004.)}
 \item{bf_added}{Logical. If \code{TRUE} (default), inclusion Bayes factor is
 calculated and displayed. (Note: with multiple factors and/or larger
 dataset, the calculation can take considerable time.)}
+
+\item{bf_sample}{Number of samples used to estimate Bayes factor (\code{10000}
+by default).}
 
 \item{test_title}{String, \code{"--- neat ANOVA ---"} by default. Simply
 displayed in printing preceding the statistics.}

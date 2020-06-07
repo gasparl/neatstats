@@ -41,6 +41,8 @@
 #'@param bf_added Logical. If \code{TRUE} (default), inclusion Bayes factor is
 #'  calculated and displayed. (Note: with multiple factors and/or larger
 #'  dataset, the calculation can take considerable time.)
+#'@param bf_sample Number of samples used to estimate Bayes factor (\code{10000}
+#'  by default).
 #'@param test_title String, \code{"--- neat ANOVA ---"} by default. Simply
 #'  displayed in printing preceding the statistics.
 #'@param welch If \code{TRUE} (default), calculates Welch's ANOVA via
@@ -325,6 +327,7 @@ anova_neat = function(data_per_subject,
                       between_vars = NULL,
                       ci = 0.90,
                       bf_added = TRUE,
+                      bf_sample = 10000,
                       test_title = "--- neat ANOVA ---",
                       welch = TRUE,
                       e_correction = NULL,
@@ -344,6 +347,7 @@ anova_neat = function(data_per_subject,
             val_arg(between_vars, c('null', 'char')),
             val_arg(ci, c('num'), 1),
             val_arg(bf_added, c('bool'), 1),
+            val_arg(bf_sample, c('num'), 1),
             val_arg(test_title, c('char'), 1),
             val_arg(welch, c('bool'), 1),
             val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none')),
@@ -488,7 +492,9 @@ anova_neat = function(data_per_subject,
                     id_part,
                     ', data = this_data, whichRandom = "',
                     id_col,
-                    '", whichModels = "withmain")'
+                    '", iterations = ',
+                    bf_sample,
+                    ', whichModels = "withmain")'
                 )
         ))
         if (is.null(within_vars) && length( to_c(between_vars) ) == 1 ) {

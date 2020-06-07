@@ -135,9 +135,12 @@ corr_neat = function(var1,
                            method = corr_method)
         if (bf_added == TRUE) {
             if (nonparametric == TRUE) {
-                bf = computeBayesFactorOneZero(rho_samps,
-                                               oneSided = "left",
-                                               priorParameter = 1)
+                bf = computeBayesFactorOneZero(
+                    rho_samps,
+                    oneSided = "left",
+                    whichTest = "Spearman",
+                    priorParameter = 1
+                )
             } else {
                 bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(-1, 0))[1])
             }
@@ -155,9 +158,12 @@ corr_neat = function(var1,
                            method = corr_method)
         if (bf_added == TRUE) {
             if (nonparametric == TRUE) {
-                bf = computeBayesFactorOneZero(rho_samps,
-                                               oneSided = "right",
-                                               priorParameter = 1)
+                bf = computeBayesFactorOneZero(
+                    rho_samps,
+                    oneSided = "right",
+                    whichTest = "Spearman",
+                    priorParameter = 1
+                )
             } else {
                 bf = as.vector(BayesFactor::correlationBF(var1, var2, nullInterval = c(0, 1))[1])
             }
@@ -167,7 +173,8 @@ corr_neat = function(var1,
         if (bf_added == TRUE) {
             if (nonparametric == TRUE) {
                 bf = computeBayesFactorOneZero(rho_samps,
-                                               priorParameter = 1)
+                                               priorParameter = 1,
+                                               whichTest = "Spearman")
             } else {
                 bf = as.vector(BayesFactor::correlationBF(var1, var2))
             }

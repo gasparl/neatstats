@@ -12,6 +12,8 @@ t_neat(
   greater = NULL,
   ci = NULL,
   bf_added = TRUE,
+  bf_rscale = sqrt(0.5),
+  bf_sample = 1000,
   auc_added = FALSE,
   r_added = TRUE,
   for_table = FALSE,
@@ -49,6 +51,13 @@ two-sided.}
 
 \item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
 and displayed.}
+
+\item{bf_rscale}{The scale of the prior distribution (\code{0.707} by
+default).}
+
+\item{bf_sample}{Number of samples used to estimate Bayes factor (\code{1000}
+by default). More samples (e.g. \code{10000}) take longer time but give more
+stable BF.}
 
 \item{auc_added}{Logical. If \code{TRUE}, AUC is calculated and displayed.
 (\code{FALSE} by default.)}
@@ -129,13 +138,13 @@ Welch's \code{\link[stats:t.test]{t-test}} results including
  Doorn et al., 2020).
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale of
-\code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
-supporting alternative hypothesis is denoted as BF10. When the BF is smaller
-than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
-BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-scientific (exponential) form is reported for readability. (The original full
-BF number is available in the returned named vector as \code{bf}.)
+The Bayes factor (BF) supporting null hypothesis is denoted as BF01, while
+that supporting alternative hypothesis is denoted as BF10. When the BF is
+smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
+(hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to
+10000, scientific (exponential) form is reported for readability. (The
+original full BF number is available in the returned named vector as
+\code{bf}.)
 
 
 For simplicity, Cohen's d is reported for nonparametric tests too: you may

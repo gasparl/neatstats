@@ -23,6 +23,11 @@
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
+#'@param bf_rscale The scale of the prior distribution (\code{0.707} by
+#'  default).
+#'@param bf_sample Number of samples used to estimate Bayes factor (\code{1000}
+#'  by default). More samples (e.g. \code{10000}) take longer time but give more
+#'  stable BF.
 #'@param auc_added Logical. If \code{TRUE}, AUC is calculated and displayed.
 #'  (\code{FALSE} by default.)
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
@@ -60,13 +65,13 @@
 #'  displayed in the legend.
 #'
 #'@details
-#' The Bayes factor (BF) is always calculated with the default r-scale of
-#' \code{0.707}. BF supporting null hypothesis is denoted as BF01, while that
-#' supporting alternative hypothesis is denoted as BF10. When the BF is smaller
-#' than 1 (i.e., supports null hypothesis), the reciprocal is calculated (hence,
-#' BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to 10000,
-#' scientific (exponential) form is reported for readability. (The original full
-#' BF number is available in the returned named vector as \code{bf}.)
+#' The Bayes factor (BF) supporting null hypothesis is denoted as BF01, while
+#' that supporting alternative hypothesis is denoted as BF10. When the BF is
+#' smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
+#' (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or equal to
+#' 10000, scientific (exponential) form is reported for readability. (The
+#' original full BF number is available in the returned named vector as
+#' \code{bf}.)
 #'
 # For details about the nonparametric (rank-based, Wilcoxon) Bayes factors, see
 # van Doorn et al. (2020). The source code for the calculation is a contribution
@@ -175,6 +180,8 @@ t_neat = function(var1,
                   greater = NULL,
                   ci = NULL,
                   bf_added = TRUE,
+                  bf_rscale = sqrt(0.5),
+                  bf_sample = 1000,
                   auc_added = FALSE,
                   r_added = TRUE,
                   for_table = FALSE,
@@ -199,6 +206,8 @@ t_neat = function(var1,
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
             val_arg(ci, c('null', 'num'), 1),
             val_arg(bf_added, c('bool'), 1),
+            val_arg(bf_rscale, c('num'), 1),
+            val_arg(bf_sample, c('num'), 1),
             val_arg(auc_added, c('bool'), 1),
             val_arg(r_added, c('bool'), 1),
             val_arg(for_table, c('bool'), 1),
@@ -250,9 +259,21 @@ t_neat = function(var1,
     if (bf_added == TRUE &&
         nonparametric == TRUE) {
         if (pair == TRUE) {
-            delta_samps = signRankGibbsSampler(var1, var2, progBar = (!hush))$deltaSamples
+            delta_samps = signRankGibbsSampler(
+                var1,
+                var2,
+                progBar = (!hush),
+                nSamples = bf_sample,
+                cauchyPriorParameter = bf_rscale
+            )$deltaSamples
         } else {
-            delta_samps = rankSumGibbsSampler(var1, var2, progBar = (!hush))$deltaSamples
+            delta_samps = rankSumGibbsSampler(
+                var1,
+                var2,
+                progBar = (!hush),
+                nSamples = bf_sample,
+                cauchyPriorParameter = bf_rscale
+            )$deltaSamples
         }
         if (hush == FALSE) {
             cat('', fill = TRUE)
@@ -303,12 +324,14 @@ t_neat = function(var1,
             if (nonparametric == TRUE) {
                 bf = computeBayesFactorOneZero(delta_samps,
                                                oneSided = "right",
-                                               priorParameter = 1 / sqrt(2))
+                                               priorParameter = bf_rscale)
             } else {
                 bf = as.vector(BayesFactor::ttestBF(
                     var1,
                     var2,
                     paired = pair,
+                    iterations = bf_sample,
+                    rscale = bf_rscale,
                     nullInterval = c(0, Inf)
                 )[1])
             }
@@ -340,12 +363,14 @@ t_neat = function(var1,
             if (nonparametric == TRUE) {
                 bf = computeBayesFactorOneZero(delta_samps,
                                                oneSided = "left",
-                                               priorParameter = 1 / sqrt(2))
+                                               priorParameter = bf_rscale)
             } else {
                 bf = as.vector(BayesFactor::ttestBF(
                     var1,
                     var2,
                     paired = pair,
+                    iterations = bf_sample,
+                    rscale = bf_rscale,
                     nullInterval = c(0, -Inf)
                 )[1])
             }
@@ -366,9 +391,17 @@ t_neat = function(var1,
         if (bf_added == TRUE) {
             if (nonparametric == TRUE) {
                 bf = computeBayesFactorOneZero(delta_samps,
-                                               priorParameter = 1 / sqrt(2))
+                                               priorParameter = bf_rscale)
             } else {
-                bf = as.vector(BayesFactor::ttestBF(var1, var2, paired = pair))
+                bf = as.vector(
+                    BayesFactor::ttestBF(
+                        var1,
+                        var2,
+                        paired = pair,
+                        iterations = bf_sample,
+                        rscale = bf_rscale
+                    )
+                )
             }
         }
     }

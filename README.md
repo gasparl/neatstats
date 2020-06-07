@@ -14,11 +14,11 @@ install.packages("neatStats")
 
 Then load with: `library("neatStats")`
 
-Alternatively, if you want to install the latest version from this repository:
+Alternatively, if you want to install the latest (possible unstable) version from this repository:
 
 ```
 install.packages("devtools") # if "devtools" package is not yet installed
-library(devtools)
+library("devtools")
 install_github("gasparl/neatstats")
 ```
 
