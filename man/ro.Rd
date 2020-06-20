@@ -4,13 +4,16 @@
 \alias{ro}
 \title{Neat rounding}
 \usage{
-ro(num, round_to = 2)
+ro(num, round_to = 2, leading_zero = TRUE)
 }
 \arguments{
 \item{num}{Number to be rounded.}
 
 \item{round_to}{Number of fractional digits (i.e., digits after the decimal
 point), to round to.}
+
+\item{leading_zero}{Logical, \code{TRUE} by default. If \code{FALSE}, omits
+leadig zero (e.g. returns ".17" instead of "0.17").}
 }
 \value{
 Number as string: \code{num} rounded to \code{round_to} digits, with

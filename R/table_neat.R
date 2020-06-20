@@ -126,14 +126,28 @@ table_neat = function(values_list,
         row.names(the_table) = 1:nrow(the_table)
     }
     if (to_clipboard == TRUE) {
-        utils::write.table(
-            the_table,
-            "clipboard",
-            sep = "\t",
-            quote = FALSE,
-            row.names = FALSE
-        )
-        message('Table copied to Clipboard.')
+        tryCatch({
+            utils::write.table(
+                the_table,
+                "clipboard",
+                sep = "\t",
+                quote = FALSE,
+                row.names = FALSE
+            )
+            message('Table copied to Clipboard.')
+        },
+        error = function(error_message) {
+            con <- pipe("xclip -selection clipboard -i", open = "w")
+            utils::write.table(
+                the_table,
+                con,
+                sep = "\t",
+                quote = FALSE,
+                row.names = FALSE
+            )
+            close(con)
+            message('Table copied to Clipboard (xclip).')
+        })
     }
     return(the_table)
 }
