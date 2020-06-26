@@ -18,7 +18,30 @@
 #' @seealso \code{\link{table_neat}} to create full tables using multiple
 #'   variables
 #' @examples
-#'
+#' data("mtcars") # load base R example dataset
+#' 
+#' # filter mtcars for mpg > 20
+#' excl_neat(mtcars, mpg > 20)
+#' 
+#' # assign the same
+#' mtcars_filtered = excl_neat(mtcars, mpg > 20)
+#' # (mtcars_filtered now contains the subset)
+#' 
+#' # group printed count by cyl
+#' excl_neat(mtcars, mpg > 20, group_by = 'cyl')
+#' 
+#' # sort output by grouping
+#' excl_neat(mtcars, mpg > 20, group_by = 'cyl', sort_by = 'group')
+#' 
+#' # group by cyl amd carb
+#' excl_neat(mtcars, mpg > 15, group_by = c('cyl', 'carb'))
+#' 
+#' # longer filter expression
+#' excl_neat(mtcars, mpg > 15 & gear == 4, group_by = 'cyl',)
+#' 
+#' # same with filter expression as string
+#' excl_neat(mtcars, "mpg > 15 & gear == 4", group_by = 'cyl')
+#' 
 #' @export
 
 excl_neat = function(dat,
@@ -60,12 +83,13 @@ excl_neat = function(dat,
         print(
             aggr_neat(
                 dat = dat,
-                values = neat_unique_ids,
+                values = 'neat_unique_ids',
                 group_by = grouppin,
                 method = length,
                 new_name = 'count'
             )
         )
     }
+    dat_filted$neat_unique_ids = NULL
     invisible(dat_filted)
 }
