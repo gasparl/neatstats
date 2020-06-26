@@ -13,8 +13,8 @@
 #'   with the string \code{female} (or its abbreviations, e.g. \code{f} or
 #'   \code{fem} ). (Lettercases do not matter, e.g. \code{Male} or \code{MALE}
 #'   are both evaluated same as \code{male}.)
-#' @param group_by A vector of factors by which the statistics are grouped,
-#'   typically a column from the data frame provided as \code{data_per_subject}.
+#' @param group_by Optionally the name(s) of column(s) from the data frame
+#'   provided as \code{data_per_subject} to group by.
 #' @param percent Logical. If \code{TRUE}, gender ratios (and the
 #'   "unknown" ratios based on \code{NA} values) are presented as percentage. If
 #'   \code{FALSE}, they are presented as counts (i.e., numbers of subjects).
@@ -50,7 +50,7 @@
 #' )
 #'
 #' # print demographics (age and gender) per "conditions":
-#' dems_neat(dat, group_by = dat$conditions)
+#' dems_neat(dat, group_by = 'conditions')
 #'
 #' # another dataset, with some missing values
 #' dat = data.frame(
@@ -62,7 +62,7 @@
 #'     stringsAsFactors = TRUE
 #' )
 #' # again print demographics per "conditions":
-#' dems_neat(dat, group_by = dat$conditions)
+#' dems_neat(dat, group_by = 'conditions')
 #'
 #' @export
 
@@ -79,6 +79,7 @@ dems_neat = function(data_per_subject,
     validate_args(match.call(),
                   list(
                       val_arg(s_dat, c('df')),
+                      val_arg(group_by, c('char', 'null')),
                       val_arg(percent, c('bool'), 1),
                       val_arg(round_perc, c('num'), 1),
                       val_arg(show_fem, c('bool', 'null'), 1)
@@ -98,16 +99,19 @@ dems_neat = function(data_per_subject,
     if (!'age' %in% names(s_dat)) {
         if (!'gender' %in% names(s_dat)) {
             stop(
-                'The data frame must contain the columns "gender" and "age", but neither was found among the column names.'
+                'The data frame must contain the columns "gender" (or "sex") and "age",',
+                ' but neither was found among the column names.'
             )
         } else {
             stop(
-                'The data frame must contain the columns "gender" and "age". Column name "age" was not found.'
+                'The data frame must contain the columns "gender" and "age".',
+                ' Column name "age" was not found.'
             )
         }
     } else if (!'gender' %in% names(s_dat)) {
         stop(
-            'The data frame must contain the columns "gender" (or "sex") and "age". Column name "gender" (or "sex") was not found.'
+            'The data frame must contain the columns "gender" (or "sex") and "age".',
+            ' Column name "gender" (or "sex") was not found.'
         )
     }
     s_dat$gender = tolower(as.character(s_dat$gender))
@@ -129,14 +133,18 @@ dems_neat = function(data_per_subject,
             )
         }
     }
-    s_dat$age = as.numeric(as.character(s_dat$age))
     if (is.null(group_by)) {
         s_dat$neat_cond = 0
-    } else if (class(group_by) == "character") {
-        s_dat$neat_cond = as.factor(as.character(s_dat[[group_by]]))
     } else {
-        s_dat$neat_cond = as.factor(as.character(group_by))
+        s_dat$neat_cond = as.factor(eval(parse(
+            text = paste0(
+                'with(data = s_dat, paste(',
+                paste(group_by, collapse = ','),
+                ', sep = "_"))'
+            )
+        )))
     }
+    s_dat$age = as.numeric(as.character(s_dat$age))
     s_dat$gender = factor(s_dat$gender, levels = c('1', '2'))
     gender = as.data.frame.matrix(stats::xtabs( ~ neat_cond + gender, s_dat))
     if (!'1' %in% colnames(gender)) {

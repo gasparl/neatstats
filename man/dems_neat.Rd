@@ -25,8 +25,8 @@ with the string \code{female} (or its abbreviations, e.g. \code{f} or
 \code{fem} ). (Lettercases do not matter, e.g. \code{Male} or \code{MALE}
 are both evaluated same as \code{male}.)}
 
-\item{group_by}{A vector of factors by which the statistics are grouped,
-typically a column from the data frame provided as \code{data_per_subject}.}
+\item{group_by}{Optionally the name(s) of column(s) from the data frame
+provided as \code{data_per_subject} to group by.}
 
 \item{percent}{Logical. If \code{TRUE}, gender ratios (and the
 "unknown" ratios based on \code{NA} values) are presented as percentage. If
@@ -70,7 +70,7 @@ dat = data.frame(
 )
 
 # print demographics (age and gender) per "conditions":
-dems_neat(dat, group_by = dat$conditions)
+dems_neat(dat, group_by = 'conditions')
 
 # another dataset, with some missing values
 dat = data.frame(
@@ -82,6 +82,6 @@ dat = data.frame(
     stringsAsFactors = TRUE
 )
 # again print demographics per "conditions":
-dems_neat(dat, group_by = dat$conditions)
+dems_neat(dat, group_by = 'conditions')
 
 }
