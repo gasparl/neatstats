@@ -202,29 +202,10 @@ At this point you might want to list column names, using `str(subjects_merged)`,
 Before any tests, we exclude subjects with overall error rate larger than 20%.
 
 ```R
-data_final = subjects_merged[subjects_merged$er_overall < 0.20, ]
+data_final = excl_neat(subjects_merged, er_overall < 0.20, group_by = 'condition')
 ```
 
-Next, we can calculate number of exclusions by adding a column `remains` to `subjects_merged` with the value `'remained'` wherever the `subject_id` (in `subjects_merged`) is not in the `final_data`, and the value `'excluded'` otherwise.
-
-```R
-subjects_merged$remains = ifelse(subjects_merged$subject_id %in% data_final$subject_id,
-                                 'remained',
-                                 'excluded')
-```
-
-Thus we can list number of exclusions and number of remaining participants per condition using another aggregation.
-
-```R
-aggr_neat(
-    dat = subjects_merged,
-    values = subject_id,
-    group_by = c('condition', 'remains'),
-    method = length
-)
-```
-
-This shows three exclusions in the 'mixed' condition, and two in the 'separate' condition, leaving 87 and 89, respectively.
+This automatically calculates and prints the number of exclusions and number of remaining participants per condition, showing three exclusions in the 'mixed' condition, and two in the 'separate' condition, leaving 87 and 89, respectively.
 
 Moving on to the first (descriptive) statistics, the `dems_neat()` gives the average age, and number of males (or percentage, if so set), using (automatically) the `age` and `gender` columns. (There is no missing age or gender data in the example data; but otherwise the missing numbers would be displayed as well.)
 
@@ -234,7 +215,7 @@ dems_neat(data_final, group_by = 'condition')
 
 The console output is:
 
->Group < mixed >: 87 subjects (age = 24.2±3.8, 49 male)  
+>Group < mixed >: 87 subjects (age = 24.2±3.8, 49 male)
 >Group < separate >: 89 subjects (age = 24.8±3.3, 45 male)
 
 To start with the main analysis, we can first take a look at the means of the main independent variables in a factorial plot. Since each participant may have several variables of interest (in case of a within-subject design such as in this example), all variables to be included in the test are given using their column names (as strings) in a string vector (or, in case of no within-subject factors, as a single string element), as the `values` parameter. To determine which within-subject factors we want to contrast in the plot (using the given `values`), there is a `within_ids` parameter that accepts a list as argument. In this list, the name of each element is the chosen display name for each factor; in this case "color" and "valence" (but we could use any other names as well). Each element must contain a vector of names that are used to identify which of the value names (given as `values`) belong to which factor. For example, the Color factor is given as `color = c('green', 'red')`: using the given words `'green'` and `'red'`, the given variable (or value) names `'rt_green_negative'` and `'rt_green_positive'` will be automatically identified as `'green'` (since they contain the string `'green'`), while the values `'rt_red_negative'` and `'rt_red_positive'` will be identified as `'red'` (since they contain the string `'red'`). The between subject variables can simply given assigned to the `between_vars` parameter as a string vector, or, in case of only one between-subject factor (as in this example), as a single string element.
@@ -280,7 +261,7 @@ plot_neat(
 
 ![Mean+ci plot.](example_images/example_image_2.png)
 
-Seems convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) 
+Seems convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
 
 The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
 
@@ -308,14 +289,14 @@ anova_neat(
 
 The output is:
 
->F(1,174) = 29507.56, p < .001, ηp2 = .994, 90% CI [.993, .995], ηG2 = .991. ((Intercept))  
->F(1,174) = 27.03, p < .001, ηp2 = .134, 90% CI [.065, .213], ηG2 = .094. (condition)  
->F(1,174) = 0.78, p = .379, ηp2 = .004, 90% CI [0, .035], ηG2 = .001. (color)  
->F(1,174) = 223.33, p < .001, ηp2 = .562, 90% CI [.483, .622], ηG2 = .112. (valence)  
->F(1,174) = 0.11, p = .736, ηp2 = .001, 90% CI [0, .019], ηG2 < .001. (color × condition)  
->F(1,174) = 0.02, p = .888, ηp2 < .001, 90% CI [0, .009], ηG2 < .001. (condition × valence)  
->F(1,174) = 56.89, p < .001, ηp2 = .246, 90% CI [.159, .330], ηG2 = .038. (color × valence)  
->F(1,174) = 34.92, p < .001, ηp2 = .167, 90% CI [.090, .248], ηG2 = .024. (color × condition × valence)  
+>F(1,174) = 29507.56, p < .001, ηp2 = .994, 90% CI [.993, .995], ηG2 = .991. ((Intercept))
+>F(1,174) = 27.03, p < .001, ηp2 = .134, 90% CI [.065, .213], ηG2 = .094. (condition)
+>F(1,174) = 0.78, p = .379, ηp2 = .004, 90% CI [0, .035], ηG2 = .001. (color)
+>F(1,174) = 223.33, p < .001, ηp2 = .562, 90% CI [.483, .622], ηG2 = .112. (valence)
+>F(1,174) = 0.11, p = .736, ηp2 = .001, 90% CI [0, .019], ηG2 < .001. (color × condition)
+>F(1,174) = 0.02, p = .888, ηp2 < .001, 90% CI [0, .009], ηG2 < .001. (condition × valence)
+>F(1,174) = 56.89, p < .001, ηp2 = .246, 90% CI [.159, .330], ηG2 = .038. (color × valence)
+>F(1,174) = 34.92, p < .001, ηp2 = .167, 90% CI [.090, .248], ηG2 = .024. (color × condition × valence)
 
 Without going into details, the three-way interaction is significant. (To note, the statistics are as close to as possible to reportable format, but italics, subscripts, and superscripts are not well supported as console outputs - hence these have to be adjusted when preparing a manuscript.)
 
@@ -338,10 +319,10 @@ anova_neat(
 ```
 
 Here I did not omit BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fractional digits) due to its inherent random sampling process. My specific out put is:
->F(1,88) = 13114.19, p < .001, ηp2 = .993, 90% CI [.991, .995], ηG2 = .990. ((Intercept))  
->F(1,88) = 0.72, p = .398, ηp2 = .008, 90% CI [0, .064], ηG2 = .001, BF01 = 6.25. (color)  
->F(1,88) = 117.52, p < .001, ηp2 = .572, 90% CI [.456, .650], ηG2 = .107, BF10 = 2.15 × 10^16. (valence)  
->F(1,88) = 1.27, p = .262, ηp2 = .014, 90% CI [0, .079], ηG2 = .002, BF01 = 3.14. (color × valence)  
+>F(1,88) = 13114.19, p < .001, ηp2 = .993, 90% CI [.991, .995], ηG2 = .990. ((Intercept))
+>F(1,88) = 0.72, p = .398, ηp2 = .008, 90% CI [0, .064], ηG2 = .001, BF01 = 6.25. (color)
+>F(1,88) = 117.52, p < .001, ηp2 = .572, 90% CI [.456, .650], ηG2 = .107, BF10 = 2.15 × 10^16. (valence)
+>F(1,88) = 1.27, p = .262, ηp2 = .014, 90% CI [0, .079], ηG2 = .002, BF01 = 3.14. (color × valence)
 
 As expected, no significant interaction. The BF for the interaction is also just large enough to be labeled as substantial evidence for equivalence. (If you are not convinced, you can use the _data_generation_code.R_ script at https://osf.io/49sq5/ to "take more participants", and rerun the test with the increased sample size.) To note, BFs supporting equivalence (i.e., are below 1) are always inverse, hence all BFs displayed are above 1, and support for equivalence is indicated by the numbers 01, such as in BF01 (as opposed to BF10, for BF supporting difference). When assigning the `anova_neat()` function (e.g., `my_results = anova_neat(...)`), it will return a list that contains, among other things, the exact values of the statistics for each effect, including unconverted BFs.
 
@@ -364,10 +345,10 @@ anova_neat(
 ```
 
 My output is:
- >F(1,86) = 16701.63, p < .001, ηp2 = .995, 90% CI [.993, .996], ηG2 = .992. ((Intercept))  
- >F(1,86) = 0.15, p = .699, ηp2 = .002, 90% CI [0, .041], ηG2 < .001, BF01 = 8.11. (color)  
- >F(1,86) = 106.02, p < .001, ηp2 = .552, 90% CI [.432, .635], ηG2 = .117, BF10 = 4.15 × 10^12. (valence)  
- >F(1,86) = 106.33, p < .001, ηp2 = .553, 90% CI [.433, .635], ηG2 = .121, BF10 = 7.01 × 10^17. (color × valence)  
+ >F(1,86) = 16701.63, p < .001, ηp2 = .995, 90% CI [.993, .996], ηG2 = .992. ((Intercept))
+ >F(1,86) = 0.15, p = .699, ηp2 = .002, 90% CI [0, .041], ηG2 < .001, BF01 = 8.11. (color)
+ >F(1,86) = 106.02, p < .001, ηp2 = .552, 90% CI [.432, .635], ηG2 = .117, BF10 = 4.15 × 10^12. (valence)
+ >F(1,86) = 106.33, p < .001, ηp2 = .553, 90% CI [.433, .635], ηG2 = .121, BF10 = 7.01 × 10^17. (color × valence)
 
 Interaction significant as expected. Now to explore the interaction in the `mixed` condition, we could do various _t_-tests (four in "parallel" and even two "crosswise"), but perhaps what's interesting is to check whether there is a significant difference between red and green in case of either positive or negative words.
 
@@ -385,9 +366,9 @@ t_neat(subjects_mx$rt_green_positive,
        pair = TRUE)
 ```
 
->Correlation: r(85) = .613, 95% CI [.462, .729], p < .001.  
->Descriptives: M±SD = 538.72±51.31 vs. 574.93±56.86 (raw mean difference: 36.20, 95% CI [–46.40, –26.01])  
->t(86) = –7.06, p < .001, d = –0.76, 95% CI [–0.99, –0.52], BF10 = 2.45 × 10^7.  
+>Correlation: r(85) = .613, 95% CI [.462, .729], p < .001.
+>Descriptives: M±SD = 538.72±51.31 vs. 574.93±56.86 (raw mean difference: 36.20, 95% CI [–46.40, –26.01])
+>t(86) = –7.06, p < .001, d = –0.76, 95% CI [–0.99, –0.52], BF10 = 2.45 × 10^7.
 
 (Along with descriptives, in case of paired samples, `t_neat()` by default also prints the correlation between the two tested variables.)
 
@@ -399,9 +380,9 @@ t_neat(subjects_mx$rt_green_negative,
        pair = TRUE)
 ```
 
->Correlation: r(85) = .454, 95% CI [.269, .606], p < .001.  
->Descriptives: M±SD = 613.31±48.62 vs. 574.20±46.57 (raw mean difference: –39.11, 95% CI [28.50, 49.72])  
->t(86) = 7.33, p < .001, d = 0.79, 95% CI [0.54, 1.02], BF10 = 8.06 × 10^7.  
+>Correlation: r(85) = .454, 95% CI [.269, .606], p < .001.
+>Descriptives: M±SD = 613.31±48.62 vs. 574.20±46.57 (raw mean difference: –39.11, 95% CI [28.50, 49.72])
+>t(86) = 7.33, p < .001, d = 0.79, 95% CI [0.54, 1.02], BF10 = 8.06 × 10^7.
 
 Both significant. All left to do is print a nice table to show means and SDs as customary.
 
