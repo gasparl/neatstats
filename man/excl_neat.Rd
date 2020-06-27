@@ -4,13 +4,28 @@
 \alias{excl_neat}
 \title{Exclusion}
 \usage{
-excl_neat(dat, filt, group_by = NULL, sort_by = "exclusion", hush = FALSE)
+excl_neat(
+  dat,
+  filt,
+  excluded = FALSE,
+  group_by = NULL,
+  sort_by = "exclusion",
+  hush = FALSE
+)
 }
 \arguments{
 \item{dat}{Data frame to be filtered.}
 
-\item{filt}{An expression to filter, by column values, the \code{dat}
-data frame. The expression should use column names alone; see Examples.}
+\item{filt}{An expression to use for filtering, by column values, the
+\code{dat} data frame. (Only the rows for which the filter expression is
+\code{TRUE} will be kept.)}
+
+\item{excluded}{Logical; \code{FALSE} by default. If \code{TRUE}, the
+function returns not only the filtered data frame, but also a data frame
+containing the excluded rows. The returned object in this case will be a
+list with two elements: (1) the filtered data frame named \code{filtered},
+and (2) the data frame with excluded rows named \code{excluded} (see
+Examples).}
 
 \item{group_by}{String, or vector of strings: the name(s) of the column(s) in
 the \code{dat} data frame, containing the vector(s) of factors by which the
@@ -24,14 +39,18 @@ any other string, e.g. \code{"conditions"}). If \code{NULL} (default).}
 \item{hush}{Logical. If \code{TRUE}, prevents printing counts to console.}
 }
 \value{
-A data frame with the statistics per group, with a single column
-  (\code{"aggr_group"}) indicating the grouping.
+A data frame with the rows for which the \code{filt} expression is
+  \code{TRUE}, or, optionally, a list with this data frame plus a data frame
+  with the excluded rows. At the same time, prints, by default, the count of
+  remaining and excluded rows.
 }
 \description{
 Filters dataset by rows (normally: subjects, observations) and
-  prints the numbers of excluded rows and remaining rows.
+  prints the numbers of excluded rows and remaining rows. Returns the
+  filtered dataset and (optionally) also the excluded rows.
 }
 \examples{
+
 data("mtcars") # load base R example dataset
 
 # filter mtcars for mpg > 20
@@ -39,7 +58,16 @@ excl_neat(mtcars, mpg > 20)
 
 # assign the same
 mtcars_filtered = excl_neat(mtcars, mpg > 20)
-# (mtcars_filtered now contains the subset)
+# (mtcars_filtered now contains the filtered subset)
+
+# return and assign excluded rows too
+mtcars_filtered_plus_excluded = excl_neat(mtcars, mpg > 20, excluded = TRUE)
+
+# print filtered data frame
+print(mtcars_filtered_plus_excluded$filtered) 
+
+# print data frame with excluded rows
+print(mtcars_filtered_plus_excluded$excluded) 
 
 # group printed count by cyl
 excl_neat(mtcars, mpg > 20, group_by = 'cyl')
@@ -58,6 +86,5 @@ excl_neat(mtcars, "mpg > 15 & gear == 4", group_by = 'cyl')
 
 }
 \seealso{
-\code{\link{table_neat}} to create full tables using multiple
-  variables
+\code{\link{aggr_neat}}
 }

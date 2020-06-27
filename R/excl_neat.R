@@ -1,10 +1,18 @@
 #' @title Exclusion
 #'
 #' @description Filters dataset by rows (normally: subjects, observations) and
-#'   prints the numbers of excluded rows and remaining rows.
+#'   prints the numbers of excluded rows and remaining rows. Returns the
+#'   filtered dataset and (optionally) also the excluded rows.
 #' @param dat Data frame to be filtered.
-#' @param filt An expression to filter, by column values, the \code{dat}
-#'   data frame. The expression should use column names alone; see Examples.
+#' @param filt An expression to use for filtering, by column values, the
+#'   \code{dat} data frame. (Only the rows for which the filter expression is
+#'   \code{TRUE} will be kept.)
+#' @param excluded Logical; \code{FALSE} by default. If \code{TRUE}, the
+#'   function returns not only the filtered data frame, but also a data frame
+#'   containing the excluded rows. The returned object in this case will be a
+#'   list with two elements: (1) the filtered data frame named \code{filtered},
+#'   and (2) the data frame with excluded rows named \code{excluded} (see
+#'   Examples).
 #' @param group_by String, or vector of strings: the name(s) of the column(s) in
 #'   the \code{dat} data frame, containing the vector(s) of factors by which the
 #'   printed counts are grouped.
@@ -12,12 +20,14 @@
 #'  by exclusion (default; \code{"exclusion"} or its short forms, e.g.
 #'  \code{"excl"}), or by the factors given for \code{group_by} (for this, give
 #'  any other string, e.g. \code{"conditions"}). If \code{NULL} (default).
-#'@param hush Logical. If \code{TRUE}, prevents printing counts to console.
-#' @return A data frame with the statistics per group, with a single column
-#'   (\code{"aggr_group"}) indicating the grouping.
-#' @seealso \code{\link{table_neat}} to create full tables using multiple
-#'   variables
+#' @param hush Logical. If \code{TRUE}, prevents printing counts to console.
+#' @return A data frame with the rows for which the \code{filt} expression is
+#'   \code{TRUE}, or, optionally, a list with this data frame plus a data frame
+#'   with the excluded rows. At the same time, prints, by default, the count of
+#'   remaining and excluded rows.
+#' @seealso \code{\link{aggr_neat}}
 #' @examples
+#' 
 #' data("mtcars") # load base R example dataset
 #' 
 #' # filter mtcars for mpg > 20
@@ -25,27 +35,37 @@
 #' 
 #' # assign the same
 #' mtcars_filtered = excl_neat(mtcars, mpg > 20)
-#' # (mtcars_filtered now contains the subset)
+#' # (mtcars_filtered now contains the filtered subset)
 #' 
+#' # return and assign excluded rows too
+#' mtcars_filtered_plus_excluded = excl_neat(mtcars, mpg > 20, excluded = TRUE)
+#' 
+#' # print filtered data frame
+#' print(mtcars_filtered_plus_excluded$filtered) 
+#' 
+#' # print data frame with excluded rows
+#' print(mtcars_filtered_plus_excluded$excluded) 
+#'
 #' # group printed count by cyl
 #' excl_neat(mtcars, mpg > 20, group_by = 'cyl')
-#' 
+#'
 #' # sort output by grouping
 #' excl_neat(mtcars, mpg > 20, group_by = 'cyl', sort_by = 'group')
-#' 
+#'
 #' # group by cyl amd carb
 #' excl_neat(mtcars, mpg > 15, group_by = c('cyl', 'carb'))
-#' 
+#'
 #' # longer filter expression
 #' excl_neat(mtcars, mpg > 15 & gear == 4, group_by = 'cyl',)
-#' 
+#'
 #' # same with filter expression as string
 #' excl_neat(mtcars, "mpg > 15 & gear == 4", group_by = 'cyl')
-#' 
+#'
 #' @export
 
 excl_neat = function(dat,
                      filt,
+                     excluded = FALSE,
                      group_by = NULL,
                      sort_by = 'exclusion',
                      hush = FALSE) {
@@ -55,6 +75,7 @@ excl_neat = function(dat,
     validate_args(match.call(),
                   list(
                       val_arg(dat, c('df')),
+                      val_arg(excluded, c('bool'), 1),
                       val_arg(group_by, c('null', 'char')),
                       val_arg(sort_by, c('char'), 1),
                       val_arg(hush, c('bool'), 1)
@@ -69,12 +90,10 @@ excl_neat = function(dat,
             ',])'
         )))
     }
+    dat$remaining = ifelse(dat$neat_unique_ids %in% dat_filted$neat_unique_ids,
+                           'remained',
+                           'excluded')
     if (hush == FALSE) {
-        dat$remaining = ifelse(
-            dat$neat_unique_ids %in% dat_filted$neat_unique_ids,
-            'remained',
-            'excluded'
-        )
         if (substr("exclusion", 1, nchar(sort_by)) == sort_by) {
             grouppin = c(group_by, 'remaining')
         } else {
@@ -90,6 +109,14 @@ excl_neat = function(dat,
             )
         )
     }
-    dat_filted$neat_unique_ids = NULL
-    invisible(dat_filted)
+    if (excluded == TRUE) {
+        dat_excl = dat[dat$remaining == 'excluded', ]
+        dat_excl$remaining = NULL
+        dat_excl$neat_unique_ids = NULL
+        dat_filted$neat_unique_ids = NULL
+        invisible(list(filtered = dat_filted, excluded = dat_excl))
+    } else {
+        dat_filted$neat_unique_ids = NULL
+        invisible(dat_filted)
+    }
 }
