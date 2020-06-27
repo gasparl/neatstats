@@ -4,3 +4,5 @@
 ^EXAMPLE\.md$
 ^neatStats\.pdf$
 ^example_images
+.RData
+.Rhistory
