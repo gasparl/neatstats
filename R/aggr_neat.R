@@ -164,7 +164,7 @@ aggr_neat = function(dat,
                       val_arg(round_to, c('num'), 1)
                   ))
     name_taken('neat_unique_values', dat)
-    values = deparse(substitute(values))
+    values = paste(deparse(substitute(values)), collapse = "")
     values = trimws(values, whitespace = "['\"]")
     if (values %in% names(dat)) {
         dat$neat_unique_values = dat[[values]]
@@ -174,7 +174,7 @@ aggr_neat = function(dat,
     if (anyNA(dat$neat_unique_values)) {
         dat = dat[!is.na(dat$neat_unique_values),]
     }
-    filt = deparse(substitute(filt))
+    filt = paste(deparse(substitute(filt)), collapse = "")
     if (filt != "NULL") {
         filt = trimws(filt, whitespace = "['\"]")
         dat = eval(parse(text = paste0(

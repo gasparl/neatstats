@@ -64,10 +64,10 @@ mtcars_filtered = excl_neat(mtcars, mpg > 20)
 mtcars_filtered_plus_excluded = excl_neat(mtcars, mpg > 20, excluded = TRUE)
 
 # print filtered data frame
-print(mtcars_filtered_plus_excluded$filtered) 
+print(mtcars_filtered_plus_excluded$filtered)
 
 # print data frame with excluded rows
-print(mtcars_filtered_plus_excluded$excluded) 
+print(mtcars_filtered_plus_excluded$excluded)
 
 # group printed count by cyl
 excl_neat(mtcars, mpg > 20, group_by = 'cyl')

@@ -27,24 +27,24 @@
 #'   remaining and excluded rows.
 #' @seealso \code{\link{aggr_neat}}
 #' @examples
-#' 
+#'
 #' data("mtcars") # load base R example dataset
-#' 
+#'
 #' # filter mtcars for mpg > 20
 #' excl_neat(mtcars, mpg > 20)
-#' 
+#'
 #' # assign the same
 #' mtcars_filtered = excl_neat(mtcars, mpg > 20)
 #' # (mtcars_filtered now contains the filtered subset)
-#' 
+#'
 #' # return and assign excluded rows too
 #' mtcars_filtered_plus_excluded = excl_neat(mtcars, mpg > 20, excluded = TRUE)
-#' 
+#'
 #' # print filtered data frame
-#' print(mtcars_filtered_plus_excluded$filtered) 
-#' 
+#' print(mtcars_filtered_plus_excluded$filtered)
+#'
 #' # print data frame with excluded rows
-#' print(mtcars_filtered_plus_excluded$excluded) 
+#' print(mtcars_filtered_plus_excluded$excluded)
 #'
 #' # group printed count by cyl
 #' excl_neat(mtcars, mpg > 20, group_by = 'cyl')
@@ -82,11 +82,11 @@ excl_neat = function(dat,
                   ))
     name_taken('neat_unique_ids', dat)
     dat$neat_unique_ids = paste0('id', seq.int(nrow(dat)))
-    filt = deparse(substitute(filt))
+    filt = paste(deparse(substitute(filt)), collapse = "")
     if (filt != "NULL") {
         dat_filted = eval(parse(text = paste0(
             'with(data = dat, dat[',
-            filt = trimws(filt, whitespace = "['\"]"),
+            trimws(filt, whitespace = "['\"]"),
             ',])'
         )))
     }

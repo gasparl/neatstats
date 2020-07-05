@@ -275,7 +275,7 @@ val_arg = function(arg_val,
                    # 0 means multiple, 1 means single, all else passes
                    opts = NULL) {
     failed = FALSE
-    arg_name = deparse(substitute(arg_val))
+    arg_name = paste(deparse(substitute(arg_val)), collapse = "")
     if (length(arg_val) > 1) {
         if (req_length == 1 &&
             !is.list(arg_val) && !is.data.frame(arg_val)) {
@@ -361,7 +361,7 @@ val_arg = function(arg_val,
 
 val_wi_id = function(func_used, id_arg, val_cols) {
     if (is.list(id_arg)) {
-        arg_name = deparse(substitute(arg_val))
+        arg_name = paste(deparse(substitute(arg_val)), collapse = "")
         func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
         if (length(id_arg) < 2) {
             feedback = paste0(
@@ -753,13 +753,13 @@ decorrelateStepTwoSample <- function(x, y, muProp, sigmaProp = 1) {
 
   newX <- x + thisZ
   newY <- y + thisZ
-  
+
   denom <-
     sum(stats::dnorm(x, (muProp - thisZ) * -0.5, log = TRUE) + stats::dnorm(y, (muProp -
                                                                                   thisZ) * 0.5, log = TRUE))
   num <-
     sum(stats::dnorm(newX, muProp * -0.5, log = TRUE) + stats::dnorm(newY, muProp * 0.5, log = TRUE))
-  
+
   if (stats::runif(1) < exp(num - denom)) {
     return(list(x = newX, y = newY, accept = TRUE))
   } else {
