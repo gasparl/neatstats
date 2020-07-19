@@ -39,7 +39,7 @@ t_neat(
 paired samples. If \code{FALSE} (default) for independent samples.}
 
 \item{nonparametric}{Logical (\code{FALSE} by default). If \code{TRUE}, uses
-nonparametric (rank-based, "Wilcoxon") t-tests (including BFs; see Details).}
+nonparametric (rank-based, "Wilcoxon") t-tests (including BFs; see Notes).}
 
 \item{greater}{\code{NULL} or string (or number); optionally specifies
 one-sided tests (t and BF): either "1" (\code{var1} mean expected to be
@@ -178,8 +178,10 @@ Cohen's d and its confidence interval are calculated, using the t value, via
 standardized mean difference) and via \code{\link[MBESS:ci.sm]{MBESS::ci.sm}}
 for paired samples (as standardized mean).
 
-The Bayes factor is calculated via
-\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}.
+The parametric Bayes factor is calculated via
+\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}. The nonparametric
+(rank-based) Bayes factor is a contribution by Johnny van Doorn; the original
+source code is available via \url{https://osf.io/gny35/}.
 
 The correlation and its CI are calculated via
 \code{\link[stats:cor.test]{stats::cor.test}}, and is always two-sided, always
