@@ -48,8 +48,10 @@
 #'@note The correlation and CI is calculated via
 #'\code{\link[stats:cor.test]{stats::cor.test}}.
 #'
-#'The Bayes factor is calculated via
-#'\code{\link[BayesFactor:correlationBF]{BayesFactor::correlationBF}}.
+#'The parametric Bayes factor is calculated via
+#'\code{\link[BayesFactor:correlationBF]{BayesFactor::correlationBF}}. The
+#'nonparametric (rank-based) Bayes factor is a contribution by Johnny van Doorn;
+#'the original source code is available via \url{https://osf.io/gny35/}.
 #'
 #'@references
 #'

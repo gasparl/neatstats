@@ -14,7 +14,7 @@
 #'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
 #'  paired samples. If \code{FALSE} (default) for independent samples.
 #'@param nonparametric Logical (\code{FALSE} by default). If \code{TRUE}, uses
-#'  nonparametric (rank-based, "Wilcoxon") t-tests (including BFs; see Details).
+#'  nonparametric (rank-based, "Wilcoxon") t-tests (including BFs; see Notes).
 #'@param greater \code{NULL} or string (or number); optionally specifies
 #'  one-sided tests (t and BF): either "1" (\code{var1} mean expected to be
 #'  greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
@@ -124,8 +124,10 @@
 #'standardized mean difference) and via \code{\link[MBESS:ci.sm]{MBESS::ci.sm}}
 #'for paired samples (as standardized mean).
 #'
-#'The Bayes factor is calculated via
-#'\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}.
+#'The parametric Bayes factor is calculated via
+#'\code{\link[BayesFactor:ttestBF]{BayesFactor::ttestBF}}. The nonparametric
+#'(rank-based) Bayes factor is a contribution by Johnny van Doorn; the original
+#'source code is available via \url{https://osf.io/gny35/}.
 #'
 #'The correlation and its CI are calculated via
 #'\code{\link[stats:cor.test]{stats::cor.test}}, and is always two-sided, always
@@ -136,7 +138,7 @@
 #'\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
 #'object \code{\link[pROC:roc]{pROC::roc}}.
 #'
-#'@references 
+#'@references
 #'
 #'Delacre, M., Lakens, D., & Leys, C. (2017). Why psychologists should by
 #'default use Welch's t-test instead of Student's t-test. International Review
