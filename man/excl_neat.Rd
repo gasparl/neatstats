@@ -81,9 +81,6 @@ excl_neat(mtcars, mpg > 15, group_by = c('cyl', 'carb'))
 # longer filter expression
 excl_neat(mtcars, mpg > 15 & gear == 4, group_by = 'cyl',)
 
-# same with filter expression as string
-excl_neat(mtcars, "mpg > 15 & gear == 4", group_by = 'cyl')
-
 }
 \seealso{
 \code{\link{aggr_neat}}

@@ -2,6 +2,7 @@
 pkg.globals = new.env()
 pkg.globals$my_unique_grouping_var = NULL
 pkg.globals$my_unique_method = NULL
+pkg.globals$my_unique_first_iter = NULL
 
 # the function below is to be added later
 # to_clipboard = function( printing_function ) {

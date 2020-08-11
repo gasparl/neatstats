@@ -16,7 +16,7 @@ Description: User-friendly, clear and simple statistics, primarily for
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.6.0)
 Imports: bayestestR, pROC, MBESS, ez, BayesFactor, Exact, ggplot2,
-  logspline, grDevices, stats, graphics
+  logspline, grDevices, stats, graphics, plyr
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8

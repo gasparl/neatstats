@@ -45,19 +45,11 @@ filenames = list.files(pattern = "^expsim_color_valence_.*txt$")
 
 Now that you have the list of all the file names (in the `filenames` variable), you can loop through it, and, for each file name, read in the data from the corresponding file and extract the data that you need. The data from the participants will be merged together in one data frame, named `subjects_merged`, which will contain in each of its row the extracted data of a single participant: namely, condition, age, gender, as well as the mean (aggregated) RTs and error rates for each stimulus type (detailed explanation will follow later).
 
-Before starting the loop, as a precaution I always check if the merged data frame variable (here: `subjects_merged`) already exists (e.g., because the loop has already been run for some reason in the current R session), and remove it if it does. (Otherwise, the loop would add new lines to the existing data frame, hence wrongly including previous data.)
-
 ```R
-if (exists("subjects_merged")) { rm(subjects_merged) }
-```
-
-Now, loop through all data files to extract the relevant data. See detailed explanations following the code.
-
-```R
-for (file_name in filenames) {
+for (file_name in enum(filenames)) {
     cat(file_name, fill = TRUE)
     subject_data = read.table(
-        file_name,
+        file_name[2],
         stringsAsFactors = FALSE,
         fill = TRUE,
         header = TRUE
@@ -94,11 +86,7 @@ for (file_name in filenames) {
         er_overall = er_overall,
         subject_line
     )
-    if (!exists("subjects_merged")) {
-        subjects_merged = subject_line
-    } else {
-        subjects_merged = rbind(subjects_merged, subject_line)
-    }
+    rbind_loop(subjects_merged, subject_line)
 }
 ```
 
@@ -183,14 +171,10 @@ subject_line = data.frame(
 )
 ```
 
-Finally, we append (bind) the `subject_line` to `subjects_merged` if `subjects_merged` exists. If it does not yet exist (as in the first cycle of the loop), we create it by assigning `subject_line` to `subjects_merged` as first row. Hint: if some data may be discrepant for some participants (e.g., some of the participants are tested with blue and yellow colors too), `rbind` will throw an error, but you can use the `rbind.fill` function from the `plyr` package to automatically pair the matching columns (by name) and fill in missing data with NAs.
+Finally, we append (bind) the `subject_line` to `subjects_merged` if `subjects_merged` exists. If it does not yet exist (as in the first cycle of the loop), `subject_line` is assigned to `subjects_merged` as first row. Hint: if some data may be discrepant for some participants (e.g., some of the participants are tested with blue and yellow colors too), the matching columns are automatically paired (by name) and missing data is filled with NAs.
 
 ```R
-if (!exists("subjects_merged")) {
-    subjects_merged = subject_line
-} else {
-    subjects_merged = rbind(subjects_merged, subject_line)
-}
+rbind_loop(subjects_merged, subject_line)
 ```
 
 When running the full _for loop_, the above described steps are repeated for each data file. After the loop has been run, the `subjects_merged` data frame is ready for statistical analysis. It might be worth noting that, while there is a "subject_id" column in this `subjects_merged` data frame, this is merely to keep track of records, but none of the statistical functions below require it: each participant is represented by a single row in the data frame, hence no additional identifier is needed.

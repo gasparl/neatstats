@@ -175,14 +175,23 @@ aggr_neat = function(dat,
         dat = dat[!is.na(dat$neat_unique_values),]
     }
     filt = paste(deparse(substitute(filt)), collapse = "")
-    if (filt != "NULL") {
-        filt = trimws(filt, whitespace = "['\"]")
-        dat = eval(parse(text = paste0(
-            'with(data = dat, dat[',
-            filt,
-            ',])'
-        )))
+    if (startsWith(filt, "'") | startsWith(filt, '"')) {
+        stop('The argument "filt" must be an expression (not string).')
     }
+    filt_vec = eval(parse(text = paste0('with(data = dat, ',
+                                        filt,
+                                        ')')))
+    na_sum = sum(is.na(filt_vec))
+    if (na_sum > 0) {
+        message(
+            'Note: ',
+            na_sum,
+            ' NA values were replaced as FALSE for filtering.',
+            ' You may want to double-check your filtering expression.'
+        )
+        filt_vec[is.na(filt_vec)] = FALSE
+    }
+    dat = dat[filt_vec, ]
     if (!is.null(pkg.globals$my_unique_method)) {
         method = pkg.globals$my_unique_method
         prefix = NULL
