@@ -648,7 +648,7 @@ anova_apa = function(ezANOVA_out,
             out = paste0(
                 "F(",
                 df_n,
-                ",",
+                ", ",
                 df_d,
                 ")",
                 " = ",

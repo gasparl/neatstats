@@ -80,23 +80,25 @@ excl_neat = function(dat,
     name_taken('neat_unique_ids', dat)
     dat$neat_unique_ids = paste0('id', seq.int(nrow(dat)))
     filt = paste(deparse(substitute(filt)), collapse = "")
-    if (startsWith(filt, "'") | startsWith(filt, '"')) {
-        stop('The argument "filt" must be an expression (not string).')
+    if (filt != "NULL") {
+        if (startsWith(filt, "'") | startsWith(filt, '"')) {
+            stop('The argument "filt" must be an expression (not string).')
+        }
+        filt_vec = eval(parse(text = paste0('with(data = dat, ',
+                                            filt,
+                                            ')')))
+        na_sum = sum(is.na(filt_vec))
+        if (na_sum > 0) {
+            message(
+                'Note: ',
+                na_sum,
+                ' NA values were replaced as FALSE for filtering.',
+                ' You may want to double-check your filtering expression.'
+            )
+            filt_vec[is.na(filt_vec)] = FALSE
+        }
+        dat_filted = dat[filt_vec,]
     }
-    filt_vec = eval(parse(text = paste0('with(data = dat, ',
-                                        filt,
-                                        ')')))
-    na_sum = sum(is.na(filt_vec))
-    if (na_sum > 0) {
-        message(
-            'Note: ',
-            na_sum,
-            ' NA values were replaced as FALSE for filtering.',
-            ' You may want to double-check your filtering expression.'
-        )
-        filt_vec[is.na(filt_vec)] = FALSE
-    }
-    dat_filted = dat[filt_vec, ]
     dat$remaining = ifelse(dat$neat_unique_ids %in% dat_filted$neat_unique_ids,
                            'remained',
                            'excluded')
