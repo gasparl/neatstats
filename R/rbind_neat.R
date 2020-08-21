@@ -9,6 +9,8 @@
 #' @param merged The name of the data frame for the merged data (without
 #'   quotes).
 #' @param to_merge Data frame to be merged. (Normally a single-row data frame.)
+#' @param hush Logical. If \code{TRUE} (default), prints message when the data
+#'   frame for merging is initated.
 #'@details See an extensive example via https://github.com/gasparl/neatstats.
 #' @seealso \code{\link{enum}}
 #' @examples
@@ -28,8 +30,10 @@
 #' # available via the README file at the repository:
 #' # https://github.com/gasparl/neatstats
 #'
+
 #' @export
-rbind_loop = function(merged, to_merge) {
+rbind_loop = function(merged, to_merge,
+                      hush = FALSE) {
     merged_str = deparse(substitute(merged))
     if (is.null(pkg.globals$my_unique_first_iter)) {
         stop(
@@ -37,6 +41,14 @@ rbind_loop = function(merged, to_merge) {
             'Please use enum() if you want to use rbind_neat(). See ?rbind_neat for details'
         )
     } else if (pkg.globals$my_unique_first_iter  == TRUE) {
+        if (hush == FALSE) {
+            message('Initiated',
+                    merged_str,
+                    '(with',
+                    ncol(merged_str),
+                    'columns).',
+                    fill = TRUE)
+        }
         pkg.globals$my_unique_first_iter = FALSE
         assign(merged_str, to_merge, envir = .GlobalEnv)
     } else if (pkg.globals$my_unique_first_iter  == FALSE) {

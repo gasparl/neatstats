@@ -20,7 +20,7 @@ plot_neat(
   line_colors = c("#555555", "#000000"),
   row_number = 1,
   method = mean,
-  eb_method = stats::sd
+  eb_method = neatStats::mean_ci
 )
 }
 \arguments{
@@ -112,9 +112,10 @@ aligned row.}
 \item{method}{A function (default: \code{mean}) for the calculation of the
 main statistics (bar or dot heights).}
 
-\item{eb_method}{A function (default: \code{sd}) for the calculation of the
-error bar size (as a single value used for both directions of the error
-bar). If set to \code{NULL}, no error bar is displayed.}
+\item{eb_method}{A function (default: \code{\link{mean_ci}} for 95% CI) for
+the calculation of the error bar size (as a single value used for both
+directions of the error bar). If set to \code{NULL}, no error bar is
+displayed.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} plot object. (This object may be

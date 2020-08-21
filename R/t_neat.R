@@ -536,10 +536,10 @@ t_neat = function(var1,
         }
         best_coords = pROC::coords(the_roc, x = "best")
         the_auc = pROC::auc(the_roc)
-        if (class(best_coords) == "matrix") {
-            plot_thres = best_coords["threshold",]
+        if (class(best_coords) == "data.frame") {
+            plot_thres = as.numeric(best_coords$threshold)
         } else {
-            plot_thres = best_coords["threshold"]
+            plot_thres = as.numeric(best_coords["threshold"])
         }
         plot_thres = plot_thres[!plot_thres %in% c(-Inf, Inf)]
     } else {

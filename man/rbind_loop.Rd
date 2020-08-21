@@ -4,13 +4,16 @@
 \alias{rbind_loop}
 \title{Merge by Columns in Loops}
 \usage{
-rbind_loop(merged, to_merge)
+rbind_loop(merged, to_merge, hush = FALSE)
 }
 \arguments{
 \item{merged}{The name of the data frame for the merged data (without
 quotes).}
 
 \item{to_merge}{Data frame to be merged. (Normally a single-row data frame.)}
+
+\item{hush}{Logical. If \code{TRUE} (default), prints message when the data
+frame for merging is initated.}
 }
 \description{
 Merges raws by columns in a loop using the \code{\link{enum}}

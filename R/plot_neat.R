@@ -65,20 +65,23 @@
 #'  for any number of differing adjacent bars are interpolated. (If the number
 #'  of given colors equal the number of different bars, the precise colors will
 #'  correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-#'  color gradient from dark gray to light gray.
+#'  color gradient from dark gray to light gray. (In case of a single factor,
+#'  the first given colors is taken.)
 #'@param line_colors Vector of strings, specifying colors from which all colors
 #'  for any number of differing vertically aligned dots and corresponding lines
 #'  are interpolated. The default \code{c('#555555', '#000000')} gives a color
-#'  gradient from dark gray to black.
+#'  gradient from dark gray to black. (In case of a single factor, the first
+#'  given colors is taken.)
 #'@param row_number Number. In case of multiple panels, the number of rows in
 #'  which the panels should be arranged. For example, with the default
 #'  \code{row_number = 1}, all panels will be displayed in one vertically
 #'  aligned row.
 #'@param method A function (default: \code{mean}) for the calculation of the
 #'  main statistics (bar or dot heights).
-#'@param eb_method A function (default: \code{sd}) for the calculation of the
-#'  error bar size (as a single value used for both directions of the error
-#'  bar). If set to \code{NULL}, no error bar is displayed.
+#'@param eb_method A function (default: \code{\link{mean_ci}} for 95% CI) for
+#'  the calculation of the error bar size (as a single value used for both
+#'  directions of the error bar). If set to \code{NULL}, no error bar is
+#'  displayed.
 #'
 #'@return A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
 #'  further modified or adjusted via regular \code{\link[ggplot2]{ggplot}}
@@ -320,7 +323,7 @@ plot_neat = function(data_per_subject,
                      line_colors = c('#555555', '#000000'),
                      row_number = 1,
                      method = mean,
-                     eb_method = stats::sd) {
+                     eb_method = neatStats::mean_ci) {
     if (class(data_per_subject) == "character") {
         data_wide = eval(parse(text = data_per_subject))
         data_per_subject = data_wide
@@ -342,7 +345,7 @@ plot_neat = function(data_per_subject,
             val_arg(type, c('char'), 1, c('bar', 'line')),
             val_arg(dodge, c('null', 'num')),
             val_arg(bar_colors, c('char'), 0),
-            val_arg(line_colors, c('char'), 0),
+            val_arg(line_colors, c('char')),
             val_arg(row_number, c('num'), 1),
             val_arg(method, c('function'), 1),
             val_arg(eb_method, c('null', 'function'), 1)
@@ -425,10 +428,11 @@ plot_neat = function(data_per_subject,
     } else {
         g_by = paste(within_vars, between_vars, sep = ',')
     }
+    onefact = FALSE
     if (length(to_c(g_by)) > 3) {
         stop("Maximum three factors can be plotted. See help(plot_neat)")
     } else if (length(to_c(g_by)) < 2) {
-        stop("Minimum two factors are needed for plotting. See help(plot_neat)")
+        onefact = TRUE
     }
     to_plot = mains_ebs(
         data_long = this_data,
@@ -453,7 +457,7 @@ plot_neat = function(data_per_subject,
         panels %in% fact_names && length(fact_names) == 3) {
         fact_names = c(fact_names[!fact_names == panels], panels)
     }
-    if (reverse == TRUE) {
+    if (reverse == TRUE && onefact == FALSE) {
         fact_names[c(1, 2)] = fact_names[c(2, 1)]
     }
     if (!is.null(within_vars)) {
@@ -468,7 +472,6 @@ plot_neat = function(data_per_subject,
         }
     }
     p_close = fact_names[1]
-    p_mid = fact_names[2]
     if (is.null(dodge)) {
         if (type == 'bar') {
             dodge = 0.9
@@ -476,51 +479,92 @@ plot_neat = function(data_per_subject,
             dodge = 0.1
         }
     }
-    if (type == 'line') {
-        color_gen = grDevices::colorRampPalette(line_colors)
-        palcolors = color_gen(length(unique(to_plot[[p_close]])))
-        the_plot = ggplot2::ggplot(data = to_plot, aes(
-            x = to_plot[[p_mid]],
-            y = to_plot$x.main,
-            group = to_plot[[p_close]]
-        )) +
-            geom_line(aes(linetype = to_plot[[p_close]], color = to_plot[[p_close]]),
-                      position = position_dodge(dodge)) +
-            geom_point(aes(shape = to_plot[[p_close]], color = to_plot[[p_close]]),
-                       position = position_dodge(dodge))  +
-            scale_shape_discrete(name = re_n(p_close, factor_names)) +
-            scale_linetype_discrete(name = re_n(p_close, factor_names)) +
-            scale_color_manual(values = palcolors,
-                              name = re_n(p_close, factor_names))
-        if (!is.null(eb_method)) {
-            the_plot = the_plot + geom_errorbar(
-                aes(
-                    ymin = to_plot$x.main - to_plot$x.eb,
-                    ymax = to_plot$x.main + to_plot$x.eb,
-                    width = 0.2,
-                    color = to_plot[[p_close]]
-                ),
-                position = position_dodge(dodge)
-            )
+    if (onefact == TRUE) {
+        p_mid = fact_names[1]
+        if (type == 'line')  {
+            the_plot = ggplot2::ggplot(data = to_plot,
+                                       aes(
+                                           x = .data[[p_close]],
+                                           y = x.main,
+                                           group = 1
+                                       )) +
+                geom_line(color = line_colors[1]) + geom_point(color = line_colors[1])
+        } else {
+            the_plot = ggplot2::ggplot(data = to_plot,
+                                       aes(
+                                           x = .data[[p_close]],
+                                           y = x.main,
+                                           group = 1
+                                       )) +
+                geom_bar(stat = "identity",
+                         color = "black",
+                         fill = bar_colors[1])
         }
     } else {
-        color_gen = grDevices::colorRampPalette(bar_colors)
-        palcolors = color_gen(length(unique(to_plot[[p_close]])))
-        the_plot = ggplot2::ggplot(data = to_plot,
-                                   aes(
-                                       x = to_plot[[p_mid]],
-                                       y = to_plot$x.main,
-                                       fill = to_plot[[p_close]]
-                                   )) +
-            geom_bar(stat = "identity",
-                     position = position_dodge(dodge)) +
-            scale_fill_manual(values = palcolors,
-                              name = re_n(p_close, factor_names))
-        if (!is.null(eb_method)) {
+        p_mid = fact_names[2]
+        if (type == 'line') {
+            color_gen = grDevices::colorRampPalette(line_colors)
+            palcolors = color_gen(length(unique(to_plot[[p_close]])))
+            the_plot = ggplot2::ggplot(data = to_plot,
+                                       aes(
+                                           x = .data[[p_mid]],
+                                           y = x.main,
+                                           group = .data[[p_close]]
+                                       )) +
+                geom_line(aes(linetype = .data[[p_close]], color = .data[[p_close]]),
+                          position = position_dodge(dodge)) +
+                geom_point(aes(shape = .data[[p_close]], color = .data[[p_close]]),
+                           position = position_dodge(dodge))  +
+                scale_shape_discrete(name = re_n(p_close, factor_names)) +
+                scale_linetype_discrete(name = re_n(p_close, factor_names)) +
+                scale_color_manual(values = palcolors,
+                                   name = re_n(p_close, factor_names))
+        } else {
+            color_gen = grDevices::colorRampPalette(bar_colors)
+            palcolors = color_gen(length(unique(to_plot[[p_close]])))
+            the_plot = ggplot2::ggplot(data = to_plot,
+                                       aes(
+                                           x = .data[[p_mid]],
+                                           y = x.main,
+                                           fill = .data[[p_close]]
+                                       )) +
+                geom_bar(
+                    stat = "identity",
+                    color = "black",
+                    position = position_dodge(dodge)
+                ) +
+                scale_fill_manual(values = palcolors,
+                                  name = re_n(p_close, factor_names))
+        }
+    }
+    if (!is.null(eb_method)) {
+        if (type == 'line') {
+            if (onefact == TRUE) {
+                the_plot = the_plot + geom_errorbar(
+                    aes(
+                        ymin = x.main - x.eb,
+                        ymax = x.main + x.eb,
+                        width = 0.2
+                    ),
+                    color = line_colors[1],
+                    position = position_dodge(dodge)
+                )
+            } else {
+                the_plot = the_plot + geom_errorbar(
+                    aes(
+                        ymin = x.main - x.eb,
+                        ymax = x.main + x.eb,
+                        width = 0.2,
+                        color = .data[[p_close]]
+                    ),
+                    position = position_dodge(dodge)
+                )
+            }
+        } else {
             the_plot = the_plot + geom_errorbar(
                 aes(
-                    ymin = to_plot$x.main - to_plot$x.eb,
-                    ymax = to_plot$x.main + to_plot$x.eb,
+                    ymin = x.main - x.eb,
+                    ymax = x.main + x.eb,
                     width = 0.2
                 ),
                 position = position_dodge(dodge)
@@ -528,7 +572,7 @@ plot_neat = function(data_per_subject,
         }
     }
     if (length(fact_names) == 3) {
-        the_plot = the_plot + facet_wrap(~ to_plot[[fact_names[3]]], nrow = row_number)
+        the_plot = the_plot + facet_wrap( ~ .data[[fact_names[3]]], nrow = row_number)
     }
     the_plot = the_plot + theme_bw() +
         labs(x = re_n(p_mid, factor_names), y = y_title) +
