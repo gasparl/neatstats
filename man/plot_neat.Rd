@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_neat.R
 \name{plot_neat}
 \alias{plot_neat}
-\title{Plots of factors}
+\title{Plots of Means}
 \usage{
 plot_neat(
   data_per_subject,
@@ -24,9 +24,8 @@ plot_neat(
 )
 }
 \arguments{
-\item{data_per_subject}{Data frame or name of data frame as string. Should
-contain all values (measurements/observations) in a single row per each
-subject.}
+\item{data_per_subject}{Data frame. Should contain all values
+(measurements/observations) in a single row per each subject.}
 
 \item{values}{Vector of strings; column name(s) in the \code{data_per_subject}
 data frame. Each column should contain a single dependent variable: thus, to
@@ -97,12 +96,14 @@ plots, and \code{0.9} for \code{bar} plots.)}
 for any number of differing adjacent bars are interpolated. (If the number
 of given colors equal the number of different bars, the precise colors will
 correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-color gradient from dark gray to light gray.}
+color gradient from dark gray to light gray. (In case of a single factor,
+the first given colors is taken.)}
 
 \item{line_colors}{Vector of strings, specifying colors from which all colors
 for any number of differing vertically aligned dots and corresponding lines
 are interpolated. The default \code{c('#555555', '#000000')} gives a color
-gradient from dark gray to black.}
+gradient from dark gray to black. (In case of a single factor, the first
+given colors is taken.)}
 
 \item{row_number}{Number. In case of multiple panels, the number of rows in
 which the panels should be arranged. For example, with the default
@@ -123,7 +124,7 @@ A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
  methods.)
 }
 \description{
-Bar and line \code{\link[ggplot2:ggplot]{plots}} for factorial
+Line and bar \code{\link[ggplot2:ggplot]{plots}} for factorial
  designs.
 }
 \note{
@@ -331,7 +332,7 @@ pic_ratings = data.frame(
 
 # now include the 'group_id' factor in the plot
 plot_neat(
-    'pic_ratings',
+    pic_ratings,
     values = c(
         'rating_fright_low_disgust_low',
         'rating_fright_high_disgust_low',

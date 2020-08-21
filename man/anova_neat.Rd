@@ -10,18 +10,19 @@ anova_neat(
   within_ids = NULL,
   between_vars = NULL,
   ci = 0.9,
-  bf_added = TRUE,
+  bf_added = FALSE,
   bf_sample = 10000,
   test_title = "--- neat ANOVA ---",
   welch = TRUE,
   e_correction = NULL,
-  hush = FALSE
+  hush = FALSE,
+  plot_means = FALSE,
+  ...
 )
 }
 \arguments{
-\item{data_per_subject}{Data frame or name of data frame as string. Should
-contain all values (measurements/observations) in a single row per each
-subject.}
+\item{data_per_subject}{Data frame. Should contain all values
+(measurements/observations) in a single row per each subject.}
 
 \item{values}{Vector of strings; column name(s) in the \code{data_per_subject}
 data frame. Each column should contain a single dependent variable: thus, to
@@ -83,6 +84,13 @@ Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
 is larger than \code{.75} (see Girden, 1992).}
 
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
+
+\item{plot_means}{Logical (\code{FALSE} by default). If \code{TRUE}, creates
+plots of means by factor, by passing data and factor information to
+\code{\link{plot_neat}}.}
+
+\item{...}{Any additional arguments will be passed on to
+\code{\link{plot_neat}}.}
 }
 \value{
 Prints ANOVA statistics (including, for each model, F-test with

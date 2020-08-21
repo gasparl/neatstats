@@ -7,9 +7,8 @@
 #'  generalized eta squared, and
 #'  \code{\link[bayestestR:bayesfactor_inclusion]{inclusion Bayes factor based
 #'  on matched models}} (BFs).
-#'@param data_per_subject Data frame or name of data frame as string. Should
-#'  contain all values (measurements/observations) in a single row per each
-#'  subject.
+#'@param data_per_subject Data frame. Should contain all values
+#'  (measurements/observations) in a single row per each subject.
 #'@param values Vector of strings; column name(s) in the \code{data_per_subject}
 #'  data frame. Each column should contain a single dependent variable: thus, to
 #'  test repeated (within-subject) measurements, each specified column should
@@ -61,6 +60,11 @@
 #'  Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
 #'  is larger than \code{.75} (see Girden, 1992).
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
+#'@param plot_means Logical (\code{FALSE} by default). If \code{TRUE}, creates
+#'  plots of means by factor, by passing data and factor information to
+#'  \code{\link{plot_neat}}.
+#'@param ... Any additional arguments will be passed on to
+#'  \code{\link{plot_neat}}.
 #'
 #'@details
 #'
@@ -249,6 +253,21 @@
 #'     between_vars = 'grouping2',
 #'     bf_added = FALSE
 #' )
+#'\donttest{
+#' # same as above, but now creating a plot of means
+#' # y_title passed add an example title (label) for the Y axis
+#' anova_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+#'     within_ids = list(
+#'         letters = c('_a', '_b'),
+#'         numbers =  c('_1', '_2')
+#'     ),
+#'     between_vars = 'grouping2',
+#'     bf_added = FALSE,
+#'     plot_means = TRUE,
+#'     y_title = 'Example Y Title'
+#' )
 #'
 #' # In real datasets, these could of course be more meaningful. For example, let's
 #' # say participants rated the attractiveness of pictures with low or high levels
@@ -326,18 +345,14 @@ anova_neat = function(data_per_subject,
                       within_ids = NULL,
                       between_vars = NULL,
                       ci = 0.90,
-                      bf_added = TRUE,
+                      bf_added = FALSE,
                       bf_sample = 10000,
                       test_title = "--- neat ANOVA ---",
                       welch = TRUE,
                       e_correction = NULL,
-                      hush = FALSE) {
-    if (class(data_per_subject) == "character") {
-        data_wide = eval(parse(text = data_per_subject))
-        data_per_subject = data_wide
-    } else {
-        data_wide = data_per_subject
-    }
+                      hush = FALSE,
+                      plot_means  = FALSE,
+                      ...) {
     validate_args(
         match.call(),
         list(
@@ -355,6 +370,7 @@ anova_neat = function(data_per_subject,
         )
     )
     cols_notfound = c()
+    bv_copy = between_vars
     if (!is.null(between_vars)) {
         for (colname in between_vars) {
             if (!colname %in% names(data_per_subject)) {
@@ -385,9 +401,17 @@ anova_neat = function(data_per_subject,
         }
     }
     val_wi_id(match.call(), within_ids, values)
+    if (plot_means == TRUE) {
+        plot(plot_neat(data_per_subject,
+                       values,
+                       within_ids,
+                       bv_copy,
+                       ...))
+    }
     if (is.null(e_correction)){
         e_correction = ''
     }
+    data_wide = data_per_subject
     name_taken('within_factor', data_wide)
     name_taken('neat_unique_values', data_wide)
     name_taken('neat_unique_id', data_wide)

@@ -1,11 +1,10 @@
-#'@title Plots of factors
+#'@title Plots of Means
 #'
-#'@description Bar and line \code{\link[ggplot2:ggplot]{plots}} for factorial
+#'@description Line and bar \code{\link[ggplot2:ggplot]{plots}} for factorial
 #'  designs.
 #'
-#'@param data_per_subject Data frame or name of data frame as string. Should
-#'  contain all values (measurements/observations) in a single row per each
-#'  subject.
+#'@param data_per_subject Data frame. Should contain all values
+#'  (measurements/observations) in a single row per each subject.
 #'@param values Vector of strings; column name(s) in the \code{data_per_subject}
 #'  data frame. Each column should contain a single dependent variable: thus, to
 #'  plot repeated (within-subject) measurements, each specified column should
@@ -292,7 +291,7 @@
 #'
 #' # now include the 'group_id' factor in the plot
 #' plot_neat(
-#'     'pic_ratings',
+#'     pic_ratings,
 #'     values = c(
 #'         'rating_fright_low_disgust_low',
 #'         'rating_fright_high_disgust_low',
@@ -324,12 +323,7 @@ plot_neat = function(data_per_subject,
                      row_number = 1,
                      method = mean,
                      eb_method = neatStats::mean_ci) {
-    if (class(data_per_subject) == "character") {
-        data_wide = eval(parse(text = data_per_subject))
-        data_per_subject = data_wide
-    } else {
-        data_wide = data_per_subject
-    }
+    data_wide = data_per_subject
     validate_args(
         match.call(),
         list(
