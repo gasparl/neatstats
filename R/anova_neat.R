@@ -253,7 +253,7 @@
 #'     between_vars = 'grouping2',
 #'     bf_added = FALSE
 #' )
-#'\donttest{
+#'
 #' # same as above, but now creating a plot of means
 #' # y_title passed add an example title (label) for the Y axis
 #' anova_neat(
@@ -400,7 +400,28 @@ anova_neat = function(data_per_subject,
             )
         }
     }
-    val_wi_id(match.call(), within_ids, values)
+    val_levels = val_wi_id(match.call(), within_ids, values)
+    # collapsing
+    fac_dups = unique(val_levels[duplicated(val_levels)])
+    if (length(fac_dups) > 0) {
+        message('Columns with identical factors were found!',
+                ' Make sure this is how you want it:')
+        for (dup in fac_dups) {
+            to_collapse = names(val_levels)[val_levels == dup]
+            message(
+                'The columns "',
+                paste(to_collapse, collapse = '", "'),
+                '" were collapsed into one column',
+                ' (using their mean value per observation).'
+            )
+            newcol = paste0('uniq_', dup)
+            data_per_subject[[newcol]] = rowMeans(data_per_subject[, to_collapse], na.rm =
+                                                      TRUE)
+            values = values[!(values %in% to_collapse)]
+            values = c(values, newcol)
+        }
+    }
+    # end collapsing
     if (plot_means == TRUE) {
         plot(plot_neat(data_per_subject,
                        values,

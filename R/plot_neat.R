@@ -376,7 +376,28 @@ plot_neat = function(data_per_subject,
             )
         }
     }
-    val_wi_id(match.call(), within_ids, values)
+    val_levels = val_wi_id(match.call(), within_ids, values)
+    # collapsing
+    fac_dups = unique(val_levels[duplicated(val_levels)])
+    if (length(fac_dups) > 0) {
+        message('Columns with identical factors were found!',
+                ' Make sure this is how you want it:')
+        for (dup in fac_dups) {
+            to_collapse = names(val_levels)[val_levels == dup]
+            message(
+                'The columns "',
+                paste(to_collapse, collapse = '", "'),
+                '" were collapsed into one column',
+                ' (using their mean value per observation).'
+            )
+            newcol = paste0('uniq_', dup)
+            data_wide[[newcol]] = rowMeans(data_wide[, to_collapse], na.rm =
+                                               TRUE)
+            values = values[!(values %in% to_collapse)]
+            values = c(values, newcol)
+        }
+    }
+    # end collapsing
     name_taken('within_factor', data_wide)
     name_taken('neat_unique_values', data_wide)
     name_taken('neat_unique_id', data_wide)
@@ -396,7 +417,7 @@ plot_neat = function(data_per_subject,
             for (fact_name in names(within_ids)) {
                 data_reshaped[[fact_name]] = fact_name
                 for (fact_x in within_ids[[fact_name]]) {
-                    data_reshaped[[fact_name]][grepl(fact_x, data_reshaped$within_factor)] = fact_x
+                    data_reshaped[[fact_name]][grepl(fact_x, data_reshaped$within_factor, fixed = TRUE)] = fact_x
                 }
                 data_reshaped[[fact_name]] = as.factor(data_reshaped[[fact_name]])
             }

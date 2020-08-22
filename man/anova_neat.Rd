@@ -252,6 +252,21 @@ anova_neat(
     bf_added = FALSE
 )
 
+# same as above, but now creating a plot of means
+# y_title passed add an example title (label) for the Y axis
+anova_neat(
+    dat_1,
+    values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+    within_ids = list(
+        letters = c('_a', '_b'),
+        numbers =  c('_1', '_2')
+    ),
+    between_vars = 'grouping2',
+    bf_added = FALSE,
+    plot_means = TRUE,
+    y_title = 'Example Y Title'
+)
+
 # In real datasets, these could of course be more meaningful. For example, let's
 # say participants rated the attractiveness of pictures with low or high levels
 # of frightening and low or high levels of disgusting qualities. So there are

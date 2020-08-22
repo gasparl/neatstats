@@ -361,89 +361,91 @@ val_arg = function(arg_val,
 }
 
 val_wi_id = function(func_used, id_arg, val_cols) {
-    if (is.list(id_arg)) {
-        arg_name = paste(deparse(substitute(arg_val)), collapse = "")
-        func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
-        if (length(id_arg) < 2) {
-            feedback = paste0(
-                '\nIf list is given as argument for "',
-                arg_name,
-                '", it must contain at least two elements.'
-            )
-        } else {
-            feedback = ''
-            vals_num = length(val_cols)
-            w_facts_num = length(id_arg)
-            if (2 ** w_facts_num > vals_num) {
-                feedback = paste0(
-                    '\nYou specified ',
-                    w_facts_num,
-                    ' within-subject factors in "',
-                    arg_name,
-                    '". This means there must be at least ',
-                    2 ** w_facts_num,
-                    ' values columns specified, but you only specified ',
-                    vals_num,
-                    '.'
-                )
-            }
-            for (val_name in val_cols) {
-                for (fact_name in names(id_arg)) {
-                    fact_ids = id_arg[fact_name][[1]]
-                    if (length(fact_ids) <= 1) {
-                        feedback = paste0(
-                            feedback,
-                            '\nAll within-subject factors must have at least two levels. (Check "',
-                            fact_name,
-                            '").'
-                        )
-                    } else {
-                        id_count = 0
-                        for (f_id in fact_ids) {
-                            if (grepl(f_id, val_name, fixed = TRUE)) {
-                                id_count = id_count + 1
-                            }
-                        }
-                        if (id_count == 0) {
-                            feedback = paste0(
-                                feedback,
-                                '\nNo matching level found for "',
-                                val_name,
-                                '" for factor "',
-                                fact_name,
-                                '".'
-                            )
-                        } else if (id_count > 1) {
-                            feedback = paste0(
-                                feedback,
-                                '\nMore than one matching level found for "',
-                                val_name,
-                                '" for factor "',
-                                fact_name,
-                                '". (This means that the specified factor name text is ambiguous,',
-                                ' see "within_ids" in documentation e.g. by entering ?anova_neat.',
-                                ' Try different naming for level specification, ',
-                                'or change column names.)'
-                            )
-                        }
-
-                    }
-                }
-            }
-        }
-        if (feedback != '') {
-            feedback = paste0(
-                "Arguments are not correct in the '",
-                func_used,
-                "' function:",
-                feedback,
-                '\n... Hint: enter help(',
-                gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
-                ') for detailed function info.'
-            )
-            stop(feedback, call. = FALSE)
-        }
+  if (is.list(id_arg)) {
+    func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
+    feedback = ''
+    vals_num = length(val_cols)
+    w_facts_num = length(id_arg)
+    dups = unique(val_cols[duplicated(val_cols)])
+    if (length(dups) > 0) {
+      feedback = paste0(
+        feedback,
+        '\nYou have duplicate column names for "values": ',
+        paste0(dups, collapse = ", "),
+        '.'
+      )
     }
+    if (2 ** w_facts_num > vals_num) {
+      feedback = paste0(
+        feedback,
+        '\nYou specified ',
+        w_facts_num,
+        ' within-subject factors for "within_ids". This means there must be at least ',
+        2 ** w_facts_num,
+        ' values columns specified, but you only specified ',
+        vals_num,
+        '.'
+      )
+    }
+    val_levels = c()
+    for (val_name in val_cols) {
+      val_levels[val_name] = ''
+      for (fact_name in names(id_arg)) {
+        fact_ids = id_arg[[fact_name]]
+        if (length(fact_ids) <= 1) {
+          feedback = paste0(
+            feedback,
+            '\nAll within-subject factors must have at least two levels. (Check "',
+            fact_name,
+            '").'
+          )
+        } else {
+          id_count = 0
+          for (f_id in fact_ids) {
+            if (grepl(f_id, val_name, fixed = TRUE)) {
+              id_count = id_count + 1
+              val_levels[val_name] = paste0(val_levels[val_name], f_id)
+            }
+          }
+          if (id_count == 0) {
+            feedback = paste0(
+              feedback,
+              '\nNo matching level found for "',
+              val_name,
+              '" for factor "',
+              fact_name,
+              '".'
+            )
+          } else if (id_count > 1) {
+            feedback = paste0(
+              feedback,
+              '\nMore than one matching level found for "',
+              val_name,
+              '" for factor "',
+              fact_name,
+              '". (This means that the specified factor name text is ambiguous,',
+              ' see "within_ids" in documentation e.g. by entering ?anova_neat.',
+              ' Try different naming for level specification, ',
+              'or change column names.)'
+            )
+          }
+        }
+      }
+    }
+    if (feedback != '') {
+      feedback = paste0(
+        "Arguments are not correct in the '",
+        func_used,
+        "' function:",
+        feedback,
+        '\n... Hint: enter help(',
+        gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
+        ') for detailed function info.'
+      )
+      stop(feedback, call. = FALSE)
+    }
+    return(val_levels)
+  }
 }
 
 
