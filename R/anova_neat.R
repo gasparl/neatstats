@@ -86,6 +86,12 @@
 #'you should either consider the results respectively or choose a different
 #'test.
 #'
+#'In case of multiple values (column names) that match identical levels for all
+#'factors, the given columns will be merged into a single column taking the mean
+#'value of all these columns. (This is to simplify "dropping" a within-subject
+#'factor and retesting the remaining factors.) Explicit warning messages are
+#'shown in each such case.
+#'
 #'@return Prints ANOVA statistics (including, for each model, F-test with
 #'  partial eta squared and its CI, generalized eta squared, and BF, as
 #'  specified via the corresponding parameters) in APA style. Furthermore, when
@@ -414,11 +420,10 @@ anova_neat = function(data_per_subject,
                 '" were collapsed into one column',
                 ' (using their mean value per observation).'
             )
-            newcol = paste0('uniq_', dup)
-            data_per_subject[[newcol]] = rowMeans(data_per_subject[, to_collapse], na.rm =
+            data_per_subject[[dup]] = rowMeans(data_per_subject[, to_collapse], na.rm =
                                                       TRUE)
             values = values[!(values %in% to_collapse)]
-            values = c(values, newcol)
+            values = c(values, dup)
         }
     }
     # end collapsing
@@ -458,7 +463,10 @@ anova_neat = function(data_per_subject,
                 data_reshaped[[fact_name]] = as.factor(data_reshaped[[fact_name]])
             }
             within_vars = paste(names(within_ids), collapse = ', ')
-        } else if (is.character(within_ids)) {
+        } else if (is.list(within_ids)) {
+            within_vars = names(within_ids)
+            names(data_reshaped)[names(data_reshaped) == 'within_factor'] = names(within_ids)
+        }  else if (is.character(within_ids)) {
             within_vars = within_ids
             names(data_reshaped)[names(data_reshaped) == 'within_factor'] = within_ids
         } else {
@@ -484,6 +492,8 @@ anova_neat = function(data_per_subject,
     }
 
     this_data[, id_col] = to_fact(this_data[[id_col]])
+
+
     if (is.null(between_vars)) {
         between_vars_ez = 'NULL'
         between_vars_bf = ''
@@ -562,7 +572,8 @@ anova_neat = function(data_per_subject,
         test_title = test_title,
         welch = w_anova,
         e_correction = e_correction,
-        hush = hush
+        hush = hush,
+        dat_tot = dat_tot
     )
     invisible(to_return)
 }
@@ -574,7 +585,8 @@ anova_apa = function(ezANOVA_out,
                      test_title = "--- neat ANOVA ---",
                      welch = NULL,
                      e_correction = '',
-                     hush = FALSE) {
+                     hush = FALSE,
+                     dat_tot = NULL) {
     levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
     ezANOVA_out$ANOVA$'p<.05' = NULL
     if ((!is.null(levene)) && (is.null(welch))) {
@@ -728,6 +740,9 @@ anova_apa = function(ezANOVA_out,
             bf = as.numeric(bf_val)
         )
     }
-    stat_list = c(stat_list, ez_anova = ezANOVA_out, bf_models = bf_models)
+    stat_list = c(stat_list,
+                  ez_anova = ezANOVA_out,
+                  bf_models = bf_models,
+                  totals = dat_tot)
     invisible(stat_list)
 }

@@ -135,6 +135,12 @@ correction may be applied (see the \code{e_correction} parameter). If Levene's
 test is significant and the data is unbalanced (unequal group sample sizes),
 you should either consider the results respectively or choose a different
 test.
+
+In case of multiple values (column names) that match identical levels for all
+factors, the given columns will be merged into a single column taking the mean
+value of all these columns. (This is to simplify "dropping" a within-subject
+factor and retesting the remaining factors.) Explicit warning messages are
+shown in each such case.
 }
 \note{
 All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},

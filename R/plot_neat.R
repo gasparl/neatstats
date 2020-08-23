@@ -80,11 +80,19 @@
 #'@param eb_method A function (default: \code{\link{mean_ci}} for 95% CI) for
 #'  the calculation of the error bar size (as a single value used for both
 #'  directions of the error bar). If set to \code{NULL}, no error bar is
-#'  displayed.
+#'  displayed.#'
+#'@param numerics If \code{FALSE} (default), returns
+#'  \code{\link[ggplot2]{ggplot}} object. If set to \code{TRUE}, returns only
+#'  the numeric aggregated data per grouping factors, as specified by
+#'  \code{method} and \code{eb_method} functions. If set to anything else (e.g.
+#'  \code{NULL}), returns the numeric aggregated data and at the same time
+#'  \code{\link[graphics:plot]{draws}} the plot.
+#'@param hush Logical. If \code{TRUE}, prevents printing aggregated values.
 #'
-#'@return A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
-#'  further modified or adjusted via regular \code{\link[ggplot2]{ggplot}}
-#'  methods.)
+#'@return By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object
+#'  may be further modified or adjusted via regular
+#'  \code{\link[ggplot2]{ggplot}} methods.) If so set (\code{numerics}),
+#'  aggregated values as specified by the methods.
 #'
 #' @note The number of factors (within and between together) must be either two
 #'   or three. Plot for a single factor would make little sense, while more than
@@ -345,6 +353,8 @@ plot_neat = function(data_per_subject,
             val_arg(eb_method, c('null', 'function'), 1)
         )
     )
+    str_meth = paste(deparse(substitute(method)), collapse = "")
+    str_ebmeth = paste(deparse(substitute(eb_method)), collapse = "")
 
     cols_notfound = c()
     if (!is.null(between_vars)) {
@@ -390,15 +400,13 @@ plot_neat = function(data_per_subject,
                 '" were collapsed into one column',
                 ' (using their mean value per observation).'
             )
-            newcol = paste0('uniq_', dup)
-            data_wide[[newcol]] = rowMeans(data_wide[, to_collapse], na.rm =
+            data_wide[[dup]] = rowMeans(data_wide[, to_collapse], na.rm =
                                                TRUE)
             values = values[!(values %in% to_collapse)]
-            values = c(values, newcol)
+            values = c(values, dup)
         }
     }
     # end collapsing
-    name_taken('within_factor', data_wide)
     name_taken('neat_unique_values', data_wide)
     name_taken('neat_unique_id', data_wide)
     id_col = 'neat_unique_id'
@@ -422,7 +430,10 @@ plot_neat = function(data_per_subject,
                 data_reshaped[[fact_name]] = as.factor(data_reshaped[[fact_name]])
             }
             within_vars = paste(names(within_ids), collapse = ', ')
-        } else if (is.character(within_ids)) {
+        } else if (is.list(within_ids)) {
+            within_vars = names(within_ids)
+            names(data_reshaped)[names(data_reshaped) == 'within_factor'] = names(within_ids)
+        }  else if (is.character(within_ids)) {
             within_vars = within_ids
             names(data_reshaped)[names(data_reshaped) == 'within_factor'] = within_ids
         } else {
@@ -480,11 +491,22 @@ plot_neat = function(data_per_subject,
             for (fact_n in names(within_ids)) {
                 to_plot[[fact_n]] = factor(to_plot[[fact_n]], levels = within_ids[[fact_n]])
             }
+        } else if (is.list(within_ids)) {
+            to_plot[[names(within_ids)]] = factor(to_plot[[names(within_ids)]], levels = values)
         } else if (is.character(within_ids)) {
             to_plot[[within_ids]] = factor(to_plot[[within_ids]], levels = values)
         } else {
             to_plot[['within_factor']] = factor(to_plot[['within_factor']], levels = values)
         }
+    }
+    tots = to_plot
+    names(tots)[names(tots) = 'x.main'] = str_meth
+    names(tots)[names(tots) = 'x.eb'] = str_ebmeth
+    if (hush == FALSE) {
+        cat(tots, fill = TRUE)
+    }
+    if (numerics == TRUE) {
+        return(tots)
     }
     p_close = fact_names[1]
     if (is.null(dodge)) {
@@ -596,5 +618,10 @@ plot_neat = function(data_per_subject,
             panel.grid.major.y = element_line(color = "#d5d5d5"),
             panel.grid.minor.y = element_line(color = "#d5d5d5")
         )
-    return(the_plot)
+    if (numerics != FALSE) {
+        plot(the_plot)
+        invisible(tots)
+    } else {
+        return(the_plot)
+    }
 }

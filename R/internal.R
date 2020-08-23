@@ -361,20 +361,21 @@ val_arg = function(arg_val,
 }
 
 val_wi_id = function(func_used, id_arg, val_cols) {
+  feedback = ''
+  dups = unique(val_cols[duplicated(val_cols)])
+  if (length(dups) > 0) {
+    feedback = paste0(
+      feedback,
+      '\nYou have duplicate column names for "values": ',
+      paste0(dups, collapse = ", "),
+      '.'
+    )
+  }
+  val_levels = c()
+  func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
   if (is.list(id_arg)) {
-    func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
-    feedback = ''
     vals_num = length(val_cols)
     w_facts_num = length(id_arg)
-    dups = unique(val_cols[duplicated(val_cols)])
-    if (length(dups) > 0) {
-      feedback = paste0(
-        feedback,
-        '\nYou have duplicate column names for "values": ',
-        paste0(dups, collapse = ", "),
-        '.'
-      )
-    }
     if (2 ** w_facts_num > vals_num) {
       feedback = paste0(
         feedback,
@@ -387,7 +388,6 @@ val_wi_id = function(func_used, id_arg, val_cols) {
         '.'
       )
     }
-    val_levels = c()
     for (val_name in val_cols) {
       val_levels[val_name] = ''
       for (fact_name in names(id_arg)) {
@@ -432,20 +432,20 @@ val_wi_id = function(func_used, id_arg, val_cols) {
         }
       }
     }
-    if (feedback != '') {
-      feedback = paste0(
-        "Arguments are not correct in the '",
-        func_used,
-        "' function:",
-        feedback,
-        '\n... Hint: enter help(',
-        gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
-        ') for detailed function info.'
-      )
-      stop(feedback, call. = FALSE)
-    }
-    return(val_levels)
   }
+  if (feedback != '') {
+    feedback = paste0(
+      "Arguments are not correct in the '",
+      func_used,
+      "' function:",
+      feedback,
+      '\n... Hint: enter help(',
+      gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
+      ') for detailed function info.'
+    )
+    stop(feedback, call. = FALSE)
+  }
+  return(val_levels)
 }
 
 
