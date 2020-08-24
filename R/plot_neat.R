@@ -84,8 +84,8 @@
 #'@param numerics If \code{FALSE} (default), returns
 #'  \code{\link[ggplot2]{ggplot}} object. If set to \code{TRUE}, returns only
 #'  the numeric aggregated data per grouping factors, as specified by
-#'  \code{method} and \code{eb_method} functions. If set to anything else (e.g.
-#'  \code{NULL}), returns the numeric aggregated data and at the same time
+#'  \code{method} and \code{eb_method} functions. If set to any string (e.g.
+#'  \code{"both"}), returns the numeric aggregated data and at the same time
 #'  \code{\link[graphics:plot]{draws}} the plot.
 #'@param hush Logical. If \code{TRUE}, prevents printing aggregated values.
 #'
@@ -330,7 +330,9 @@ plot_neat = function(data_per_subject,
                      line_colors = c('#555555', '#000000'),
                      row_number = 1,
                      method = mean,
-                     eb_method = neatStats::mean_ci) {
+                     eb_method = neatStats::mean_ci,
+                     numerics = FALSE,
+                     hush = FALSE) {
     data_wide = data_per_subject
     validate_args(
         match.call(),
@@ -350,11 +352,17 @@ plot_neat = function(data_per_subject,
             val_arg(line_colors, c('char')),
             val_arg(row_number, c('num'), 1),
             val_arg(method, c('function'), 1),
-            val_arg(eb_method, c('null', 'function'), 1)
+            val_arg(eb_method, c('null', 'function'), 1),
+            val_arg(numerics, c('bool', 'char'), 1),
+            val_arg(hush, c('bool'), 1)
         )
     )
-    str_meth = paste(deparse(substitute(method)), collapse = "")
-    str_ebmeth = paste(deparse(substitute(eb_method)), collapse = "")
+    str_meth = tail(strsplit(paste(deparse(substitute(
+        method
+    )), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
+    str_ebmeth = tail(strsplit(paste(deparse(
+        substitute(eb_method)
+    ), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
 
     cols_notfound = c()
     if (!is.null(between_vars)) {
@@ -455,11 +463,6 @@ plot_neat = function(data_per_subject,
         g_by = paste(within_vars, between_vars, sep = ',')
     }
     onefact = FALSE
-    if (length(to_c(g_by)) > 3) {
-        stop("Maximum three factors can be plotted. See help(plot_neat)")
-    } else if (length(to_c(g_by)) < 2) {
-        onefact = TRUE
-    }
     to_plot = mains_ebs(
         data_long = this_data,
         method = method,
@@ -500,13 +503,19 @@ plot_neat = function(data_per_subject,
         }
     }
     tots = to_plot
-    names(tots)[names(tots) = 'x.main'] = str_meth
-    names(tots)[names(tots) = 'x.eb'] = str_ebmeth
-    if (hush == FALSE) {
-        cat(tots, fill = TRUE)
-    }
+    names(tots)[names(tots) == 'x.main'] = str_meth
+    names(tots)[names(tots) == 'x.eb'] = str_ebmeth
     if (numerics == TRUE) {
         return(tots)
+    }
+    if (hush == FALSE) {
+        print(tots)
+    }
+    if (length(to_c(g_by)) > 3) {
+        message("Maximum three factors can be plotted. See help(plot_neat)")
+        return(NULL)
+    } else if (length(to_c(g_by)) < 2) {
+        onefact = TRUE
     }
     p_close = fact_names[1]
     if (is.null(dodge)) {

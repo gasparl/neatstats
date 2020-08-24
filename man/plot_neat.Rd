@@ -20,7 +20,9 @@ plot_neat(
   line_colors = c("#555555", "#000000"),
   row_number = 1,
   method = mean,
-  eb_method = neatStats::mean_ci
+  eb_method = neatStats::mean_ci,
+  numerics = FALSE,
+  hush = FALSE
 )
 }
 \arguments{
@@ -116,12 +118,22 @@ main statistics (bar or dot heights).}
 \item{eb_method}{A function (default: \code{\link{mean_ci}} for 95% CI) for
 the calculation of the error bar size (as a single value used for both
 directions of the error bar). If set to \code{NULL}, no error bar is
-displayed.}
+displayed.#'}
+
+\item{numerics}{If \code{FALSE} (default), returns
+\code{\link[ggplot2]{ggplot}} object. If set to \code{TRUE}, returns only
+the numeric aggregated data per grouping factors, as specified by
+\code{method} and \code{eb_method} functions. If set to any string (e.g.
+\code{"both"}), returns the numeric aggregated data and at the same time
+\code{\link[graphics:plot]{draws}} the plot.}
+
+\item{hush}{Logical. If \code{TRUE}, prevents printing aggregated values.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} plot object. (This object may be
- further modified or adjusted via regular \code{\link[ggplot2]{ggplot}}
- methods.)
+By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object
+ may be further modified or adjusted via regular
+ \code{\link[ggplot2]{ggplot}} methods.) If so set (\code{numerics}),
+ aggregated values as specified by the methods.
 }
 \description{
 Line and bar \code{\link[ggplot2:ggplot]{plots}} for factorial

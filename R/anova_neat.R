@@ -95,17 +95,18 @@
 #'@return Prints ANOVA statistics (including, for each model, F-test with
 #'  partial eta squared and its CI, generalized eta squared, and BF, as
 #'  specified via the corresponding parameters) in APA style. Furthermore, when
-#'  assigned, returns a list with up to three elements. First,
+#'  assigned, returns a list with up to four elements. First,
 #'  '\code{stat_list}', a list of named vectors per each effect (main or
 #'  interaction). Each vector contains the following elements: \code{F} (F
 #'  value), \code{p} (p value), \code{petas} (partial eta squared), \code{getas}
 #'  (generalized eta squared), \code{epsilon} (epsilon used for correction), and
 #'  \code{bf} (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second,
-#'  the \code{\link[ez]{ezANOVA}} object, named \code{ez_anova} (calculated even
-#'  when \code{\link[stats]{oneway.test}} is printed). Third, when
-#'  \code{bf_added} is not \code{FALSE}, the \code{\link[BayesFactor]{anovaBF}}
-#'  object, named \code{bf_models}; including all models on which the inclusion
-#'  BFs are based.
+#'  a dataframe with mean and SD per each condition (i.e., per each level per
+#'  each factor). Third, the \code{\link[ez]{ezANOVA}} object, named
+#'  \code{ez_anova} (calculated even when \code{\link[stats]{oneway.test}} is
+#'  printed). Fourth, when \code{bf_added} is not \code{FALSE}, the
+#'  \code{\link[BayesFactor]{anovaBF}} object, named \code{bf_models}; including
+#'  all models on which the inclusion BFs are based.
 #'
 #'@note All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
 #'  including Levene's test and Mauchly's sphericity test. (But Welch's ANOVA is
@@ -275,6 +276,19 @@
 #'     y_title = 'Example Y Title'
 #' )
 #'
+#' # same as above, but collapsing means over the removed "numbers" factor
+#' anova_neat(
+#'     dat_1,
+#'     values = c('value_1_a', 'value_2_a', 'value_1_b', 'value_2_b'),
+#'     within_ids = list(
+#'         letters = c('_a', '_b')
+#'     ),
+#'     between_vars = 'grouping2',
+#'     bf_added = FALSE,
+#'     plot_means = TRUE,
+#'     y_title = 'Example Y Title'
+#' )
+#'
 #' # In real datasets, these could of course be more meaningful. For example, let's
 #' # say participants rated the attractiveness of pictures with low or high levels
 #' # of frightening and low or high levels of disgusting qualities. So there are
@@ -417,8 +431,7 @@ anova_neat = function(data_per_subject,
             message(
                 'The columns "',
                 paste(to_collapse, collapse = '", "'),
-                '" were collapsed into one column',
-                ' (using their mean value per observation).'
+                '" were collapsed (averaged) into one column.'
             )
             data_per_subject[[dup]] = rowMeans(data_per_subject[, to_collapse], na.rm =
                                                       TRUE)
@@ -428,12 +441,28 @@ anova_neat = function(data_per_subject,
     }
     # end collapsing
     if (plot_means == TRUE) {
-        plot(plot_neat(data_per_subject,
-                       values,
-                       within_ids,
-                       bv_copy,
-                       ...))
+        means_plot =
+            plot_neat(
+                data_per_subject,
+                values,
+                within_ids,
+                bv_copy,
+                numerics = FALSE,
+                hush = TRUE,
+                ...
+            )
+        if (!is.null(means_plot[1])) {
+            plot(means_plot)
+        }
     }
+    dat_tot = plot_neat(
+        data_per_subject,
+        values,
+        within_ids,
+        bv_copy,
+        eb_method = sd,
+        numerics = TRUE
+    )
     if (is.null(e_correction)){
         e_correction = ''
     }
@@ -740,7 +769,7 @@ anova_apa = function(ezANOVA_out,
             bf = as.numeric(bf_val)
         )
     }
-    stat_list = c(stat_list,
+    stat_list = list(effects = stat_list,
                   ez_anova = ezANOVA_out,
                   bf_models = bf_models,
                   totals = dat_tot)
