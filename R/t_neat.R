@@ -31,7 +31,7 @@
 #'@param auc_added Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
 #'  calculated and displayed (including TPR and FPR, i.e., true positive and
 #'  true negative rates, i.e. sensitivity and specificity, using an optimal
-#'  threshold value, i.e. cutoff, that provides maximal TPR and FPR).
+#'  cutoff value, i.e. threshold, that provides maximal TPR and FPR).
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
 #'  calculated and displayed in case of paired comparison.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display

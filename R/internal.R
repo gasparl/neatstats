@@ -108,7 +108,7 @@ show_auc = function(theroc,
       best_tp,
       ", FPR = ",
       best_fp,
-      ", with the optimal threshold ",
+      ", with the optimal cutoff ",
       thres,
       ")"
     )
