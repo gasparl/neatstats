@@ -10,8 +10,9 @@ t_neat(
   pair = FALSE,
   nonparametric = FALSE,
   greater = NULL,
+  norm_tests = "latent",
   ci = NULL,
-  bf_added = TRUE,
+  bf_added = FALSE,
   bf_rscale = sqrt(0.5),
   bf_sample = 1000,
   auc_added = FALSE,
@@ -47,6 +48,17 @@ greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
 greater than \code{var1} mean). If \code{NULL} (default), the test is
 two-sided.}
 
+\item{norm_tests}{Normality tests. Any or all of the following character input
+is accepted (as a single string or a character vector; case-insensitive):
+\code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
+(Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. Two other options
+are \code{"all"} (to choose all four previous tests at the same time) or
+\code{"latent"} (default value; prints all tests only if
+\code{nonparametric} is set to \code{FALSE} and any of the four tests gives
+a p value below .01). Each normality test is performed for the difference
+values between the two variables in case of paired samples, or for each of
+the two variables for unpaired samples.}
+
 \item{ci}{Numeric; confidence level for returned CIs for Cohen's d and AUC.}
 
 \item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
@@ -61,8 +73,8 @@ stable BF.}
 
 \item{auc_added}{Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
 calculated and displayed (including TPR and FPR, i.e., true positive and
-true negative rates, i.e. sensitivity and specificity, at an optimal
-threshold that provides maximal TPR and FPR).}
+true negative rates, i.e. sensitivity and specificity, using an optimal
+cutoff value, i.e. threshold, that provides maximal TPR and FPR).}
 
 \item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is
 calculated and displayed in case of paired comparison.}
@@ -175,6 +187,16 @@ values for males. (Or, easier, just add the expected larger values as
 The Welch's t-test is calculated via
 \code{\link[stats:t.test]{stats::t.test}}.
 
+#'Normality tests are all calculated via
+\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
+recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
+distribution is symmetric with low kurtosis values (i.e. symmetric
+short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
+tests have good power. For symmetric distribution with high sample kurtosis
+(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
+Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
+more details.
+
 Cohen's d and its confidence interval are calculated, using the t value, via
 \code{\link[MBESS:ci.smd]{MBESS::ci.smd}} for independent samples (as
 standardized mean difference) and via \code{\link[MBESS:ci.sm]{MBESS::ci.sm}}
@@ -219,6 +241,15 @@ Kelley, K. (2007). Methods for the behavioral, educational, and social
 sciences: An R package. Behavior Research Methods, 39(4), 979-984.
 \doi{https://doi.org/10.3758/BF03192993}
 
+Lafaye de Micheaux, P., & Tran, V. A. (2016). PoweR: A Reproducible Research
+Tool to Ease Monte Carlo Power Simulation Studies for Goodness-of-fit Tests in
+R. Journal of Statistical Software, 69(3).
+\doi{https://doi.org/10.18637/jss.v069.i03}
+
+Lakens, D. (2015). The perfect t-test (version 1.0.0). Retrieved from
+https://github.com/Lakens/perfect-t-test.
+\doi{https://doi.org/10.5281/zenodo.17603}
+
 Robin, X., Turck, N., Hainard, A., Tiberti, N., Lisacek, F., Sanchez, J. C., &
 Muller, M. (2011). pROC: an open-source package for R and S+ to analyze and
 compare ROC curves. BMC bioinformatics, 12(1), 77.
@@ -228,6 +259,10 @@ van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E.-J. (2020). Bayesian
 rank-based hypothesis testing for the rank sum test, the signed rank test, and
 Spearman’s rho. Journal of Applied Statistics, 1–23.
 \doi{https://doi.org/10.1080/02664763.2019.1709053}
+
+Yap, B. W., & Sim, C. H. (2011). Comparisons of various types of normality
+tests. Journal of Statistical Computation and Simulation, 81(12), 2141–2155.
+\doi{https://doi.org/10.1080/00949655.2010.520163}
 }
 \seealso{
 \code{\link{corr_neat}}, \code{\link{roc_neat}}

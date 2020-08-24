@@ -96,6 +96,17 @@ show_auc = function(theroc,
     thres = ro(thres, round_to)
     best_tp = edges(best_tp, round_to)
     best_fp = edges(best_fp, round_to)
+    if (thres == Inf | thres == -Inf) {
+      rates_optim = " (below chance level)"
+    } else {
+      rates_optim = paste0(" (TPR = ",
+                           best_tp,
+                           ", FPR = ",
+                           best_fp,
+                           ", with the optimal cutoff ",
+                           thres,
+                           ")")
+    }
     prnt(
       "AUC = ",
       auc_num,
@@ -104,13 +115,8 @@ show_auc = function(theroc,
       lower,
       ", ",
       upper,
-      "] (TPR = ",
-      best_tp,
-      ", FPR = ",
-      best_fp,
-      ", with the optimal cutoff ",
-      thres,
-      ")"
+      "]",
+      rates_optim
     )
 }
 

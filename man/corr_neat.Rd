@@ -9,7 +9,7 @@ corr_neat(
   var2,
   nonparametric = FALSE,
   ci = 0.95,
-  bf_added = TRUE,
+  bf_added = FALSE,
   direction = NULL,
   round_r = 3,
   for_table = FALSE,

@@ -20,6 +20,16 @@
 #'  greater than \code{var2} mean) or "2" (\code{var2} mean expected to be
 #'  greater than \code{var1} mean). If \code{NULL} (default), the test is
 #'  two-sided.
+#'@param norm_tests Normality tests. Any or all of the following character input
+#'  is accepted (as a single string or a character vector; case-insensitive):
+#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
+#'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. Two other options
+#'  are \code{"all"} (to choose all four previous tests at the same time) or
+#'  \code{"latent"} (default value; prints all tests only if
+#'  \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
+#'  a p value below .01). Each normality test is performed for the difference
+#'  values between the two variables in case of paired samples, or for each of
+#'  the two variables for unpaired samples.
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
@@ -118,8 +128,20 @@
 #'  well as returned as a \code{\link[ggplot2]{ggplot}} object, named
 #'  \code{density_plot}.
 #'
-#'@note The Welch's t-test is calculated via
+#'@note
+#'
+#'The Welch's t-test is calculated via
 #'\code{\link[stats:t.test]{stats::t.test}}.
+#'
+#'#'Normality tests are all calculated via
+#'\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
+#'recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
+#'distribution is symmetric with low kurtosis values (i.e. symmetric
+#'short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
+#'tests have good power. For symmetric distribution with high sample kurtosis
+#'(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
+#'Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
+#'more details.
 #'
 #'Cohen's d and its confidence interval are calculated, using the t value, via
 #'\code{\link[MBESS:ci.smd]{MBESS::ci.smd}} for independent samples (as
@@ -150,6 +172,15 @@
 #'sciences: An R package. Behavior Research Methods, 39(4), 979-984.
 #'\doi{https://doi.org/10.3758/BF03192993}
 #'
+#'Lafaye de Micheaux, P., & Tran, V. A. (2016). PoweR: A Reproducible Research
+#'Tool to Ease Monte Carlo Power Simulation Studies for Goodness-of-fit Tests in
+#'R. Journal of Statistical Software, 69(3).
+#'\doi{https://doi.org/10.18637/jss.v069.i03}
+#'
+#'Lakens, D. (2015). The perfect t-test (version 1.0.0). Retrieved from
+#'https://github.com/Lakens/perfect-t-test.
+#'\doi{https://doi.org/10.5281/zenodo.17603}
+#'
 #'Robin, X., Turck, N., Hainard, A., Tiberti, N., Lisacek, F., Sanchez, J. C., &
 #'Muller, M. (2011). pROC: an open-source package for R and S+ to analyze and
 #'compare ROC curves. BMC bioinformatics, 12(1), 77.
@@ -159,6 +190,10 @@
 #'rank-based hypothesis testing for the rank sum test, the signed rank test, and
 #'Spearman’s rho. Journal of Applied Statistics, 1–23.
 #'\doi{https://doi.org/10.1080/02664763.2019.1709053}
+#'
+#'Yap, B. W., & Sim, C. H. (2011). Comparisons of various types of normality
+#'tests. Journal of Statistical Computation and Simulation, 81(12), 2141–2155.
+#'\doi{https://doi.org/10.1080/00949655.2010.520163}
 #'
 #' @seealso \code{\link{corr_neat}}, \code{\link{roc_neat}}
 #' @examples
@@ -182,8 +217,9 @@ t_neat = function(var1,
                   pair = FALSE,
                   nonparametric = FALSE,
                   greater = NULL,
+                  norm_tests = 'latent',
                   ci = NULL,
-                  bf_added = TRUE,
+                  bf_added = FALSE,
                   bf_rscale = sqrt(0.5),
                   bf_sample = 1000,
                   auc_added = FALSE,
@@ -208,6 +244,7 @@ t_neat = function(var1,
             val_arg(pair, c('bool'), 1),
             val_arg(nonparametric, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+            val_arg(norm_tests, c('char')),
             val_arg(ci, c('null', 'num'), 1),
             val_arg(bf_added, c('bool'), 1),
             val_arg(bf_rscale, c('num'), 1),
@@ -283,7 +320,7 @@ t_neat = function(var1,
             cat('', fill = TRUE)
         }
     }
-    if (pair == TRUE & r_added == TRUE) {
+    if (pair == TRUE & r_added == TRUE & hush == FALSE) {
         if (nonparametric == TRUE) {
             cat("Spearman's rank correlation: ")
             corr_neat(var1,
@@ -299,6 +336,87 @@ t_neat = function(var1,
                       ci = 0.95,
                       bf_added = FALSE,
                       hush = hush)
+        }
+    }
+    norm_tests = tolower(norm_tests)
+    norm_outs = c()
+    norm_ps = c()
+    norm_latent = FALSE
+    if (norm_tests  != 'none' & hush == FALSE) {
+        if (norm_tests  == 'all') {
+            norm_tests = c("w", "k2", "a2", "jb")
+        } else if (norm_tests  == 'latent')  {
+            norm_tests = c("w", "k2", "a2", "jb")
+            norm_latent = TRUE
+        } else {
+            wrongnorm = norm_tests[!(norm_tests %in% c("w", "k2", "a2", "jb"))]
+            if (length(wrongnorm) > 0) {
+                message(
+                    'The following "norm_tests" inputs are not correct: "',
+                    paste(wrongnorm, collapse = '", "'),
+                    '". Switched to "all".'
+                )
+                norm_tests = c("w", "k2", "a2", "jb")
+            }
+        }
+        for (norm_abbr in norm_tests) {
+            statcomp_num = as.numeric(c(
+                'w' = 21,
+                'k2' = 6,
+                'a2' = 2,
+                'jb' = 7
+            )[norm_abbr])
+            stat_title = as.character(
+                c(
+                    'w' = 'Shapiro-Wilk test: ',
+                    'k2' = "D'Agostino-Pearson test: ",
+                    'a2' = "Anderson-Darling test: ",
+                    'jb' = "Jarque-Bera test: "
+                )[norm_abbr]
+            )
+            if (pair == TRUE) {
+                diff = var1 - var2
+                normres = PoweR::statcompute(statcomp_num, diff)
+                norm_ps = c(norm_ps, normres$pvalue)
+                norm_outs = c(norm_outs,
+                              paste0(
+                                  stat_title,
+                                  toupper(norm_abbr),
+                                  " = ",
+                                  ro(normres$statistic, 2),
+                                  ", p = ",
+                                  ro(normres$pvalue, 3)
+                              ))
+            } else {
+                normres1 = PoweR::statcompute(statcomp_num, var1)
+                normres2 = PoweR::statcompute(statcomp_num, var2)
+                norm_ps = c(norm_ps, normres1$pvalue, normres2$pvalue)
+                norm_outs = c(
+                    norm_outs,
+                    paste0(
+                        stat_title,
+                        toupper(norm_abbr),
+                        " = ",
+                        ro(normres1$statistic, 2),
+                        ", p = ",
+                        ro(normres2$pvalue, 3),
+                        ' (1st var.); ',
+                        toupper(norm_abbr),
+                        " = ",
+                        ro(normres1$statistic, 2),
+                        ", p = ",
+                        ro(normres2$pvalue, 3),
+                        ' (2nd var.)'
+                    )
+                )
+            }
+        }
+        if (norm_latent == FALSE |
+            (any(norm_ps[!is.na(norm_ps)] < 0.01) &
+             nonparametric == FALSE)) {
+            prnt("--- Normality ---")
+            prnt(paste(norm_outs, collapse = '\n'))
+            prnt("--- t-test ---")
         }
     }
     if (greater == "1") {
@@ -531,13 +649,13 @@ t_neat = function(var1,
         best_coords = pROC::coords(the_roc, x = "best")
         the_auc = pROC::auc(the_roc)
         if (class(best_coords) == "data.frame") {
-            plot_thres = as.numeric(best_coords$threshold)
-            best_tp = as.numeric(best_coords$sensitivity)
-            best_fp = as.numeric(best_coords$specificity)
+            plot_thres = as.numeric(best_coords$threshold)[1]
+            best_tp = as.numeric(best_coords$sensitivity)[1]
+            best_fp = as.numeric(best_coords$specificity)[1]
         } else {
-            plot_thres = as.numeric(best_coords["threshold"])
-            best_tp = as.numeric(best_coords["sensitivity"])
-            best_fp = as.numeric(best_coords["specificity"])
+            plot_thres = as.numeric(best_coords["threshold"])[1]
+            best_tp = as.numeric(best_coords["sensitivity"])[1]
+            best_fp = as.numeric(best_coords["specificity"])[1]
         }
         if (hush == FALSE) {
             show_auc(

@@ -94,7 +94,7 @@ props_neat = function(case1,
                       n2,
                       greater = NULL,
                       ci = NULL,
-                      bf_added = TRUE,
+                      bf_added = FALSE,
                       h_added = FALSE,
                       for_table = FALSE,
                       hush = FALSE) {
