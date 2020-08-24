@@ -20,7 +20,7 @@ aggr_neat(
 
 \item{values}{The vector of numbers from which the statistics are to be
 calculated, or the name of the column in the \code{dat} data frame, that
-contains the vector. (Expression or string are both accepted.)}
+contains the vector.}
 
 \item{method}{Function of string. If function, uses the \code{values} to
 calculate the returned value for the given function (e.g. means, as per

@@ -59,8 +59,10 @@ default).}
 by default). More samples (e.g. \code{10000}) take longer time but give more
 stable BF.}
 
-\item{auc_added}{Logical. If \code{TRUE}, AUC is calculated and displayed.
-(\code{FALSE} by default.)}
+\item{auc_added}{Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
+calculated and displayed (including TPR and FPR, i.e., true positive and
+true negative rates, i.e. sensitivity and specificity, at an optimal
+threshold that provides maximal TPR and FPR).}
 
 \item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is
 calculated and displayed in case of paired comparison.}

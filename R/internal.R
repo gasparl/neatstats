@@ -80,7 +80,10 @@ bf_names = function(the_names) {
 show_auc = function(theroc,
                     ci = 0.95,
                     round_to = 3,
-                    for_table = FALSE) {
+                    for_table = FALSE,
+                    thres = NULL,
+                    best_tp = NULL,
+                    best_fp = NULL) {
     if (for_table == TRUE) {
         ci_disp = ""
     } else {
@@ -90,7 +93,25 @@ show_auc = function(theroc,
     auc_ci = as.numeric(pROC::ci.auc(theroc, conf.level = ci))
     lower = edges(auc_ci[1], round_to)
     upper = edges(auc_ci[3], round_to)
-    prnt("AUC = ", auc_num, ci_disp, " [", lower, ", ", upper, "]")
+    thres = ro(thres, round_to)
+    best_tp = edges(best_tp, round_to)
+    best_fp = edges(best_fp, round_to)
+    prnt(
+      "AUC = ",
+      auc_num,
+      ci_disp,
+      " [",
+      lower,
+      ", ",
+      upper,
+      "] (TPR = ",
+      best_tp,
+      ", FPR = ",
+      best_fp,
+      ", with the optimal threshold ",
+      thres,
+      ")"
+    )
 }
 
 edges = function(the_num, round_to, no_null = FALSE) {

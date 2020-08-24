@@ -28,8 +28,10 @@
 #'@param bf_sample Number of samples used to estimate Bayes factor (\code{1000}
 #'  by default). More samples (e.g. \code{10000}) take longer time but give more
 #'  stable BF.
-#'@param auc_added Logical. If \code{TRUE}, AUC is calculated and displayed.
-#'  (\code{FALSE} by default.)
+#'@param auc_added Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
+#'  calculated and displayed (including TPR and FPR, i.e., true positive and
+#'  true negative rates, i.e. sensitivity and specificity, using an optimal
+#'  threshold value, i.e. cutoff, that provides maximal TPR and FPR).
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
 #'  calculated and displayed in case of paired comparison.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
@@ -514,32 +516,39 @@ t_neat = function(var1,
             levels = c(0, 1),
             direction =  auc_dir
         ) # v1 larger
-        if (hush == FALSE) {
-            show_auc(
-                theroc = the_roc,
-                ci = ci,
-                round_to = round_auc,
-                for_table = for_table
-            )
-        }
         youdn = pROC::coords(the_roc, x = "best", ret = "youden")
         if (class(youdn) == "data.frame") {
             maxyouden = as.numeric(youdn$youden[1])-1
         } else {
-            maxyouden =as.numeric(youdn[1])-1
+            maxyouden = as.numeric(youdn[1])-1
         }
         bestacc = pROC::coords(the_roc, x = "best", ret = "accuracy")
         if (class(bestacc) == "data.frame") {
             max_acc = as.numeric(bestacc$accuracy[1])
         } else {
-            max_acc =as.numeric(bestacc[1])
+            max_acc = as.numeric(bestacc[1])
         }
         best_coords = pROC::coords(the_roc, x = "best")
         the_auc = pROC::auc(the_roc)
         if (class(best_coords) == "data.frame") {
             plot_thres = as.numeric(best_coords$threshold)
+            best_tp = as.numeric(best_coords$sensitivity)
+            best_fp = as.numeric(best_coords$specificity)
         } else {
             plot_thres = as.numeric(best_coords["threshold"])
+            best_tp = as.numeric(best_coords["sensitivity"])
+            best_fp = as.numeric(best_coords["specificity"])
+        }
+        if (hush == FALSE) {
+            show_auc(
+                theroc = the_roc,
+                ci = ci,
+                round_to = round_auc,
+                for_table = for_table,
+                thres = plot_thres,
+                best_tp = best_tp,
+                best_fp = best_fp
+            )
         }
         plot_thres = plot_thres[!plot_thres %in% c(-Inf, Inf)]
     } else {
