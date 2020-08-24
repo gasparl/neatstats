@@ -5,7 +5,7 @@
 #' @param dat Data frame (or name of data frame as string).
 #' @param values The vector of numbers from which the statistics are to be
 #'   calculated, or the name of the column in the \code{dat} data frame, that
-#'   contains the vector. (Expression or string are both accepted.)
+#'   contains the vector.
 #' @param method Function of string. If function, uses the \code{values} to
 #'   calculate the returned value for the given function (e.g. means, as per
 #'   default, using the \code{mean} function). Such a function may return a
