@@ -558,7 +558,7 @@ anova_neat = function(data_per_subject,
         between_vars_ez,
         ', within =',
         within_vars_ez,
-        ', type = 2, detailed = TRUE )'
+        ', type = 2, detailed = TRUE, return_aov = TRUE)'
     )
     ez_anova_out = eval(parse(text = a_text))
     # suppressWarnings

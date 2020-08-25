@@ -618,7 +618,9 @@ plot_neat = function(data_per_subject,
         }
     }
     if (length(fact_names) == 3) {
-        the_plot = the_plot + facet_wrap( ~ .data[[fact_names[3]]], nrow = row_number)
+        the_plot = the_plot + facet_wrap( ~ .data[[fact_names[3]]], nrow = row_number) +
+            theme(strip.background = element_blank(),
+                  strip.text = element_text(face = 'bold', size = 12))
     }
     the_plot = the_plot + theme_bw() +
         labs(x = re_n(p_mid, factor_names), y = y_title) +
