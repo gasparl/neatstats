@@ -10,6 +10,7 @@ aggr_neat(
   method = mean,
   group_by = NULL,
   filt = NULL,
+  sep = "_",
   prefix = NULL,
   new_name = NULL,
   round_to = 2
@@ -52,6 +53,9 @@ statistics are grouped.}
 \item{filt}{An expression to filter, by column values, the entire \code{dat}
 data frame before performing the aggregation. The expression should use
 column names alone; see Examples.}
+
+\item{sep}{String (underscore \code{"_"} by default) for separating group
+names (and prefix, if given).}
 
 \item{prefix}{\code{NULL} (default) or string. String specifies a prefix for
 each group type under the \code{group} column.}

@@ -34,6 +34,8 @@
 #' @param filt An expression to filter, by column values, the entire \code{dat}
 #'   data frame before performing the aggregation. The expression should use
 #'   column names alone; see Examples.
+#' @param sep String (underscore \code{"_"} by default) for separating group
+#'   names (and prefix, if given).
 #' @param prefix \code{NULL} (default) or string. String specifies a prefix for
 #'   each group type under the \code{group} column.
 #' @param new_name \code{NULL} (default) or string. String specifies new name
@@ -148,6 +150,7 @@ aggr_neat = function(dat,
                      method = mean,
                      group_by = NULL,
                      filt = NULL,
+                     sep = "_",
                      prefix = NULL,
                      new_name = NULL,
                      round_to = 2) {
@@ -253,10 +256,10 @@ aggr_neat = function(dat,
             }
         )
     }
-    aggred = merge_cols(aggred)
+    aggred = merge_cols(aggred, sep)
     colnames(aggred)[colnames(aggred) == 'x'] <- val_name
     if (is.null(prefix) != TRUE) {
-        aggred$aggr_group = paste(prefix, aggred$aggr_group, sep = "_")
+        aggred$aggr_group = paste(prefix, aggred$aggr_group, sep = sep)
     }
     return(aggred)
 }

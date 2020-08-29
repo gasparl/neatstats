@@ -59,6 +59,15 @@
 #'  larger than \code{.75}, while Huynh-Feldt correction is applied when
 #'  Mauchly's sphericity test is significant and the Greenhouse-Geisser epsilon
 #'  is larger than \code{.75} (see Girden, 1992).
+#'@param type Sum of squares type specified as a number: \code{1}, \code{2}, or
+#'  \code{3}. Set to \code{2} by default (which is generally recommended, see
+#'  e.g. Navarro, 2019, Chapter 16).
+#'@param white.adjust If not FALSE (default) uses a heteroscedasticity-corrected
+#'  coefficient covariance matrix; the various values of the argument specify
+#'  different corrections (\code{"hc0"}, \code{"hc1"}, \code{"hc2"},
+#'  \code{"hc3"}, or \code{"hc4"}). See the documentation for
+#'  \code{\link[car:hccm]{car::hccm}} for details. If set to \code{TRUE} then
+#'  the \code{"hc3"} correction is selected.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@param plot_means Logical (\code{FALSE} by default). If \code{TRUE}, creates
 #'  plots of means by factor, by passing data and factor information to
@@ -149,11 +158,15 @@
 #'in JASP [Blog post]. Retrieved from
 #'\url{https://www.cogsci.nl/blog/interpreting-bayesian-repeated-measures-in-jasp}
 #'
-#'McDonald, J. H. 2015. Handbook of Biological Statistics (3rd ed.). Sparky House Publishing, Baltimore, Maryland. Retrieved from \url{http://www.biostathandbook.com}
+#'McDonald, J. H. 2015. Handbook of Biological Statistics (3rd ed.). Sparky
+#'House Publishing, Baltimore, Maryland. Retrieved from
+#'\url{http://www.biostathandbook.com}
 #'
-#'Moder, K. (2010). Alternatives to F-test in one way ANOVA in case of heterogeneity of variances (a simulation study). Psychological Test and Assessment Modeling, 52(4), 343-353.
+#'Moder, K. (2010). Alternatives to F-test in one way ANOVA in case of
+#'heterogeneity of variances (a simulation study). Psychological Test and
+#'Assessment Modeling, 52(4), 343-353.
 #'
-#'Navarro, D. (2013). Learning Statistics with R: A Tutorial for Psychology
+#'Navarro, D. (2019). Learning Statistics with R: A Tutorial for Psychology
 #'Students and Other Beginners (Version 0.6.1). Retrieved from
 #'\url{https://learningstatisticswithr.com/}
 #'
@@ -370,6 +383,8 @@ anova_neat = function(data_per_subject,
                       test_title = "--- neat ANOVA ---",
                       welch = TRUE,
                       e_correction = NULL,
+                      type = 2,
+                      white.adjust = FALSE,
                       hush = FALSE,
                       plot_means  = FALSE,
                       ...) {
@@ -386,6 +401,8 @@ anova_neat = function(data_per_subject,
             val_arg(test_title, c('char'), 1),
             val_arg(welch, c('bool'), 1),
             val_arg(e_correction, c('null', 'char'), 1, c('gg', 'hf', 'none')),
+            val_arg(type, c('num'), 1),
+            val_arg(white.adjust, c('bool', 'char'), 1),
             val_arg(hush, c('bool'), 1)
         )
     )
@@ -558,7 +575,11 @@ anova_neat = function(data_per_subject,
         between_vars_ez,
         ', within =',
         within_vars_ez,
-        ', type = 2, detailed = TRUE, return_aov = TRUE)'
+        ', type = 2',
+        type,
+        ', white.adjust = NULL',
+        white.adjust,
+        ', detailed = TRUE, return_aov = TRUE)'
     )
     ez_anova_out = eval(parse(text = a_text))
     # suppressWarnings

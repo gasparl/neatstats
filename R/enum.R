@@ -30,7 +30,7 @@ enum = function(items,
                   list(val_arg(hush, c('bool'), 1),
                        val_arg(enumerate, c('bool'), 1)))
     if (hush == FALSE) {
-        message('Loop started.', fill = TRUE)
+        message('Loop started.')
     }
     pkg.globals$my_unique_first_iter = TRUE
     if (enumerate == TRUE) {

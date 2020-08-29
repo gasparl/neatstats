@@ -195,17 +195,19 @@ to_c = function(var) {
     return(strsplit(var, ",")[[1]])
 }
 
-merge_cols = function(dat_aggred) {
+merge_cols = function(dat_aggred, sep) {
     g_names = names(dat_aggred)[startsWith(names(dat_aggred), 'Group.')]
     if (length(g_names) > 1) {
         dat_aggred = eval(parse(
-            text = paste0(
-                "within(dat_aggred, g_merged <-
+          text = paste0(
+            "within(dat_aggred, g_merged <-
                 paste(",
-                paste(g_names, collapse = ','),
-                ", sep = '_'))"
-                )
-            ))
+            paste(g_names, collapse = ','),
+            ", sep = '",
+            sep,
+            "'))"
+          )
+        ))
         dat_aggred[, 1] = dat_aggred$g_merged
         colnames(dat_aggred)[1] <- "aggr_group"
         dat_aggred = dat_aggred[, setdiff(names(dat_aggred), c('g_merged', g_names))]
@@ -227,6 +229,57 @@ transp = function(to_transpose, headers) {
     tdat = as.data.frame(t(to_transpose[, -1]))
     colnames(tdat) = hnames
     return(tdat)
+}
+
+get_row = function(..., nameless = FALSE) {
+  dotdot = c(as.list(environment()), list(...))
+  dotdot$nameless = NULL
+  newrow = data.frame(row.names = 1)
+  for (itnum in seq_along(dotdot)) {
+    itname = names(dotdot)[itnum]
+    addee = dotdot[[itnum]]
+    if (itname != "" & is.atomic(addee) & length(addee) == 1) {
+      addee = data.frame(a = addee)
+      names(addee)[1] = itname
+    } else {
+      if (is.atomic(addee) | inherits(addee, "list")) {
+        if (nameless == FALSE &
+            length(names(addee)[(names(addee) != "")]) != length(addee)) {
+          print(addee)
+          stop("Missing vector names!")
+          stop('Each addition (... argument) must be one of the following: ',
+               'a data frame (either single row or two column); ',
+               'a list or a vector with single elements; ',
+               'or a single value with parameter name ',
+               '(e.g. date = 1989 or id = "jdoe").')
+        }
+        addee = as.list(addee)
+      } else if (inherits(addee, "data.frame")) {
+        if (nrow(addee) == 0) {
+          print(addee)
+          stop('Data frame should not be empty.')
+        } else if (nrow(addee) > 1) {
+          if (ncol(addee) == 2) {
+            hnames = as.character(addee[, 1])
+            addee = as.data.frame(t(as.vector(addee[, 2])))
+            colnames(addee) = hnames
+          } else {
+            print(names(addee))
+            stop('Data frame with multiple rows must have two columns.')
+          }
+        }
+      } else {
+        print(addee)
+        stop('Each addition (... argument) must be one of the following: ',
+             'a data frame (either single row or two column); ',
+             'a list or a vector with single elements; ',
+             'or a single value with parameter name ',
+             '(e.g. date = 1989 or id = "jdoe").')
+      }
+    }
+    newrow = data.frame(newrow, addee)
+  }
+  return(newrow)
 }
 
 mains_ebs = function(data_long, method, eb_method, g_by) {
