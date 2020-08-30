@@ -29,13 +29,18 @@ enum = function(items,
     validate_args(match.call(),
                   list(val_arg(hush, c('bool'), 1),
                        val_arg(enumerate, c('bool'), 1)))
-    if (hush == FALSE) {
-        message('Loop started.')
-    }
-    pkg.globals$my_unique_first_iter = TRUE
-    if (enumerate == TRUE) {
-        return(mapply(c, 1:length(items), items, SIMPLIFY = FALSE))
+    if (length(items) > 0) {
+        if (hush == FALSE) {
+            message('Loop started.')
+        }
+        pkg.globals$my_unique_first_iter = TRUE
+        if (enumerate == TRUE) {
+            return(mapply(c, 1:length(items), items, SIMPLIFY = FALSE))
+        } else {
+            return(items)
+        }
     } else {
+        message('No items to iterate.')
         return(items)
     }
 }
