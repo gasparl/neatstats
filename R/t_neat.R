@@ -27,7 +27,7 @@
 #'  are \code{"all"} (to choose all four previous tests at the same time) or
 #'  \code{"latent"} (default value; prints all tests only if
 #'  \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
-#'  a p value below .01). Each normality test is performed for the difference
+#'  a p value below .05). Each normality test is performed for the difference
 #'  values between the two variables in case of paired samples, or for each of
 #'  the two variables for unpaired samples.
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
@@ -338,86 +338,19 @@ t_neat = function(var1,
                       hush = hush)
         }
     }
-    norm_tests = tolower(norm_tests)
-    norm_outs = c()
-    norm_ps = c()
-    norm_latent = FALSE
-    if (norm_tests  != 'none' & hush == FALSE) {
-        if (norm_tests  == 'all') {
-            norm_tests = c("w", "k2", "a2", "jb")
-        } else if (norm_tests  == 'latent')  {
-            norm_tests = c("w", "k2", "a2", "jb")
-            norm_latent = TRUE
-        } else {
-            wrongnorm = norm_tests[!(norm_tests %in% c("w", "k2", "a2", "jb"))]
-            if (length(wrongnorm) > 0) {
-                message(
-                    'The following "norm_tests" inputs are not correct: "',
-                    paste(wrongnorm, collapse = '", "'),
-                    '". Switched to "all".'
-                )
-                norm_tests = c("w", "k2", "a2", "jb")
-            }
-        }
-        for (norm_abbr in norm_tests) {
-            statcomp_num = as.numeric(c(
-                'w' = 21,
-                'k2' = 6,
-                'a2' = 2,
-                'jb' = 7
-            )[norm_abbr])
-            stat_title = as.character(
-                c(
-                    'w' = 'Shapiro-Wilk test: ',
-                    'k2' = "D'Agostino-Pearson test: ",
-                    'a2' = "Anderson-Darling test: ",
-                    'jb' = "Jarque-Bera test: "
-                )[norm_abbr]
-            )
-            if (pair == TRUE) {
-                diff = var1 - var2
-                normres = PoweR::statcompute(statcomp_num, diff)
-                norm_ps = c(norm_ps, normres$pvalue)
-                norm_outs = c(norm_outs,
-                              paste0(
-                                  stat_title,
-                                  toupper(norm_abbr),
-                                  " = ",
-                                  ro(normres$statistic, 2),
-                                  ", p = ",
-                                  ro(normres$pvalue, 3)
-                              ))
-            } else {
-                normres1 = PoweR::statcompute(statcomp_num, var1)
-                normres2 = PoweR::statcompute(statcomp_num, var2)
-                norm_ps = c(norm_ps, normres1$pvalue, normres2$pvalue)
-                norm_outs = c(
-                    norm_outs,
-                    paste0(
-                        stat_title,
-                        toupper(norm_abbr),
-                        " = ",
-                        ro(normres1$statistic, 2),
-                        ", p = ",
-                        ro(normres1$pvalue, 3),
-                        ' (1st var.); ',
-                        toupper(norm_abbr),
-                        " = ",
-                        ro(normres2$statistic, 2),
-                        ", p = ",
-                        ro(normres2$pvalue, 3),
-                        ' (2nd var.)'
-                    )
-                )
-            }
-        }
-        if (norm_latent == FALSE |
-            (any(norm_ps[!is.na(norm_ps)] < 0.01) &
-             nonparametric == FALSE)) {
-            prnt("--- Normality ---")
-            prnt(paste(norm_outs, collapse = '\n'))
-            prnt("--- t-test ---")
-        }
+    if (norm_tests  != 'none' &
+        hush == FALSE) {
+        norm_tests_in(
+            var1 = var1,
+            var2 = var2,
+            pair = pair,
+            norm_tests = norm_tests,
+            alpha = 0.05,
+            hush = FALSE,
+            plots = 'none',
+            tneet = TRUE,
+            nonparametric = nonparametric
+        )
     }
     if (greater == "1") {
         if (hush == FALSE) {
