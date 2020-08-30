@@ -291,6 +291,20 @@ t_neat = function(var1,
             message("NA values omitted.")
         }
     }
+    if (norm_tests  != 'none' &
+        hush == FALSE) {
+        norm_tests_in(
+            var1 = var1,
+            var2 = var2,
+            pair = pair,
+            norm_tests = norm_tests,
+            alpha = 0.05,
+            hush = FALSE,
+            plots = 'none',
+            tneet = TRUE,
+            nonparametric = nonparametric
+        )
+    }
     descr_1 = paste0(ro(mean(var1), round_descr),
                      "CHAR_PLUSMIN",
                      ro(stats::sd(var1), round_descr))
@@ -337,20 +351,6 @@ t_neat = function(var1,
                       bf_added = FALSE,
                       hush = hush)
         }
-    }
-    if (norm_tests  != 'none' &
-        hush == FALSE) {
-        norm_tests_in(
-            var1 = var1,
-            var2 = var2,
-            pair = pair,
-            norm_tests = norm_tests,
-            alpha = 0.05,
-            hush = FALSE,
-            plots = 'none',
-            tneet = TRUE,
-            nonparametric = nonparametric
-        )
     }
     if (greater == "1") {
         if (hush == FALSE) {

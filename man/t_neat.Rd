@@ -55,7 +55,7 @@ is accepted (as a single string or a character vector; case-insensitive):
 are \code{"all"} (to choose all four previous tests at the same time) or
 \code{"latent"} (default value; prints all tests only if
 \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
-a p value below .01). Each normality test is performed for the difference
+a p value below .05). Each normality test is performed for the difference
 values between the two variables in case of paired samples, or for each of
 the two variables for unpaired samples.}
 

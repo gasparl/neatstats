@@ -16,9 +16,9 @@
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. The option
 #'  \code{"all"} (default value) selects all four previous tests at the same
 #'  time.
-#'@param plots Logical. If \code{TRUE}, creates a density plot (i.e.,
-#'  \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
-#'  variables.
+#'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogramm
+#'  and density, \code{"qq"} for Q-Q plot, and \code{"both"} for both at the
+#'  same time.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
 #'@return Prints normality tests, and displays plots (and returns them as
@@ -57,7 +57,7 @@
 #' @export
 norm_tests = function(var1,
                       var2 = NULL,
-                      pair = TRUE,
+                      pair = FALSE,
                       norm_tests = 'all',
                       alpha = 0.05,
                       hush = FALSE,
@@ -66,12 +66,12 @@ norm_tests = function(var1,
         match.call(),
         list(
             val_arg(var1, c('num'), 0),
-            val_arg(var2, c('num'), 0),
+            val_arg(var2, c('null', 'num')),
             val_arg(pair, c('bool'), 1),
             val_arg(norm_tests, c('char')),
             val_arg(alpha, c('num'), 1),
             val_arg(hush, c('bool'), 1),
-            val_arg(plots, c('char'), 1, c('none', 'hist', 'qq', 'both')),
+            val_arg(plots, c('char'), 1, c('none', 'hist', 'qq', 'both'))
         )
     )
     norm_tests_in(
@@ -130,7 +130,19 @@ norm_tests_in = function(var1,
                 'jb' = "Jarque-Bera test: "
             )[norm_abbr]
         )
-        if (pair == TRUE) {
+        if (is.null(var2)) {
+            normres = PoweR::statcompute(statcomp_num, var1)
+            norm_ps = c(norm_ps, normres$pvalue)
+            norm_outs = c(norm_outs,
+                          paste0(
+                              stat_title,
+                              toupper(norm_abbr),
+                              " = ",
+                              ro(normres$statistic, 2),
+                              ", p = ",
+                              ro(normres$pvalue, 3)
+                          ))
+        } else if (pair == TRUE) {
             diff = var1 - var2
             normres = PoweR::statcompute(statcomp_num, diff)
             norm_ps = c(norm_ps, normres$pvalue)
