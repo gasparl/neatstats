@@ -1,14 +1,12 @@
 #'@title Variance Equality Tests and Plots
 #'
-#'@description Performs variance equality tests and creates related plots
-#'  (histogram, density, boxplots). This is primarily a subfunction of
+#'@description Performs variance Brown-Forsythe and Fligner-Killeen equality tests
+#'  (tests of homogeneity of variances) and creates related plots (histogram,
+#'  density, boxplots). This is primarily a subfunction of
 #'  \code{\link{anova_neat}}, but here it is available separately for other
 #'  potential purposes.
 #'@param var Numeric vector; numbers of any given variable.
 #'@param group Vector of factors with which to group the \code{var} values.
-#'@param median Logical, \code{FALSE} by default. If \code{TRUE}, Levene's test
-#'  uses medians instead of means (giving a Brown-Forsythe test). This is a
-#'  robust alternative that works better with non-normal (skewed) data.
 #'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogram
 #'  and density, \code{"box"} for box plot, and \code{"both"} for both at the
 #'  same time.
@@ -19,21 +17,32 @@
 #'
 #'@note
 #'
-#'Calculated via...
+#' Brown-Forsythe test (i.e., Levene's test using medians) is calculated via
+#' \code{\link[car:leveneTest]{car::leveneTest}}. Fligner-Killeen test, which
+#' may be more robust (i.e., less affected by non-normal distribution), is
+#' calculated via \code{\link[stats:fligner.test]{stats::fligner.test}}. (See
+#' also Conover et al., 1981, p. 360.)
 #'
 #'@references
 #'
-#'Brown, M. B. and Forsythe, A. B. (1974), Journal of the American Statistical
+#'Brown, M. B. & Forsythe, A. B. (1974), Journal of the American Statistical
 #'Association, 69, pp. 364-367.
+#'
+#'Conover W. J., Johnson M. E., & Johnson M. M. (1981) A comparative study of
+#'tests for homogeneity of variances, with applications to the outer continental
+#'shelf bidding data. Technometrics, 23, 351–361.
+#'
+#'Fligner, M. A. & Killeen, T. J. (1976). Distribution-free two-sample tests for
+#'scale. ‘Journal of the American Statistical Association.’ 71(353), 210-213.
+#'
+#'Fox, J. & Weisberg, S. (2019) An R Companion to Applied Regression, Third
+#'Edition, Sage.
 #'
 #'Levene, H. (1960). Robust tests for equality of variances. In I. Olkin, H.
 #'Hotelling, et al. (eds.). Contributions to Probability and Statistics: Essays
 #'in Honor of Harold Hotelling. Stanford University Press. pp. 278–292.
 #'
-#'Fox, J. and Weisberg, S. (2019) An R Companion to Applied Regression, Third
-#'Edition, Sage.
-#'
-#' @seealso \code{\link{t_neat}}
+#' @seealso \code{\link{anova_neat}}
 #' @examples
 #'
 #' # var_tests( ### )
