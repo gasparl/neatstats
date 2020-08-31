@@ -15,8 +15,8 @@ Description: User-friendly, clear and simple statistics, primarily for
   experimental designs.
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.6.0)
-Imports: PoweR, plyr, bayestestR, pROC, MBESS, ez, BayesFactor,
-  Exact, ggplot2, logspline, grDevices, stats, graphics
+Imports: PoweR, plyr, bayestestR, pROC, MBESS, car, ez, BayesFactor, Exact,
+  ggplot2, ggpubr, logspline, grDevices, stats, graphics
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8

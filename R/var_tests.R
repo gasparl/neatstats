@@ -1,62 +1,46 @@
-#'@title Normality Tests and Plots
+#'@title Variance Equality Tests and Plots
 #'
-#'@description Performs normality tests and creates related plots (histogram,
-#'  density, Q-Q). This is primarily a subfunction of \code{\link{t_neat}} and
+#'@description Performs variance equality tests and creates related plots
+#'  (histogram, density, boxplots). This is primarily a subfunction of
 #'  \code{\link{anova_neat}}, but here it is available separately for other
 #'  potential purposes.
-#'@param var1 Numeric vector; numbers of any given variable.
-#'@param var2 Optional numeric vector (or \code{NULL}); numbers of a second
-#'  variable.
-#'@param pair Logical; only matters if \code{var2} is not null. In that case, if
-#'  \code{TRUE} each normality test is performed for the difference values
-#'  between the two variables in case of paired samples, or, if \code{FALSE},
-#'  separately for each of the two variables for unpaired samples.
-#'@param norm_tests Normality tests. Any or all of the following character input
-#'  is accepted (as a single string or a character vector; case-insensitive):
-#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
-#'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. The option
-#'  \code{"all"} (default value) selects all four previous tests at the same
-#'  time.
+#'@param var Numeric vector; numbers of any given variable.
+#'@param group Vector of factors with which to group the \code{var} values.
+#'@param median Logical, \code{FALSE} by default. If \code{TRUE}, Levene's test
+#'  uses medians instead of means (giving a Brown-Forsythe test). This is a
+#'  robust alternative that works better with non-normal (skewed) data.
 #'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogram
-#'  and density, \code{"qq"} for Q-Q plot, and \code{"both"} for both at the
+#'  and density, \code{"box"} for box plot, and \code{"both"} for both at the
 #'  same time.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
-#'@return Prints normality tests, and displays plots (and returns them as
-#'  \code{\link[ggplot2]{ggplot}} object), if so specified. If no plots are
-#'  created, returns \code{TRUE} if any of the specified tests has p value below
-#'  the specified \code{alpha}, otherwise returns \code{FALSE}.
+#'@return Prints test results, and displays plots (and returns them as
+#'  \code{\link[ggplot2]{ggplot}} object), if so specified.
 #'
 #'@note
 #'
-#'#'Normality tests are all calculated via
-#'\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
-#'recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
-#'distribution is symmetric with low kurtosis values (i.e. symmetric
-#'short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
-#'tests have good power. For symmetric distribution with high sample kurtosis
-#'(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
-#'Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
-#'more details.
+#'Calculated via...
 #'
 #'@references
 #'
-#'Lakens, D. (2015). The perfect t-test (version 1.0.0). Retrieved from
-#'https://github.com/Lakens/perfect-t-test.
-#'\doi{https://doi.org/10.5281/zenodo.17603}
+#'Brown, M. B. and Forsythe, A. B. (1974), Journal of the American Statistical
+#'Association, 69, pp. 364-367.
 #'
-#'Yap, B. W., & Sim, C. H. (2011). Comparisons of various types of normality
-#'tests. Journal of Statistical Computation and Simulation, 81(12), 2141–2155.
-#'\doi{https://doi.org/10.1080/00949655.2010.520163}
+#'Levene, H. (1960). Robust tests for equality of variances. In I. Olkin, H.
+#'Hotelling, et al. (eds.). Contributions to Probability and Statistics: Essays
+#'in Honor of Harold Hotelling. Stanford University Press. pp. 278–292.
+#'
+#'Fox, J. and Weisberg, S. (2019) An R Companion to Applied Regression, Third
+#'Edition, Sage.
 #'
 #' @seealso \code{\link{t_neat}}
 #' @examples
 #'
-#' norm_tests(stats::rnorm(100))
-#' # should be normal...
+#' # var_tests( ### )
+#' # should be equal...
 #'
 #' @export
-norm_tests = function(var1,
+var_tests = function(var1,
                       var2 = NULL,
                       pair = FALSE,
                       norm_tests = 'all',
