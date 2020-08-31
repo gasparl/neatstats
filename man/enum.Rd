@@ -37,5 +37,5 @@ enum(my_vector)
 
 }
 \seealso{
-\code{\link{rbind_neat}}
+\code{\link{rbind_loop}}
 }

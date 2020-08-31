@@ -32,6 +32,10 @@ is accepted (as a single string or a character vector; case-insensitive):
 \code{"all"} (default value) selects all four previous tests at the same
 time.}
 
+\item{alpha}{Numeric (\code{.05} by default), alpha level: if any p value if
+below this alpha level, the funtion returns \code{TRUE}, otherwise
+\code{FALSE}.}
+
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 
 \item{plots}{String: \code{"none"} for no plots, \code{"hist"} for histrogram

@@ -53,18 +53,20 @@
 #' @seealso \code{\link{anova_neat}}
 #' @examples
 #'
+#' data("ToothGrowth") # load base R example dataset
+#'
 #' # the statistics of the four functions below should match
-#' var_tests(Moore$conformity, Moore$fcategory)
-#' var_tests('conformity', 'fcategory', Moore)
-#' car::leveneTest(conformity ~ fcategory, data = Moore)
-#' stats::fligner.test(conformity ~ fcategory, Moore)
+#' var_tests(ToothGrowth$len, ToothGrowth$supp)
+#' var_tests('len', 'supp', ToothGrowth)
+#' car::leveneTest(len ~ supp, data = ToothGrowth)
+#' stats::fligner.test(len ~ supp, ToothGrowth)
 #'
 #' # again the results below should match each other
-#' var_tests(Moore$conformity,
-#'           interaction(Moore$fcategory, Moore$partner.status))
-#' var_tests('conformity', c('fcategory', 'partner.status'), Moore)
-#' car::leveneTest(conformity ~ fcategory * partner.status, data = Moore)
-#' stats::fligner.test(conformity ~ interaction(fcategory, partner.status), Moore)
+#' var_tests(ToothGrowth$len,
+#'           interaction(ToothGrowth$supp, ToothGrowth$dose))
+#' var_tests('len', c('supp', 'dose'), ToothGrowth)
+#' car::leveneTest(len ~ supp * as.factor(dose), data = ToothGrowth)
+#' stats::fligner.test(len ~ interaction(supp, dose), ToothGrowth)
 #'
 #' @export
 var_tests = function(xvar,

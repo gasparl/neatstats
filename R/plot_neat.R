@@ -531,7 +531,7 @@ plot_neat = function(data_per_subject,
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_close]],
-                                           y = x.main,
+                                           y = .data$x.main,
                                            group = 1
                                        )) +
                 geom_line(color = line_colors[1]) + geom_point(color = line_colors[1])
@@ -539,7 +539,7 @@ plot_neat = function(data_per_subject,
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_close]],
-                                           y = x.main,
+                                           y = .data$x.main,
                                            group = 1
                                        )) +
                 geom_bar(stat = "identity",
@@ -554,7 +554,7 @@ plot_neat = function(data_per_subject,
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_mid]],
-                                           y = x.main,
+                                           y = .data$x.main,
                                            group = .data[[p_close]]
                                        )) +
                 geom_line(aes(linetype = .data[[p_close]], color = .data[[p_close]]),
@@ -571,7 +571,7 @@ plot_neat = function(data_per_subject,
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_mid]],
-                                           y = x.main,
+                                           y = .data$x.main,
                                            fill = .data[[p_close]]
                                        )) +
                 geom_bar(
@@ -588,8 +588,8 @@ plot_neat = function(data_per_subject,
             if (onefact == TRUE) {
                 the_plot = the_plot + geom_errorbar(
                     aes(
-                        ymin = x.main - x.eb,
-                        ymax = x.main + x.eb,
+                        ymin = .data$x.main - .data$x.eb,
+                        ymax = .data$x.main + .data$x.eb,
                         width = 0.2
                     ),
                     color = line_colors[1],
@@ -598,8 +598,8 @@ plot_neat = function(data_per_subject,
             } else {
                 the_plot = the_plot + geom_errorbar(
                     aes(
-                        ymin = x.main - x.eb,
-                        ymax = x.main + x.eb,
+                        ymin = .data$x.main - .data$x.eb,
+                        ymax = .data$x.main + .data$x.eb,
                         width = 0.2,
                         color = .data[[p_close]]
                     ),
@@ -609,26 +609,26 @@ plot_neat = function(data_per_subject,
         } else {
             the_plot = the_plot + geom_errorbar(
                 aes(
-                    ymin = x.main - x.eb,
-                    ymax = x.main + x.eb,
+                    ymin = .data$x.main - .data$x.eb,
+                    ymax = .data$x.main + .data$x.eb,
                     width = 0.2
                 ),
                 position = position_dodge(dodge)
             )
         }
     }
-    if (length(fact_names) == 3) {
-        the_plot = the_plot + facet_wrap( ~ .data[[fact_names[3]]], nrow = row_number) +
-            theme(strip.background = element_blank(),
-                  strip.text = element_text(face = 'bold', size = 12))
-    }
     the_plot = the_plot + theme_bw() +
         labs(x = re_n(p_mid, factor_names), y = y_title) +
-        theme(panel.grid.major.x = element_blank()) +
         theme(
+            panel.grid.major.x = element_blank(),
             panel.grid.major.y = element_line(color = "#d5d5d5"),
             panel.grid.minor.y = element_line(color = "#d5d5d5")
         )
+    if (length(fact_names) == 3) {
+        the_plot = the_plot + facet_wrap(~ .data[[fact_names[3]]], nrow = row_number) +
+            theme(strip.background = element_blank(),
+                  strip.text = element_text(face = 'bold', size = 12))
+    }
     if (numerics != FALSE) {
         graphics::plot(the_plot)
         invisible(tots)

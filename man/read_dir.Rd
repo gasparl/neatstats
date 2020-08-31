@@ -55,13 +55,12 @@ Reads data files from any given directory as data frames and
   \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}).
 }
 \note{
-This function is very similar to the
- \code{\link[readbulk:read_bulk]{readbulk::read_bulk}}) function. One
- important difference however is the possibility of pre-filtering by file
- (see \code{filt}). Data files could include significant amount of
- unnecessary data, and filtering prevents these to be merged. Another
- difference is the possibility of file selection based on any regex
- \code{pattern}.
+This function is very similar to the \code{readbulk::read_bulk}
+ function. One important difference however is the possibility of
+ pre-filtering by file (see \code{filt}). Data files could include
+ significant amount of unnecessary data, and filtering prevents these to be
+ merged. Another important difference is the possibility of file selection
+ based on any regex \code{pattern}.
 }
 \examples{
 \donttest{
@@ -85,6 +84,5 @@ merged_df = read_dir(
 
 }
 \seealso{
-\code{\link[plyr:rbind.fill]{plyr:rbind.fill}},
- \code{\link[readbulk:read_bulk]{readbulk::read_bulk}})
+\code{\link[plyr:rbind.fill]{plyr:rbind.fill}}
 }

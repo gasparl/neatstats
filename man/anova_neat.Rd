@@ -89,12 +89,12 @@ is larger than \code{.75} (see Girden, 1992).}
 \code{3}. Set to \code{2} by default (which is generally recommended, see
 e.g. Navarro, 2019, Chapter 16).}
 
-\item{white.adjust}{If not FALSE (default) uses a heteroscedasticity-corrected
-coefficient covariance matrix; the various values of the argument specify
-different corrections (\code{"hc0"}, \code{"hc1"}, \code{"hc2"},
-\code{"hc3"}, or \code{"hc4"}). See the documentation for
-\code{\link[car:hccm]{car::hccm}} for details. If set to \code{TRUE} then
-the \code{"hc3"} correction is selected.}
+\item{white.adjust}{If not \code{FALSE} (default) uses a
+heteroscedasticity-corrected coefficient covariance matrix; the various
+values of the argument specify different corrections (\code{"hc0"},
+\code{"hc1"}, \code{"hc2"}, \code{"hc3"}, or \code{"hc4"}). See the
+documentation for \code{\link[car:hccm]{car::hccm}} for details. If set to
+\code{TRUE} then the \code{"hc3"} correction is selected.}
 
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 
