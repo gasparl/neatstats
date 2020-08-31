@@ -217,6 +217,33 @@ merge_cols = function(dat_aggred, sep) {
     return(dat_aggred)
 }
 
+checkcol = function(df_names, thecols) {
+    cols_notfound = c()
+    for (colname in thecols) {
+        if (!colname %in% df_names) {
+            cols_notfound = c(cols_notfound, colname)
+        }
+    }
+    if (length(cols_notfound) > 0) {
+        if (length(cols_notfound) ==  1) {
+            stop(
+                'The column "',
+                cols_notfound,
+                '" was not found in the data frame. Perhaps check for spelling mistakes.'
+            )
+        } else {
+            stop(
+                'The following columns were not found in the data frame: "',
+                paste(cols_notfound,
+                      collapse = '", "'),
+                '". Perhaps check for spelling mistakes.'
+            )
+        }
+    }
+}
+
+
+
 transp = function(to_transpose, headers) {
     if (headers == TRUE) {
         headers = 'aggr_group'
@@ -383,7 +410,9 @@ val_arg = function(arg_val,
         && (!('data.frame' %in% req_types &&
               is.data.frame(arg_val)))
         && (!('function' %in% req_types &&
-              is.function(arg_val))) &&
+              is.function(arg_val)))
+        && (!('double' %in% req_types &&
+              is.integer(arg_val))) &&
         (!('list' %in% req_types &&
            is.list(arg_val)))) {
         failed = TRUE

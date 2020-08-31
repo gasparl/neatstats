@@ -34,7 +34,7 @@ time.}
 
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 
-\item{plots}{String: \code{"none"} for no plots, \code{"hist"} for histrogramm
+\item{plots}{String: \code{"none"} for no plots, \code{"hist"} for histrogram
 and density, \code{"qq"} for Q-Q plot, and \code{"both"} for both at the
 same time.}
 }
@@ -45,9 +45,10 @@ Prints normality tests, and displays plots (and returns them as
  the specified \code{alpha}, otherwise returns \code{FALSE}.
 }
 \description{
-Performs normality tests and creates related plots (histogramm,
- density, Q-Q). This is primarily a subfunction of \code{\link{t_neat}}, but
- here it is available separately for other potential purposes.
+Performs normality tests and creates related plots (histogram,
+ density, Q-Q). This is primarily a subfunction of \code{\link{t_neat}} and
+ \code{\link{anova_neat}}, but here it is available separately for other
+ potential purposes.
 }
 \note{
 #'Normality tests are all calculated via

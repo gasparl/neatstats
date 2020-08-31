@@ -13,7 +13,7 @@ ro(num, round_to = 2, leading_zero = TRUE)
 point), to round to.}
 
 \item{leading_zero}{Logical, \code{TRUE} by default. If \code{FALSE}, omits
-leadig zero (e.g. returns ".17" instead of "0.17").}
+leading zero (e.g. returns ".17" instead of "0.17").}
 }
 \value{
 Number as string: \code{num} rounded to \code{round_to} digits, with

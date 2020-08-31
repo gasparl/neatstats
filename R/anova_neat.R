@@ -62,12 +62,12 @@
 #'@param type Sum of squares type specified as a number: \code{1}, \code{2}, or
 #'  \code{3}. Set to \code{2} by default (which is generally recommended, see
 #'  e.g. Navarro, 2019, Chapter 16).
-#'@param white.adjust If not FALSE (default) uses a heteroscedasticity-corrected
-#'  coefficient covariance matrix; the various values of the argument specify
-#'  different corrections (\code{"hc0"}, \code{"hc1"}, \code{"hc2"},
-#'  \code{"hc3"}, or \code{"hc4"}). See the documentation for
-#'  \code{\link[car:hccm]{car::hccm}} for details. If set to \code{TRUE} then
-#'  the \code{"hc3"} correction is selected.
+#'@param white.adjust If not \code{FALSE} (default) uses a
+#'  heteroscedasticity-corrected coefficient covariance matrix; the various
+#'  values of the argument specify different corrections (\code{"hc0"},
+#'  \code{"hc1"}, \code{"hc2"}, \code{"hc3"}, or \code{"hc4"}). See the
+#'  documentation for \code{\link[car:hccm]{car::hccm}} for details. If set to
+#'  \code{TRUE} then the \code{"hc3"} correction is selected.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@param plot_means Logical (\code{FALSE} by default). If \code{TRUE}, creates
 #'  plots of means by factor, by passing data and factor information to
@@ -469,7 +469,7 @@ anova_neat = function(data_per_subject,
                 ...
             )
         if (!is.null(means_plot[1])) {
-            plot(means_plot)
+            graphics::plot(means_plot)
         }
     }
     dat_tot = plot_neat(
@@ -477,7 +477,7 @@ anova_neat = function(data_per_subject,
         values,
         within_ids,
         bv_copy,
-        eb_method = sd,
+        eb_method = stats::sd,
         numerics = TRUE
     )
     if (is.null(e_correction)){
@@ -575,9 +575,9 @@ anova_neat = function(data_per_subject,
         between_vars_ez,
         ', within =',
         within_vars_ez,
-        ', type = 2',
+        ', type = ',
         type,
-        ', white.adjust = NULL',
+        ', white.adjust = ',
         white.adjust,
         ', detailed = TRUE, return_aov = TRUE)'
     )

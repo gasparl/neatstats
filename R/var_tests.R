@@ -1,15 +1,23 @@
 #'@title Variance Equality Tests and Plots
 #'
-#'@description Performs variance Brown-Forsythe and Fligner-Killeen equality tests
-#'  (tests of homogeneity of variances) and creates related plots (histogram,
-#'  density, boxplots). This is primarily a subfunction of
+#'@description Performs variance Brown-Forsythe and Fligner-Killeen equality
+#'  tests (tests of homogeneity of variances) and creates related plots
+#'  (histogram, density, boxplots). This is primarily a subfunction of
 #'  \code{\link{anova_neat}}, but here it is available separately for other
 #'  potential purposes.
-#'@param var Numeric vector; numbers of any given variable.
-#'@param group Vector of factors with which to group the \code{var} values.
+#'@param xvar Either a numeric vector (numbers of any given variable), or, if
+#'  \code{dat} is given, a column name specifying the variable in the given data
+#'  frame.
+#'@param group_by Either a vector of factors with which to group the \code{xvar}
+#'  values, or, if \code{dat} is given, one or more column names specifying the
+#'  columns in the given data frame.
+#'@param dat Either \code{NULL} or a data frame from which the respective column
+#'  names should be selected for \code{xvar} and \code{group}.
 #'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogram
 #'  and density, \code{"box"} for box plot, and \code{"both"} for both at the
 #'  same time.
+#'@param sep String (underscore \code{"_"} by default) for separating group
+#'  names, for plot display.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
 #'@return Prints test results, and displays plots (and returns them as
@@ -45,150 +53,72 @@
 #' @seealso \code{\link{anova_neat}}
 #' @examples
 #'
-#' # var_tests( ### )
-#' # should be equal...
+#' # the statistics of the four functions below should match
+#' var_tests(Moore$conformity, Moore$fcategory)
+#' var_tests('conformity', 'fcategory', Moore)
+#' car::leveneTest(conformity ~ fcategory, data = Moore)
+#' stats::fligner.test(conformity ~ fcategory, Moore)
+#'
+#' # again the results below should match each other
+#' var_tests(Moore$conformity,
+#'           interaction(Moore$fcategory, Moore$partner.status))
+#' var_tests('conformity', c('fcategory', 'partner.status'), Moore)
+#' car::leveneTest(conformity ~ fcategory * partner.status, data = Moore)
+#' stats::fligner.test(conformity ~ interaction(fcategory, partner.status), Moore)
 #'
 #' @export
-var_tests = function(var1,
-                      var2 = NULL,
-                      pair = FALSE,
-                      norm_tests = 'all',
-                      alpha = 0.05,
-                      hush = FALSE,
-                      plots = 'none') {
-    validate_args(
-        match.call(),
-        list(
-            val_arg(var1, c('num'), 0),
-            val_arg(var2, c('null', 'num')),
-            val_arg(pair, c('bool'), 1),
-            val_arg(norm_tests, c('char')),
-            val_arg(alpha, c('num'), 1),
-            val_arg(hush, c('bool'), 1),
-            val_arg(plots, c('char'), 1, c('none', 'hist', 'qq', 'both'))
-        )
-    )
-    norm_tests_in(
-        var1 = var1,
-        var2 = var2,
-        pair = pair,
-        norm_tests = norm_tests,
-        alpha = alpha,
-        hush = hush,
-        plots = plots,
-        tneet = FALSE,
-        nonparametric = FALSE
-    )
-}
-norm_tests_in = function(var1,
-                         var2,
-                         pair,
-                         norm_tests,
-                         alpha,
-                         hush,
-                         plots,
-                         tneet,
-                         nonparametric) {
-    norm_tests = tolower(norm_tests)
-    norm_outs = c()
-    norm_ps = c()
-    norm_latent = FALSE
-    if (norm_tests  == 'all') {
-        norm_tests = c("w", "k2", "a2", "jb")
-    } else if (norm_tests  == 'latent')  {
-        norm_tests = c("w", "k2", "a2", "jb")
-        norm_latent = TRUE
-    } else {
-        wrongnorm = norm_tests[!(norm_tests %in% c("w", "k2", "a2", "jb"))]
-        if (length(wrongnorm) > 0) {
-            message(
-                'The following "norm_tests" inputs are not correct: "',
-                paste(wrongnorm, collapse = '", "'),
-                '". Switched to "all".'
-            )
-            norm_tests = c("w", "k2", "a2", "jb")
-        }
+var_tests = function(xvar,
+                     group_by,
+                     dat = NULL,
+                     hush = FALSE,
+                     sep = ', ',
+                     plots = 'none') {
+    if (typeof(dat) == "character") {
+        dat = eval(parse(text = dat))
     }
-    for (norm_abbr in norm_tests) {
-        statcomp_num = as.numeric(c(
-            'w' = 21,
-            'k2' = 6,
-            'a2' = 2,
-            'jb' = 7
-        )[norm_abbr])
-        stat_title = as.character(
-            c(
-                'w' = 'Shapiro-Wilk test: ',
-                'k2' = "D'Agostino-Pearson test: ",
-                'a2' = "Anderson-Darling test: ",
-                'jb' = "Jarque-Bera test: "
-            )[norm_abbr]
-        )
-        if (is.null(var2)) {
-            normres = PoweR::statcompute(statcomp_num, var1)
-            norm_ps = c(norm_ps, normres$pvalue)
-            norm_outs = c(norm_outs,
-                          paste0(
-                              stat_title,
-                              toupper(norm_abbr),
-                              " = ",
-                              ro(normres$statistic, 2),
-                              ", p = ",
-                              ro(normres$pvalue, 3)
-                          ))
-        } else if (pair == TRUE) {
-            diff = var1 - var2
-            normres = PoweR::statcompute(statcomp_num, diff)
-            norm_ps = c(norm_ps, normres$pvalue)
-            norm_outs = c(norm_outs,
-                          paste0(
-                              stat_title,
-                              toupper(norm_abbr),
-                              " = ",
-                              ro(normres$statistic, 2),
-                              ", p = ",
-                              ro(normres$pvalue, 3)
-                          ))
-        } else {
-            normres1 = PoweR::statcompute(statcomp_num, var1)
-            normres2 = PoweR::statcompute(statcomp_num, var2)
-            norm_ps = c(norm_ps, normres1$pvalue, normres2$pvalue)
-            norm_outs = c(
-                norm_outs,
-                paste0(
-                    stat_title,
-                    toupper(norm_abbr),
-                    " = ",
-                    ro(normres1$statistic, 2),
-                    ", p = ",
-                    ro(normres1$pvalue, 3),
-                    ' (1st var.); ',
-                    toupper(norm_abbr),
-                    " = ",
-                    ro(normres2$statistic, 2),
-                    ", p = ",
-                    ro(normres2$pvalue, 3),
-                    ' (2nd var.)'
+    validate_args(match.call(),
+                  list(val_arg(xvar, c('num', 'char')),
+                       val_arg(dat, c('null', 'df'), 1),
+                       val_arg(
+                           plots, c('char'), 1, c('none', 'hist', 'qq', 'both')
+                       )))
+    if (!is.null(dat)) {
+        if (typeof(xvar) == 'character') {
+            checkcol(names(dat), xvar)
+            xvar = dat[[xvar]]
+        }
+        if (typeof(group_by) == 'character') {
+            group_by = eval(parse(
+                text = paste(
+                    'with(data = dat, paste(',
+                    paste(group_by, collapse = ','),
+                    ", sep = '",
+                    sep,
+                    "'))"
                 )
-            )
+            ))
         }
     }
-    if (tneet == TRUE) {
-        if (norm_latent == FALSE |
-            (any(norm_ps[!is.na(norm_ps)] < alpha) &
-             nonparametric == FALSE)) {
-            prnt("--- Normality ---")
-            prnt(paste(norm_outs, collapse = '\n'))
-            prnt("--- t-test ---")
-        }
-    } else {
-        if (hush == FALSE) {
-            prnt(paste(norm_outs, collapse = '\n'))
-        }
-        if (any(norm_ps[!is.na(norm_ps)] < alpha)) {
-            invisible(TRUE)
-        } else {
-            invisible(FALSE)
-        }
-    }
+    group_by = as.factor(as.character(group_by))
+    lev_med = car::leveneTest(y = xvar, group = group_by)
+    fk_med = stats::fligner.test(x = xvar, g = group_by)
+    prnt(
+        "Brown-Forsythe: F(",
+        lev_med$Df[1],
+        ",",
+        lev_med$Df[2],
+        ")",
+        " = ",
+        ro(lev_med$`F value`[1], 2),
+        ", p = ",
+        ro(lev_med$`Pr(>F)`[1], 3),
+        "; Fligner-Killeen: X2(",
+        fk_med$parameter,
+        ")",
+        " = ",
+        ro(fk_med$statistic, 3),
+        ", p = ",
+        ro(fk_med$p.value, 3),
+        '.'
+    )
 }

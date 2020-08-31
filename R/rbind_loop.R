@@ -15,7 +15,7 @@
 #'   will be transposed using first column as column names and second column as
 #'   corresponding values. See Details, Examples.
 #' @param hush Logical. If \code{TRUE} (default), prints message when the data
-#'   frame for merging is initated.
+#'   frame for merging is initiated.
 #' @param nameless Logical. If \code{FALSE} (default), unnamed vectors or list
 #'   elements are not allowed. If set to \code{TRUE}, unnamed elements will be
 #'   named automatically (e.g. \code{X.value.}).

@@ -60,7 +60,7 @@ This function is very similar to the
  important difference however is the possibility of pre-filtering by file
  (see \code{filt}). Data files could include significant amount of
  unnecessary data, and filtering prevents these to be merged. Another
- difference is the possiblity of file selection based on any regex
+ difference is the possibility of file selection based on any regex
  \code{pattern}.
 }
 \examples{

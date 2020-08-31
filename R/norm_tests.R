@@ -17,6 +17,9 @@
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. The option
 #'  \code{"all"} (default value) selects all four previous tests at the same
 #'  time.
+#'@param alpha Numeric (\code{.05} by default), alpha level: if any p value if
+#'  below this alpha level, the funtion returns \code{TRUE}, otherwise
+#'  \code{FALSE}.
 #'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogram
 #'  and density, \code{"qq"} for Q-Q plot, and \code{"both"} for both at the
 #'  same time.

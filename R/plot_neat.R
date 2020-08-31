@@ -357,10 +357,10 @@ plot_neat = function(data_per_subject,
             val_arg(hush, c('bool'), 1)
         )
     )
-    str_meth = tail(strsplit(paste(deparse(substitute(
+    str_meth = utils::tail(strsplit(paste(deparse(substitute(
         method
     )), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
-    str_ebmeth = tail(strsplit(paste(deparse(
+    str_ebmeth = utils::tail(strsplit(paste(deparse(
         substitute(eb_method)
     ), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
 
@@ -630,7 +630,7 @@ plot_neat = function(data_per_subject,
             panel.grid.minor.y = element_line(color = "#d5d5d5")
         )
     if (numerics != FALSE) {
-        plot(the_plot)
+        graphics::plot(the_plot)
         invisible(tots)
     } else {
         return(the_plot)

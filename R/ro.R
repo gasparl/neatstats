@@ -6,7 +6,7 @@
 #' @param round_to Number of fractional digits (i.e., digits after the decimal
 #'   point), to round to.
 #' @param leading_zero Logical, \code{TRUE} by default. If \code{FALSE}, omits
-#'   leadig zero (e.g. returns ".17" instead of "0.17").
+#'   leading zero (e.g. returns ".17" instead of "0.17").
 #' @return Number as string: \code{num} rounded to \code{round_to} digits, with
 #'   trailing zeros when applicable.
 #' @examples

@@ -10,7 +10,7 @@
 #'   input vector (in item pairs, see Examples). If \code{FALSE}, returns the
 #'   original input.
 #' @return Vector with numbers added (if so set).
-#' @seealso \code{\link{rbind_neat}}
+#' @seealso \code{\link{rbind_loop}}
 #' @examples
 #'
 #' my_vector = c('aa', 'bb', 'cxyz', 'last')

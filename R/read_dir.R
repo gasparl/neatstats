@@ -31,16 +31,14 @@
 #'  use column names alone; see Examples.)
 #'@param hush Logical. If \code{FALSE} (default), prints lists all data file
 #'  names as they are being read (along with related warnings).
-#'@note This function is very similar to the
-#'  \code{\link[readbulk:read_bulk]{readbulk::read_bulk}}) function. One
-#'  important difference however is the possibility of pre-filtering by file
-#'  (see \code{filt}). Data files could include significant amount of
-#'  unnecessary data, and filtering prevents these to be merged. Another
-#'  difference is the possiblity of file selection based on any regex
-#'  \code{pattern}.
+#'@note This function is very similar to the \code{readbulk::read_bulk}
+#'  function. One important difference however is the possibility of
+#'  pre-filtering by file (see \code{filt}). Data files could include
+#'  significant amount of unnecessary data, and filtering prevents these to be
+#'  merged. Another important difference is the possibility of file selection
+#'  based on any regex \code{pattern}.
 #'
-#'@seealso \code{\link[plyr:rbind.fill]{plyr:rbind.fill}},
-#'  \code{\link[readbulk:read_bulk]{readbulk::read_bulk}})
+#'@seealso \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}
 #' @examples
 #'\donttest{
 #'
