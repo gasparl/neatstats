@@ -26,7 +26,7 @@ ro = function(num,
     } else {
         value = as.numeric(as.character(num))
     }
-    formtd = format(round(value, round_to), nsmall = round_to)
+    formtd = gsub(" ", "", format(round(value, round_to), nsmall = round_to))
     if (leading_zero == FALSE) {
         formtd = sub("0.", ".", formtd, fixed = TRUE)
     }

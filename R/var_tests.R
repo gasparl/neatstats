@@ -91,7 +91,7 @@ var_tests = function(xvar,
         }
         if (typeof(group_by) == 'character') {
             group_by = eval(parse(
-                text = paste(
+                text = paste0(
                     'with(data = dat, paste(',
                     paste(group_by, collapse = ','),
                     ", sep = '",
@@ -102,6 +102,14 @@ var_tests = function(xvar,
         }
     }
     group_by = as.factor(as.character(group_by))
+    df_mes = data.frame(xvar = xvar, group_by = group_by)
+    df_sds = aggr_neat(df_mes,
+                       'xvar',
+                       group_by = 'group_by',
+                       method = sd)
+    sds_zip = paste(paste(df_sds$aggr_group,
+                          ro(df_sds$aggr_value, 2),
+                          sep = ': SD = '), collapse = '; ')
     lev_med = car::leveneTest(y = xvar, group = group_by)
     fk_med = stats::fligner.test(x = xvar, g = group_by)
     prnt(
@@ -121,6 +129,6 @@ var_tests = function(xvar,
         ro(fk_med$statistic, 3),
         ", p = ",
         ro(fk_med$p.value, 3),
-        '.'
+        ' (', sds_zip, ').'
     )
 }

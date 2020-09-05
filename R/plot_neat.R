@@ -315,8 +315,8 @@
 #'}
 #' @export
 
-plot_neat = function(data_per_subject,
-                     values,
+plot_neat = function(data_per_subject = NULL,
+                     values = NULL,
                      within_ids = NULL,
                      between_vars = NULL,
                      factor_names = NULL,
@@ -635,4 +635,137 @@ plot_neat = function(data_per_subject,
     } else {
         return(the_plot)
     }
+}
+
+neat_plt2 = function(values,
+                     binwidth = NULL,
+                     parts = c('h', 'b', 'n')) {
+    # parts = c('h', 'd', 'b', 'n')
+    plot_data = data.frame(values = values)
+    if (is.null(binwidth)) {
+        max_binwidth = (max(values) - min(values)) / 5
+        my_binwidth = 2 * IQR(values) / (length(values) ^ (1 / 3)) # Freedman–Diaconis rule
+        if (max_binwidth < my_binwidth) {
+            my_binwidth = max_binwidth
+        }
+    } else {
+        my_binwidth = binwidth
+    }
+    the_plot = ggplot(plot_data, aes(x = values))
+    if ('h' %in% parts) {
+        the_plot = the_plot +  geom_histogram(
+            aes(y = ..count..),
+            alpha = 0.5,
+            binwidth = my_binwidth,
+            color = 'black',
+            fill = '#aeaec4'
+        )
+        if ('d' %in% parts) {
+            the_plot = the_plot +
+                geom_density(
+                    aes(y = ..count.. * my_binwidth),
+                    color = '#660000',
+                    alpha = 0.1,
+                    fill = 'red'
+                )
+        }
+
+        if ('n' %in% parts) {
+            the_plot = the_plot +
+                stat_function(
+                    fun = function(x)
+                        dnorm(
+                            x,
+                            mean = mean(values),
+                            sd = sd(values)
+                        ) * length(values) * my_binwidth,
+                    color = "red",
+                    linetype = "dotted"
+                )
+        }
+    } else {
+        if ('d' %in% parts) {
+            the_plot = the_plot +
+                geom_density(color = '#660000',
+                             alpha = 0.1,
+                             fill = 'red')
+        }
+
+        if ('n' %in% parts) {
+            the_plot = the_plot +
+                stat_function(
+                    fun = function(x)
+                        dnorm(
+                            x,
+                            mean = mean(values),
+                            sd = sd(values)
+                        ),
+                    color = "red",
+                    linetype = "dotted"
+                )
+        }
+    }
+    if ('b' %in% parts) {
+        xrange = ggplot_build(the_plot)$layout$panel_params[[1]]$y.range
+        hght = xrange[2] - xrange[1]
+        box_y = -hght / 20
+        box_w = -box_y / 2.2
+        p_box <-
+            ggplot(plot_data, aes(y = values)) + geom_boxplot()
+        p_box_dat = layer_data(p_box)
+        the_plot = the_plot +
+            # manually plot flipped boxplot
+            geom_segment(data = p_box_dat, aes(
+                x = ymin,
+                xend = ymax,
+                y = box_y,
+                yend = box_y
+            )) +
+            geom_rect(
+                data = p_box_dat,
+                aes(
+                    x = NULL,
+                    xmin = .data$lower,
+                    xmax = .data$upper,
+                    ymin = box_y - box_w,
+                    ymax = box_y + box_w
+                ),
+                color = "black",
+                fill = '#93a78e'
+            )  +
+            # vertical lines at Q1 / Q2 / Q3
+            geom_segment(data = p_box_dat,
+                         aes(
+                             x = .data$ymin ,
+                             y = box_y + box_w,
+                             yend = box_y - box_w,
+                             xend = .data$ymin
+                         )) +
+            geom_segment(
+                data = p_box_dat,
+                aes(
+                    x = .data$middle ,
+                    y = box_y + box_w,
+                    yend = box_y - box_w,
+                    xend = .data$middle
+                ),
+                size = 0.8
+            ) +
+            geom_segment(data = p_box_dat,
+                         aes(
+                             x = .data$ymax,
+                             y = box_y + box_w,
+                             yend = box_y - box_w,
+                             xend = .data$ymax
+                         ))
+        if (length(p_box_dat$outliers[[1]]) > 0) {
+            the_plot = the_plot + geom_point(
+                data = data.frame(x1 = p_box_dat$outliers[[1]]),
+                aes(x = .data$x1, y = box_y),
+                shape = 4
+            )
+
+        }
+    }
+    return(the_plot + theme_bw())
 }
