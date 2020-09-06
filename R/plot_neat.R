@@ -1,14 +1,22 @@
-#'@title Plots of Means
+#'@title Plots of Means and of Dispersion
 #'
-#'@description Line and bar \code{\link[ggplot2:ggplot]{plots}} for factorial
-#'  designs.
-#'
-#'@param data_per_subject Data frame. Should contain all values
-#'  (measurements/observations) in a single row per each subject.
-#'@param values Vector of strings; column name(s) in the \code{data_per_subject}
-#'  data frame. Each column should contain a single dependent variable: thus, to
-#'  plot repeated (within-subject) measurements, each specified column should
-#'  contain one measurement.
+#'@description Primarily for line and bar \code{\link[ggplot2:ggplot]{plots}}
+#'  for factorial designs. Otherwise (if no \code{data_per_subject} is given)
+#'  descriptive dispersion plots (histogram, density, or box plots) for a
+#'  continous variable. (For the latter, only the parameters \code{values},
+#'  \code{parts}, \code{part_colors}, and \code{binwidth} are used, the rest are
+#'  ignored.)
+#'@param data_per_subject Data frame containing all values
+#'  (measurements/observations for a factorial design) in a single row per each
+#'  subject. Otherwise, if no data frame is given (default: \code{NULL}),
+#'  histogram, density, or box plots will be returned for a continous variable
+#'  (numeric vector).
+#'@param values For plots of means (factorial designs): vector of strings;
+#'  column name(s) in the \code{data_per_subject} data frame. Each column should
+#'  contain a single dependent variable: thus, to plot repeated (within-subject)
+#'  measurements, each specified column should contain one measurement. For
+#'  descriptive dispersion plots (if \code{data_per_subject} is \code{NULL}), a
+#'  numeric vector is expected.
 #'@param within_ids \code{NULL} (default), string, or named list. In case of no
 #'  within-subject factors, leave as \code{NULL}. In case of a single within
 #'  subject factor, a single string may be given to optionally provide custom
@@ -88,19 +96,36 @@
 #'  \code{"both"}), returns the numeric aggregated data and at the same time
 #'  \code{\link[graphics:plot]{draws}} the plot.
 #'@param hush Logical. If \code{TRUE}, prevents printing aggregated values.
+#'@param parts For dispersion plots only (if no \code{data_per_subject} is
+#'  given). A vector of characters that specify which types of overlayed types
+#'  to plot: \code{"h"} for histogram, \code{"d"} for density, \code{"n"}
+#'  normally distribution density (using the mean and standard deviation of the
+#'  given variable), \code{"b"} for boxplot. (All are included by default:
+#'  \code{parts = c("h", "d", "n", "b")}).
+#'@param part_colors For dispersion plots only (if no \code{data_per_subject} is
+#'  given). A named that can specify and thereby override default colors and
+#'  alpha (transparency) of each plot type. Colors can be given by adding "c" to
+#'  the plot type letter, e.g. \code{c(hc = "blue")} for blue histogram. Alpha
+#'  can be given by adding "a" to the plot type letter, e.g. \code{c(ha = 0)}
+#'  for completely transparent histogram. Any number may be given: e.g. a dark
+#'  red transparent histogram with green boxplot would be \code{part_colors =
+#'  c(hc = "#cc0000", ha = 0.1, bc = "green")}.
+#'@param binwidth For dispersion plots only (if no \code{data_per_subject} is
+#'  given). Binwidth for histograms. If \code{NULL} (default), either
+#'  Freedman–Diaconis rule is used if it produces at least 10 bins – otherwise
+#'  1bandwidth is calculated for 10 bins.
 #'
 #'@return By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object
 #'  may be further modified or adjusted via regular
 #'  \code{\link[ggplot2]{ggplot}} methods.) If so set (\code{numerics}),
 #'  aggregated values as specified by the methods.
 #'
-#' @note The number of factors (within and between together) must be either two
-#'   or three. Plot for a single factor would make little sense, while more than
-#'   three is difficult to clearly depict in a simple plot. (In the latter case,
-#'   you probably want to build an appropriate graph using
-#'   \code{\link[ggplot2]{ggplot}} directly; but you can also just divide the
-#'   data to produce several three-factor plots, after which you can use e.g.
-#'   \code{ggpubr}'s \code{ggarrange} to easily collate the plots.)
+#' @note More than three factors is not allowied: it would make little sense and
+#'   it would be difficult to clearly depict in a simple figure. (However, you
+#'   can build an appropriate graph using \code{\link[ggplot2]{ggplot}}
+#'   directly; but you can also just divide the data to produce several
+#'   three-factor plots, after which you can use e.g. \code{ggpubr}'s
+#'   \code{ggarrange} to easily collate the plots.)
 #'
 #' @seealso \code{\link{anova_neat}}, \code{\link{mean_ci}}, \code{\link{se}}
 #' @examples
@@ -333,6 +358,14 @@ plot_neat = function(data_per_subject = NULL,
                      eb_method = neatStats::mean_ci,
                      numerics = FALSE,
                      hush = FALSE) {
+    if (is.null(data_per_subject)) {
+        return(neat_plt2(
+            values,
+            parts = c('h', 'b', 'n'),
+            part_colors = NULL,
+            binwidth = NULL
+        ))
+    }
     data_wide = data_per_subject
     validate_args(
         match.call(),
@@ -637,15 +670,44 @@ plot_neat = function(data_per_subject = NULL,
     }
 }
 
+
 neat_plt2 = function(values,
                      binwidth = NULL,
-                     parts = c('h', 'b', 'n')) {
-    # parts = c('h', 'd', 'b', 'n')
+                     parts = c('h', 'b', 'n'),
+                     part_colors = NULL) {
+    clrs = c(
+        hc = '#aeaec4',
+        ha = 0.5,
+        dc = '#660000',
+        da = 0.1,
+        nc = '#FF0000',
+        na = 1,
+        bc = '#93a78e',
+        ba = 1
+    )
+    # c('hc', 'ha', 'dc', 'da', 'nc', 'na', 'bc', 'ba')
+    validate_args(match.call(),
+                  list(
+                      val_arg(values, c('num'), 1),
+                      val_arg(parts, c('char'), 1, c('h', 'd', 'b', 'n')),
+                      val_arg(names(part_colors),
+                              c('char'),
+                              1,
+                              names(clrs)),
+                      val_arg(binwidth, c('null', 'num')),
+                  ))
+    if (!is.null(part_colors)) {
+        for (nm in names(part_colors)) {
+            clrs[nm] = part_colors[nm]
+        }
+    }
     plot_data = data.frame(values = values)
     if (is.null(binwidth)) {
-        max_binwidth = (max(values) - min(values)) / 5
-        my_binwidth = 2 * IQR(values) / (length(values) ^ (1 / 3)) # Freedman–Diaconis rule
+        max_binwidth = (max(values) - min(values)) / 10
+        my_binwidth = 2 * IQR(values) / (length(values) ^ (1 / 3))
         if (max_binwidth < my_binwidth) {
+            print(max_binwidth)
+            print(my_binwidth)
             my_binwidth = max_binwidth
         }
     } else {
@@ -655,18 +717,18 @@ neat_plt2 = function(values,
     if ('h' %in% parts) {
         the_plot = the_plot +  geom_histogram(
             aes(y = ..count..),
-            alpha = 0.5,
+            alpha = as.numeric(clrs['ha']),
             binwidth = my_binwidth,
             color = 'black',
-            fill = '#aeaec4'
+            fill = clrs['hc']
         )
         if ('d' %in% parts) {
             the_plot = the_plot +
                 geom_density(
                     aes(y = ..count.. * my_binwidth),
-                    color = '#660000',
-                    alpha = 0.1,
-                    fill = 'red'
+                    color = clrs['dc'],
+                    alpha = as.numeric(clrs['da']),
+                    fill = clrs['dc']
                 )
         }
 
@@ -679,16 +741,19 @@ neat_plt2 = function(values,
                             mean = mean(values),
                             sd = sd(values)
                         ) * length(values) * my_binwidth,
-                    color = "red",
+                    color = clrs['nc'],
+                    alpha = as.numeric(clrs['na']),
                     linetype = "dotted"
                 )
         }
     } else {
         if ('d' %in% parts) {
             the_plot = the_plot +
-                geom_density(color = '#660000',
-                             alpha = 0.1,
-                             fill = 'red')
+                geom_density(
+                    color = clrs['dc'],
+                    alpha = as.numeric(clrs['da']),
+                    fill = clrs['dc']
+                )
         }
 
         if ('n' %in% parts) {
@@ -700,7 +765,8 @@ neat_plt2 = function(values,
                             mean = mean(values),
                             sd = sd(values)
                         ),
-                    color = "red",
+                    color = clrs['nc'],
+                    alpha = as.numeric(clrs['na']),
                     linetype = "dotted"
                 )
         }
@@ -731,7 +797,8 @@ neat_plt2 = function(values,
                     ymax = box_y + box_w
                 ),
                 color = "black",
-                fill = '#93a78e'
+                fill = clrs['bc'],
+                alpha = as.numeric(clrs['ba'])
             )  +
             # vertical lines at Q1 / Q2 / Q3
             geom_segment(data = p_box_dat,
