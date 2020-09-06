@@ -30,6 +30,10 @@
 #'  a p value below .05). Each normality test is performed for the difference
 #'  values between the two variables in case of paired samples, or for each of
 #'  the two variables for unpaired samples.
+#'@param norm_plots If \code{TRUE} and \code{norm_tests} is also \code{TRUE},
+#'  displays density, histogram, and Q-Q plots (and scatter plots for paired
+#'  tests) for each of the two variable (and differences for pairwise
+#'  observations, in case of paired samples).
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
@@ -59,12 +63,18 @@
 #'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
 #'  confused with one-sided tests; see Details.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
-#'@param plot_densities Logical. If \code{TRUE}, creates a density plot (i.e.,
-#'  \code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
-#'  variables. When \code{auc_added} is \code{TRUE} (and the AUC is at least
-#'  .5), the best threshold value for classification (maximal differentiation
-#'  accuracy) is added to the plot as vertical line. (In case of multiple best
-#'  thresholds with identical overall accuracy, all are added.)
+#'@param plots Logical (or \code{NULL}). If \code{TRUE}, creates a combined
+#'  density plot (i.e., \code{\link[stats:density]{Gaussian kernel density
+#'  estimates}}) from the two variables. When \code{auc_added} is \code{TRUE}
+#'  (and the AUC is at least .5), the best threshold value for classification
+#'  (maximal differentiation accuracy) is added to the plot as vertical line.
+#'  (In case of multiple best thresholds with identical overall accuracy, all
+#'  are added.) If \code{NULL}, same as if \code{TRUE} except that histogram is
+#'  added to the background.
+#'@param rug_size Numeric (\code{4} by default): size of the rug ticks below the
+#'  density plot. Set to \code{0} (zero) to omit rug plotting.
+#'@param aspect_ratio Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
+#'  default. (Set to \code{NULL} for dynamic aspect ratio.)
 #'@param y_label String or \code{NULL}; the label for the \code{y} axis.
 #'  (Default: \code{"density estimate"}.)
 #'@param x_label String or \code{NULL}; the label for the \code{x} axis.
@@ -124,9 +134,9 @@
 #'  object, to be used e.g. with the \code{\link{roc_neat}} function. The other
 #'  is '\code{best_thresholds}', which contains the best threshold value(s) for
 #'  classification, along with corresponding specificity and sensitivity.
-#'  Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
-#'  well as returned as a \code{\link[ggplot2]{ggplot}} object, named
-#'  \code{density_plot}.
+#'  Finally, if \code{plots} is \code{TRUE} (or \code{NULL}), the plot is
+#'  displayed as well as returned as a \code{\link[ggplot2]{ggplot}} object,
+#'  named \code{t_plot}.
 #'
 #'@note
 #'
@@ -218,6 +228,7 @@ t_neat = function(var1,
                   nonparametric = FALSE,
                   greater = NULL,
                   norm_tests = 'latent',
+                  norm_plots = FALSE,
                   ci = NULL,
                   bf_added = FALSE,
                   bf_rscale = sqrt(0.5),
@@ -230,7 +241,9 @@ t_neat = function(var1,
                   round_auc = 3,
                   auc_greater = '1',
                   hush = FALSE,
-                  plot_densities = FALSE,
+                  plots = FALSE,
+                  rug_size = 4,
+                  aspect_ratio = 1,
                   y_label = "density estimate",
                   x_label = "\nvalues",
                   factor_name = NULL,
@@ -245,6 +258,7 @@ t_neat = function(var1,
             val_arg(nonparametric, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
             val_arg(norm_tests, c('char')),
+            val_arg(norm_plots, c('bool'), 1),
             val_arg(ci, c('null', 'num'), 1),
             val_arg(bf_added, c('bool'), 1),
             val_arg(bf_rscale, c('num'), 1),
@@ -257,7 +271,9 @@ t_neat = function(var1,
             val_arg(round_auc, c('num'), 1),
             val_arg(auc_greater, c('char'), 1, c('1', '2')),
             val_arg(hush, c('bool'), 1),
-            val_arg(plot_densities, c('bool'), 1),
+            val_arg(plots, c('bool', 'null'), 1),
+            val_arg(rug_size, c('num'), 1),
+            val_arg(aspect_ratio, c('num', 'null'), 1),
             val_arg(y_label, c('null', 'char'), 1),
             val_arg(x_label, c('null', 'char'), 1),
             val_arg(factor_name, c('null', 'char'), 1),
@@ -300,9 +316,10 @@ t_neat = function(var1,
             norm_tests = norm_tests,
             alpha = 0.05,
             hush = FALSE,
-            plots = 'none',
+            plots = norm_plots,
             tneet = TRUE,
-            nonparametric = nonparametric
+            nonparametric = nonparametric,
+            aspect_ratio = 1
         )
     }
     descr_1 = paste0(ro(mean(var1), round_descr),
@@ -610,7 +627,7 @@ t_neat = function(var1,
         best_coords = NULL
         plot_thres = NULL
     }
-    if (plot_densities == TRUE) {
+    if (plots != FALSE) {
         the_plot = plot_dens(
             v1 = var1,
             v2 = var2,
@@ -619,7 +636,10 @@ t_neat = function(var1,
             thres = plot_thres,
             factor_name = factor_name,
             var_names = var_names,
-            reverse = reverse
+            reverse = reverse,
+            hist = plots,
+            rug_size = rug_size,
+            aspect_ratio = aspect_ratio
         )
         graphics::plot(the_plot)
     } else {
@@ -637,7 +657,7 @@ t_neat = function(var1,
         ),
         roc_obj = the_roc,
         best_thresholds = best_coords,
-        density_plot = the_plot
+        t_plot = the_plot
     ))
 }
 
@@ -650,27 +670,31 @@ plot_dens = function(v1,
                      thres,
                      factor_name,
                      var_names,
-                     reverse) {
+                     reverse,
+                     hist,
+                     rug_size,
+                     aspect_ratio) {
     dens_dat = data.frame(vals = c(v1, v2),
                           facts = c(rep(var_names[1], length(v1)),
                                     rep(var_names[2], length(v2))))
     if (reverse == TRUE) {
         dens_dat$facts =  factor(dens_dat$facts, levels = c(var_names[2], var_names[1]))
-        start_color = 0.8
-        end_color = 0.2
+        colrs = c('#006600', '#b3b3ff')
     } else {
-        dens_dat$facts =  factor(dens_dat$facts, levels = var_names)
-        start_color = 0.2
-        end_color = 0.8
+        colrs = c('#b3b3ff', '#006600')
     }
-    the_plot = ggplot(data = dens_dat, aes(x = dens_dat$vals,
+    if (is.null(hist)) {
+
+    } else {
+
+        myplot = ggplot(dens_dat, aes(x = .data$vals, fill = .data$facts, color = .data$facts)) +
+            geom_density(aes(y = .data$..count.. / sum(..count..)), alpha = 0.4)
+    }
+
+
+    the_plot = ggplot(data = dens_dat, aes(x = .data$vals,
                                            fill = dens_dat$facts)) + geom_density(alpha = 0.4, trim = FALSE) +
-        theme_classic() +
-        theme(text = element_text(family = "serif", size = 17),
-              panel.border = element_rect(fill = NA)) +
-        scale_fill_grey(name = factor_name,
-                        start = start_color,
-                        end = end_color) +
+
         geom_vline(
             xintercept = c(mean(v1), mean(v2)),
             color = "#777777",
@@ -687,5 +711,14 @@ plot_dens = function(v1,
                 size = 0.5
             )
     }
-    return(the_plot)
+
+    return(
+        the_plot + theme(
+            aspect.ratio = aspect_ratio,
+            text = element_text(family = "serif", size = 17)
+        ) + theme_bw() +
+            scale_fill_manual(values = c('#006600', '#b3b3ff'),
+                              name = factor_name) +
+            scale_color_manual(values = c('#006600', '#b3b3ff'))
+    )
 }

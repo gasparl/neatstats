@@ -106,7 +106,7 @@ var_tests = function(xvar,
     df_sds = aggr_neat(df_mes,
                        'xvar',
                        group_by = 'group_by',
-                       method = sd)
+                       method = stats::sd)
     sds_zip = paste(paste(df_sds$aggr_group,
                           ro(df_sds$aggr_value, 2),
                           sep = ': SD = '), collapse = '; ')

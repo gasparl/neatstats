@@ -10,8 +10,9 @@ norm_tests(
   pair = FALSE,
   norm_tests = "all",
   alpha = 0.05,
-  hush = FALSE,
-  plots = "none"
+  plots = FALSE,
+  aspect_ratio = 1,
+  hush = FALSE
 )
 }
 \arguments{
@@ -36,17 +37,20 @@ time.}
 below this alpha level, the funtion returns \code{TRUE}, otherwise
 \code{FALSE}.}
 
-\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
+\item{plots}{Logical: if \code{TRUE} adds histrogram, density, and Q-Q plots.
+(Note: in case of paired samples, Q-Q plots are plotted on a separate
+figure. In RStudio, press on "Previous plot" under "Plots" to see these Q-Q
+plots.)}
 
-\item{plots}{String: \code{"none"} for no plots, \code{"hist"} for histrogram
-and density, \code{"qq"} for Q-Q plot, and \code{"both"} for both at the
-same time.}
+\item{aspect_ratio}{Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
+default. (Set to \code{NULL} for dynamic aspect ratio.)}
+
+\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 }
 \value{
-Prints normality tests, and displays plots (and returns them as
- \code{\link[ggplot2]{ggplot}} object), if so specified. If no plots are
- created, returns \code{TRUE} if any of the specified tests has p value below
- the specified \code{alpha}, otherwise returns \code{FALSE}.
+Prints normality tests, and displays plots if so specified. Returns
+ \code{TRUE} if any of the specified tests has p value below the specified
+ \code{alpha}, otherwise returns \code{FALSE}.
 }
 \description{
 Performs normality tests and creates related plots (histogram,

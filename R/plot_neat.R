@@ -338,8 +338,25 @@
 #'     between_vars = 'group_id'
 #' )
 #'}
+#'
+#'## DISPERSION PLOTS
+#'
+#'plot_neat(values = rnorm(100))
+#'
+#'# with smaller binwidth (hence more bins)
+#'plot_neat(values = rnorm(100), binwidth = 0.2)
+#'
+#'# without normal distribution line
+#'plot_neat(values = rnorm(100), parts = c('h', 'd', 'b'))
+#'
+#'# without histrogram
+#'plot_neat(values = rnorm(100), parts = c('d', 'n', 'b'))
+#'
+#'# blue density, fully opaque histogram
+#'plot_neat(values = rnorm(100),
+#'          part_colors = c(dc = 'blue', ha = 1))
+#'
 #' @export
-
 plot_neat = function(data_per_subject = NULL,
                      values = NULL,
                      within_ids = NULL,
@@ -357,13 +374,16 @@ plot_neat = function(data_per_subject = NULL,
                      method = mean,
                      eb_method = neatStats::mean_ci,
                      numerics = FALSE,
-                     hush = FALSE) {
+                     hush = FALSE,
+                     parts = c('h', 'd', 'n', 'b'),
+                     part_colors = NULL,
+                     binwidth = NULL) {
     if (is.null(data_per_subject)) {
-        return(neat_plt2(
-            values,
-            parts = c('h', 'b', 'n'),
-            part_colors = NULL,
-            binwidth = NULL
+        return(neat_plot2(
+            values = values,
+            parts = parts,
+            part_colors = part_colors,
+            binwidth = binwidth
         ))
     }
     data_wide = data_per_subject
@@ -671,10 +691,18 @@ plot_neat = function(data_per_subject = NULL,
 }
 
 
-neat_plt2 = function(values,
+neat_plot2 = function(values,
                      binwidth = NULL,
                      parts = c('h', 'b', 'n'),
                      part_colors = NULL) {
+    # c('hc', 'ha', 'dc', 'da', 'nc', 'na', 'bc', 'ba')
+    validate_args(match.call(),
+                  list(
+                      val_arg(values, c('num'), 0),
+                      val_arg(parts, c('char')),
+                      val_arg(part_colors, c('null', 'num', 'char')),
+                      val_arg(binwidth, c('null', 'num'))
+                  ))
     clrs = c(
         hc = '#aeaec4',
         ha = 0.5,
@@ -683,19 +711,25 @@ neat_plt2 = function(values,
         nc = '#FF0000',
         na = 1,
         bc = '#93a78e',
-        ba = 1
+        ba = 1,
+        hlc = 'black'
     )
-    # c('hc', 'ha', 'dc', 'da', 'nc', 'na', 'bc', 'ba')
-    validate_args(match.call(),
-                  list(
-                      val_arg(values, c('num'), 1),
-                      val_arg(parts, c('char'), 1, c('h', 'd', 'b', 'n')),
-                      val_arg(names(part_colors),
-                              c('char'),
-                              1,
-                              names(clrs)),
-                      val_arg(binwidth, c('null', 'num')),
-                  ))
+    wrongparts = parts[!(parts %in% c('h', 'd', 'b', 'n'))]
+    if (length(wrongparts) > 0) {
+        message(
+            'The following "parts" inputs are not correct: "',
+            paste(wrongparts, collapse = '", "'),
+            '". See ?plot_neat.'
+        )
+    }
+    wrongpartclrs = names(part_colors)[!(names(part_colors) %in% names(clrs))]
+    if (length(wrongpartclrs) > 0) {
+        message(
+            'The following "part_colors" inputs are not correct: "',
+            paste(wrongpartclrs, collapse = '", "'),
+            '". See ?plot_neat.'
+        )
+    }
     if (!is.null(part_colors)) {
         for (nm in names(part_colors)) {
             clrs[nm] = part_colors[nm]
@@ -704,10 +738,8 @@ neat_plt2 = function(values,
     plot_data = data.frame(values = values)
     if (is.null(binwidth)) {
         max_binwidth = (max(values) - min(values)) / 10
-        my_binwidth = 2 * IQR(values) / (length(values) ^ (1 / 3))
+        my_binwidth = 2 * stats::IQR(values) / (length(values) ^ (1 / 3))
         if (max_binwidth < my_binwidth) {
-            print(max_binwidth)
-            print(my_binwidth)
             my_binwidth = max_binwidth
         }
     } else {
@@ -716,16 +748,16 @@ neat_plt2 = function(values,
     the_plot = ggplot(plot_data, aes(x = values))
     if ('h' %in% parts) {
         the_plot = the_plot +  geom_histogram(
-            aes(y = ..count..),
+            aes(y = .data$..count..),
             alpha = as.numeric(clrs['ha']),
             binwidth = my_binwidth,
-            color = 'black',
+            color = clrs['hlc'],
             fill = clrs['hc']
         )
         if ('d' %in% parts) {
             the_plot = the_plot +
                 geom_density(
-                    aes(y = ..count.. * my_binwidth),
+                    aes(y = .data$..count.. * my_binwidth),
                     color = clrs['dc'],
                     alpha = as.numeric(clrs['da']),
                     fill = clrs['dc']
@@ -736,10 +768,10 @@ neat_plt2 = function(values,
             the_plot = the_plot +
                 stat_function(
                     fun = function(x)
-                        dnorm(
+                        stats::dnorm(
                             x,
                             mean = mean(values),
-                            sd = sd(values)
+                            sd = stats::sd(values)
                         ) * length(values) * my_binwidth,
                     color = clrs['nc'],
                     alpha = as.numeric(clrs['na']),
@@ -760,10 +792,10 @@ neat_plt2 = function(values,
             the_plot = the_plot +
                 stat_function(
                     fun = function(x)
-                        dnorm(
+                        stats::dnorm(
                             x,
                             mean = mean(values),
-                            sd = sd(values)
+                            sd = stats::sd(values)
                         ),
                     color = clrs['nc'],
                     alpha = as.numeric(clrs['na']),
@@ -782,8 +814,8 @@ neat_plt2 = function(values,
         the_plot = the_plot +
             # manually plot flipped boxplot
             geom_segment(data = p_box_dat, aes(
-                x = ymin,
-                xend = ymax,
+                x = .data$ymin,
+                xend = .data$ymax,
                 y = box_y,
                 yend = box_y
             )) +

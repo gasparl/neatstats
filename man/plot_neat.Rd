@@ -22,7 +22,10 @@ plot_neat(
   method = mean,
   eb_method = neatStats::mean_ci,
   numerics = FALSE,
-  hush = FALSE
+  hush = FALSE,
+  parts = c("h", "d", "n", "b"),
+  part_colors = NULL,
+  binwidth = NULL
 )
 }
 \arguments{
@@ -387,6 +390,24 @@ plot_neat(
     between_vars = 'group_id'
 )
 }
+
+## DISPERSION PLOTS
+
+plot_neat(values = rnorm(100))
+
+# with smaller binwidth (hence more bins)
+plot_neat(values = rnorm(100), binwidth = 0.2)
+
+# without normal distribution line
+plot_neat(values = rnorm(100), parts = c('h', 'd', 'b'))
+
+# without histrogram
+plot_neat(values = rnorm(100), parts = c('d', 'n', 'b'))
+
+# blue density, fully opaque histogram
+plot_neat(values = rnorm(100),
+         part_colors = c(dc = 'blue', ha = 1))
+
 }
 \seealso{
 \code{\link{anova_neat}}, \code{\link{mean_ci}}, \code{\link{se}}
