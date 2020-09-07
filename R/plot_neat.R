@@ -111,9 +111,9 @@
 #'  red transparent histogram with green boxplot would be \code{part_colors =
 #'  c(hc = "#cc0000", ha = 0.1, bc = "green")}.
 #'@param binwidth For dispersion plots only (if no \code{data_per_subject} is
-#'  given). Binwidth for histograms. If \code{NULL} (default), either
-#'  Freedman–Diaconis rule is used if it produces at least 10 bins – otherwise
-#'  1bandwidth is calculated for 10 bins.
+#'  given). Binwidth for histograms. If \code{NULL} (default), Freedman–Diaconis
+#'  rule is used if it produces at least 10 bins – otherwise 1bandwidth is
+#'  calculated for 10 bins.
 #'
 #'@return By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object
 #'  may be further modified or adjusted via regular
@@ -704,13 +704,13 @@ neat_plot2 = function(values,
                       val_arg(binwidth, c('null', 'num'))
                   ))
     clrs = c(
-        hc = '#aeaec4',
-        ha = 0.5,
-        dc = '#660000',
+        hc = '#aaaadc',
+        ha = 0.4,
+        dc = '#004400',
         da = 0.1,
-        nc = '#FF0000',
+        nc = '#cc0000',
         na = 1,
-        bc = '#93a78e',
+        bc = '#bcdcc5',
         ba = 1,
         hlc = 'black'
     )
@@ -747,7 +747,7 @@ neat_plot2 = function(values,
     }
     the_plot = ggplot(plot_data, aes(x = values))
     if ('h' %in% parts) {
-        the_plot = the_plot +  geom_histogram(
+        the_plot = the_plot + geom_histogram(
             aes(y = .data$..count..),
             alpha = as.numeric(clrs['ha']),
             binwidth = my_binwidth,
@@ -763,7 +763,6 @@ neat_plot2 = function(values,
                     fill = clrs['dc']
                 )
         }
-
         if ('n' %in% parts) {
             the_plot = the_plot +
                 stat_function(
@@ -775,7 +774,7 @@ neat_plot2 = function(values,
                         ) * length(values) * my_binwidth,
                     color = clrs['nc'],
                     alpha = as.numeric(clrs['na']),
-                    linetype = "dotted"
+                    linetype = "dashed"
                 )
         }
     } else {
@@ -799,7 +798,7 @@ neat_plot2 = function(values,
                         ),
                     color = clrs['nc'],
                     alpha = as.numeric(clrs['na']),
-                    linetype = "dotted"
+                    linetype = "dashed"
                 )
         }
     }

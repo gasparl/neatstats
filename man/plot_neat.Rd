@@ -154,9 +154,9 @@ red transparent histogram with green boxplot would be \code{part_colors =
 c(hc = "#cc0000", ha = 0.1, bc = "green")}.}
 
 \item{binwidth}{For dispersion plots only (if no \code{data_per_subject} is
-given). Binwidth for histograms. If \code{NULL} (default), either
-Freedman–Diaconis rule is used if it produces at least 10 bins – otherwise
-1bandwidth is calculated for 10 bins.}
+given). Binwidth for histograms. If \code{NULL} (default), Freedman–Diaconis
+rule is used if it produces at least 10 bins – otherwise 1bandwidth is
+calculated for 10 bins.}
 }
 \value{
 By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object

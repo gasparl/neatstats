@@ -44,7 +44,7 @@ my_vector = c('aa', 'bb', 'cxyz', 'last')
 for (elem in enum(my_vector)) {
     cat(elem, fill = TRUE)
     rbind_loop(
-        merged_data,
+        merged_data, # data frame name for merging
         item = elem[2],
         number = elem[1],
         whatever = paste0('number (', elem[1], ')')

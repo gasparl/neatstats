@@ -109,7 +109,7 @@ norm_tests_in = function(var1,
         diff = var2 - var1
     }
     if (plots == TRUE) {
-        qqclrs = c('darkred', 'blue', 'lightblue')
+        qqclrs = c('#000099', '#e60000', '#ff5555')
         pv1q = ggpubr::ggqqplot(var1, shape = 1) +
             xlab('Theoretical quantiles') +
             ylab('Var 1 quantiles') +
@@ -121,10 +121,9 @@ norm_tests_in = function(var1,
         parts = c('b', 'd', 'n', 'h')
         part_colors = c(
             ha = 0.15,
-            da = 0.25,
-            dc = 'blue',
-            hlc = 'grey'
-            ba = 0.5
+            da = 0.2,
+            dc = '#0000b3',
+            hlc = '#737373'
         )
         pv1 = plot_neat(values = var1,
                         parts = parts,
@@ -158,24 +157,25 @@ norm_tests_in = function(var1,
                     xlab('difference (var 2 - var 1)') +
                     theme(aspect.ratio = aspect_ratio)
                 var12 = data.frame(v1 = var1, v2 = var2)
-                pscat = ggplot(var12, aes(x = v1, y = v2)) +
+                pscat = ggplot(var12, aes(x = .data$v1,
+                                          y = .data$v2)) +
                     stat_smooth(
                         method = "lm",
                         formula = y ~ x,
-                        col = "lightblue",
+                        col = "72b7cd",
                         se = FALSE,
-                        size = 0.5
+                        size = 0.8
                     ) +
                     geom_point(shape = 23)  +
                     xlab('var 1')  + ylab('var 2') + theme_bw() +
                     theme(aspect.ratio = aspect_ratio)
-                plot(ggpubr::ggarrange(pv1q, pv2q, pv21q))
-                plot(ggpubr::ggarrange(pv1, pv2, pv21, pscat))
+                graphics::plot(ggpubr::ggarrange(pv1q, pv2q, pv21q))
+                graphics::plot(ggpubr::ggarrange(pv1, pv2, pv21, pscat))
             } else {
-                plot(ggpubr::ggarrange(pv1, pv2, pv1q, pv2q))
+                graphics::plot(ggpubr::ggarrange(pv1, pv2, pv1q, pv2q))
             }
         } else {
-            plot(ggpubr::ggarrange(pv1, pv1q))
+            graphics::plot(ggpubr::ggarrange(pv1, pv1q))
         }
     }
     norm_tests = tolower(norm_tests)

@@ -11,6 +11,7 @@ t_neat(
   nonparametric = FALSE,
   greater = NULL,
   norm_tests = "latent",
+  norm_plots = FALSE,
   ci = NULL,
   bf_added = FALSE,
   bf_rscale = sqrt(0.5),
@@ -23,7 +24,9 @@ t_neat(
   round_auc = 3,
   auc_greater = "1",
   hush = FALSE,
-  plot_densities = FALSE,
+  plots = FALSE,
+  rug_size = 4,
+  aspect_ratio = 1,
   y_label = "density estimate",
   x_label = "\\nvalues",
   factor_name = NULL,
@@ -58,6 +61,11 @@ are \code{"all"} (to choose all four previous tests at the same time) or
 a p value below .05). Each normality test is performed for the difference
 values between the two variables in case of paired samples, or for each of
 the two variables for unpaired samples.}
+
+\item{norm_plots}{If \code{TRUE} and \code{norm_tests} is also \code{TRUE},
+displays density, histogram, and Q-Q plots (and scatter plots for paired
+tests) for each of the two variable (and differences for pairwise
+observations, in case of paired samples).}
 
 \item{ci}{Numeric; confidence level for returned CIs for Cohen's d and AUC.}
 
@@ -100,12 +108,23 @@ confused with one-sided tests; see Details.}
 
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 
-\item{plot_densities}{Logical. If \code{TRUE}, creates a density plot (i.e.,
-\code{\link[stats:density]{Gaussian kernel density estimates}}) from the two
-variables. When \code{auc_added} is \code{TRUE} (and the AUC is at least
-.5), the best threshold value for classification (maximal differentiation
-accuracy) is added to the plot as vertical line. (In case of multiple best
-thresholds with identical overall accuracy, all are added.)}
+\item{plots}{Logical (or \code{NULL}). If \code{TRUE}, creates a combined
+density plot (i.e., \code{\link[stats:density]{Gaussian kernel density
+estimates}}) from the two variables. Includes dashed vertical lines to
+indicate means of each of the two variables. If \code{nonparametric} is set
+to \code{TRUE}, medians are calculated for these dashed lines instead of
+means. When \code{auc_added} is \code{TRUE} (and the AUC is at least .5),
+the best threshold value for classification (maximal differentiation
+accuracy) is added to the plot as solid vertical line. (In case of multiple
+best thresholds with identical overall accuracy, all are added.) If
+\code{NULL}, same as if \code{TRUE} except that histogram is added to the
+background.}
+
+\item{rug_size}{Numeric (\code{4} by default): size of the rug ticks below the
+density plot. Set to \code{0} (zero) to omit rug plotting.}
+
+\item{aspect_ratio}{Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
+default. (Set to \code{NULL} for dynamic aspect ratio.)}
 
 \item{y_label}{String or \code{NULL}; the label for the \code{y} axis.
 (Default: \code{"density estimate"}.)}
@@ -136,9 +155,9 @@ Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
  object, to be used e.g. with the \code{\link{roc_neat}} function. The other
  is '\code{best_thresholds}', which contains the best threshold value(s) for
  classification, along with corresponding specificity and sensitivity.
- Finally, if \code{plot_densities} is \code{TRUE}, the plot is displayed as
- well as returned as a \code{\link[ggplot2]{ggplot}} object, named
- \code{density_plot}.
+ Finally, if \code{plots} is \code{TRUE} (or \code{NULL}), the plot is
+ displayed as well as returned as a \code{\link[ggplot2]{ggplot}} object,
+ named \code{t_plot}.
 }
 \description{
 Welch's \code{\link[stats:t.test]{t-test}} results including

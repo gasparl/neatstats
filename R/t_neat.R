@@ -65,12 +65,15 @@
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@param plots Logical (or \code{NULL}). If \code{TRUE}, creates a combined
 #'  density plot (i.e., \code{\link[stats:density]{Gaussian kernel density
-#'  estimates}}) from the two variables. When \code{auc_added} is \code{TRUE}
-#'  (and the AUC is at least .5), the best threshold value for classification
-#'  (maximal differentiation accuracy) is added to the plot as vertical line.
-#'  (In case of multiple best thresholds with identical overall accuracy, all
-#'  are added.) If \code{NULL}, same as if \code{TRUE} except that histogram is
-#'  added to the background.
+#'  estimates}}) from the two variables. Includes dashed vertical lines to
+#'  indicate means of each of the two variables. If \code{nonparametric} is set
+#'  to \code{TRUE}, medians are calculated for these dashed lines instead of
+#'  means. When \code{auc_added} is \code{TRUE} (and the AUC is at least .5),
+#'  the best threshold value for classification (maximal differentiation
+#'  accuracy) is added to the plot as solid vertical line. (In case of multiple
+#'  best thresholds with identical overall accuracy, all are added.) If
+#'  \code{NULL}, same as if \code{TRUE} except that histogram is added to the
+#'  background.
 #'@param rug_size Numeric (\code{4} by default): size of the rug ticks below the
 #'  density plot. Set to \code{0} (zero) to omit rug plotting.
 #'@param aspect_ratio Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
@@ -627,7 +630,7 @@ t_neat = function(var1,
         best_coords = NULL
         plot_thres = NULL
     }
-    if (plots != FALSE) {
+    if (is.null(plots) || plots == TRUE) {
         the_plot = plot_dens(
             v1 = var1,
             v2 = var2,
@@ -639,7 +642,8 @@ t_neat = function(var1,
             reverse = reverse,
             hist = plots,
             rug_size = rug_size,
-            aspect_ratio = aspect_ratio
+            aspect_ratio = aspect_ratio,
+            nonparam = nonparametric
         )
         graphics::plot(the_plot)
     } else {
@@ -673,7 +677,8 @@ plot_dens = function(v1,
                      reverse,
                      hist,
                      rug_size,
-                     aspect_ratio) {
+                     aspect_ratio,
+                     nonparam) {
     dens_dat = data.frame(vals = c(v1, v2),
                           facts = c(rep(var_names[1], length(v1)),
                                     rep(var_names[2], length(v2))))
@@ -684,24 +689,52 @@ plot_dens = function(v1,
         colrs = c('#b3b3ff', '#006600')
     }
     if (is.null(hist)) {
-
+        max_1 = (max(v1) - min(v1)) / 10
+        max_2 = (max(v2) - min(v2)) / 10
+        freed1 = 2 * stats::IQR(v1) / (length(v1) ^ (1 / 3))
+        freed2 = 2 * stats::IQR(v2) / (length(v2) ^ (1 / 3))
+        my_binwidth = min(max_1, max_2, freed1, freed2)
+        the_plot = ggplot(dens_dat,
+                        aes(
+                            x = .data$vals,
+                            fill = .data$facts,
+                            color = .data$facts
+                        )) +
+            geom_histogram(
+                aes(y = .data$..count..),
+                alpha = 0.1,
+                binwidth = my_binwidth,
+                color = 'darkgray',
+                position = "identity"
+            ) +
+            geom_density(aes(y = .data$..count.. * my_binwidth), alpha = 0.3)
     } else {
-
-        myplot = ggplot(dens_dat, aes(x = .data$vals, fill = .data$facts, color = .data$facts)) +
-            geom_density(aes(y = .data$..count.. / sum(..count..)), alpha = 0.4)
+        the_plot = ggplot(dens_dat,
+                        aes(
+                            x = .data$vals,
+                            fill = .data$facts,
+                            color = .data$facts
+                        )) +
+            geom_density(aes(y = .data$..count.. / sum(.data$..count..)),
+                         alpha = 0.3)
     }
-
-
-    the_plot = ggplot(data = dens_dat, aes(x = .data$vals,
-                                           fill = dens_dat$facts)) + geom_density(alpha = 0.4, trim = FALSE) +
-
-        geom_vline(
-            xintercept = c(mean(v1), mean(v2)),
-            color = "#777777",
-            linetype = "dashed",
-            size = 0.5
-        )  +
-        ylab(y_label) + xlab(x_label)
+    if (rug_size > 0) {
+        yrange = ggplot_build(the_plot)$layout$panel_params[[1]]$y.range
+        hght = yrange[2] - yrange[1]
+        dens_dat$ypos <- -hght / 20
+        dens_dat$ypos[dens_dat$facts == var_names[2]] <-
+            -(2 * hght / 20)
+        the_plot = the_plot + geom_point(
+            aes(
+                x = .data$vals,
+                y = dens_dat$ypos,
+                colour = .data$facts
+            ),
+            alpha = 1,
+            shape = '|',
+            size = rug_size
+        )
+    }
     if (!is.null(thres)) {
         the_plot = the_plot +
             geom_vline(
@@ -711,14 +744,24 @@ plot_dens = function(v1,
                 size = 0.5
             )
     }
-
+    if (nonparam == TRUE) {
+        xfunc = stats::median
+    } else {
+        xfunc = mean
+    }
     return(
-        the_plot + theme(
-            aspect.ratio = aspect_ratio,
-            text = element_text(family = "serif", size = 17)
-        ) + theme_bw() +
-            scale_fill_manual(values = c('#006600', '#b3b3ff'),
-                              name = factor_name) +
-            scale_color_manual(values = c('#006600', '#b3b3ff'))
+        the_plot + scale_fill_manual(values = c('#004d00', '#8080ff'),
+                                     name = factor_name) +
+            scale_color_manual(values = c('#004d00', '#8080ff'), guide = FALSE) +
+            geom_vline(
+                xintercept = c(xfunc(v1), xfunc(v2)),
+                color = "#777777",
+                linetype = "dashed",
+                size = 0.5
+            ) + theme_bw() +
+            ylab(y_label) + xlab(x_label) + theme(
+                aspect.ratio = aspect_ratio,
+                text = element_text(family = "serif", size = 17)
+            )
     )
 }
