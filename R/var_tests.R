@@ -1,9 +1,8 @@
-#'@title Variance Equality Tests and Plots
+#'@title Variance Equality Tests
 #'
 #'@description Performs variance Brown-Forsythe and Fligner-Killeen equality
-#'  tests (tests of homogeneity of variances) and creates related plots
-#'  (histogram, density, boxplots). This is primarily a subfunction of
-#'  \code{\link{anova_neat}}, but here it is available separately for other
+#'  tests (tests of homogeneity of variances). This is primarily a subfunction
+#'  of \code{\link{anova_neat}}, but here it is available separately for other
 #'  potential purposes.
 #'@param xvar Either a numeric vector (numbers of any given variable), or, if
 #'  \code{dat} is given, a column name specifying the variable in the given data
@@ -13,23 +12,19 @@
 #'  columns in the given data frame.
 #'@param dat Either \code{NULL} or a data frame from which the respective column
 #'  names should be selected for \code{xvar} and \code{group}.
-#'@param plots String: \code{"none"} for no plots, \code{"hist"} for histrogram
-#'  and density, \code{"box"} for box plot, and \code{"both"} for both at the
-#'  same time.
 #'@param sep String (underscore \code{"_"} by default) for separating group
-#'  names, for plot display.
+#'  names.
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
-#'@return Prints test results, and displays plots (and returns them as
-#'  \code{\link[ggplot2]{ggplot}} object), if so specified.
+#'@return Prints test results.
 #'
 #'@note
 #'
-#' Brown-Forsythe test (i.e., Levene's test using medians) is calculated via
-#' \code{\link[car:leveneTest]{car::leveneTest}}. Fligner-Killeen test, which
-#' may be more robust (i.e., less affected by non-normal distribution), is
-#' calculated via \code{\link[stats:fligner.test]{stats::fligner.test}}. (See
-#' also Conover et al., 1981, p. 360.)
+#'Brown-Forsythe test (i.e., Levene's test using medians) is calculated via
+#'\code{\link[car:leveneTest]{car::leveneTest}}. Fligner-Killeen test, which may
+#'be more robust (i.e., less affected by non-normal distribution), is calculated
+#'via \code{\link[stats:fligner.test]{stats::fligner.test}}. (See also Conover
+#'et al., 1981, p. 360.)
 #'
 #'@references
 #'
@@ -73,17 +68,13 @@ var_tests = function(xvar,
                      group_by,
                      dat = NULL,
                      hush = FALSE,
-                     sep = ', ',
-                     plots = 'none') {
+                     sep = ', ') {
     if (typeof(dat) == "character") {
         dat = eval(parse(text = dat))
     }
     validate_args(match.call(),
                   list(val_arg(xvar, c('num', 'char')),
-                       val_arg(dat, c('null', 'df'), 1),
-                       val_arg(
-                           plots, c('char'), 1, c('none', 'hist', 'qq', 'both')
-                       )))
+                       val_arg(dat, c('null', 'df'), 1)))
     if (!is.null(dat)) {
         if (typeof(xvar) == 'character') {
             checkcol(names(dat), xvar)
