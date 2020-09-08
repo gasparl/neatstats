@@ -6,7 +6,7 @@
 \usage{
 dems_neat(
   data_per_subject,
-  group_by = NULLL,
+  group_by = NULL,
   gender_col = NULL,
   age_col = NULL,
   percent = FALSE,
