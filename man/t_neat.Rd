@@ -60,9 +60,10 @@ are \code{"all"} (to choose all four previous tests at the same time) or
 \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
 a p value below .05). Each normality test is performed for the difference
 values between the two variables in case of paired samples, or for each of
-the two variables for unpaired samples.}
+the two variables for unpaired samples. Set to \code{"none"} to disable
+(i.e., not to perform any normality tests).}
 
-\item{norm_plots}{If \code{TRUE} and \code{norm_tests} is also \code{TRUE},
+\item{norm_plots}{If \code{TRUE} and \code{norm_tests} is not \code{"none"},
 displays density, histogram, and Q-Q plots (and scatter plots for paired
 tests) for each of the two variable (and differences for pairwise
 observations, in case of paired samples).}

@@ -2,9 +2,9 @@
 % Please edit documentation in R/var_tests.R
 \name{var_tests}
 \alias{var_tests}
-\title{Variance Equality Tests and Plots}
+\title{Variance Equality Tests}
 \usage{
-var_tests(xvar, group_by, dat = NULL, hush = FALSE, sep = ", ", plots = "none")
+var_tests(xvar, group_by, dat = NULL, hush = FALSE, sep = ", ")
 }
 \arguments{
 \item{xvar}{Either a numeric vector (numbers of any given variable), or, if
@@ -21,29 +21,23 @@ names should be selected for \code{xvar} and \code{group}.}
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 
 \item{sep}{String (underscore \code{"_"} by default) for separating group
-names, for plot display.}
-
-\item{plots}{String: \code{"none"} for no plots, \code{"hist"} for histrogram
-and density, \code{"box"} for box plot, and \code{"both"} for both at the
-same time.}
+names.}
 }
 \value{
-Prints test results, and displays plots (and returns them as
- \code{\link[ggplot2]{ggplot}} object), if so specified.
+Prints test results.
 }
 \description{
-Performs variance Brown-Forsythe and Fligner-Killeen equality
- tests (tests of homogeneity of variances) and creates related plots
- (histogram, density, boxplots). This is primarily a subfunction of
- \code{\link{anova_neat}}, but here it is available separately for other
+Performs Brown-Forsythe and Fligner-Killeen variance equality
+ tests (tests of homogeneity of variances). This is primarily a subfunction
+ of \code{\link{anova_neat}}, but here it is available separately for other
  potential purposes.
 }
 \note{
 Brown-Forsythe test (i.e., Levene's test using medians) is calculated via
-\code{\link[car:leveneTest]{car::leveneTest}}. Fligner-Killeen test, which
-may be more robust (i.e., less affected by non-normal distribution), is
-calculated via \code{\link[stats:fligner.test]{stats::fligner.test}}. (See
-also Conover et al., 1981, p. 360.)
+\code{\link[car:leveneTest]{car::leveneTest}}. Fligner-Killeen test, which may
+be more robust (i.e., less affected by non-normal distribution), is calculated
+via \code{\link[stats:fligner.test]{stats::fligner.test}}. (See also Conover
+et al., 1981, p. 360.)
 }
 \examples{
 

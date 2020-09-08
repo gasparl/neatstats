@@ -37,13 +37,27 @@
 #'  variable (representing between-subject factors).
 #'@param ci Numeric; confidence level for returned CIs. (Default: \code{.9};
 #'  Lakens, 2014; Steiger, 2004.)
+#'@param norm_tests Normality tests for the pooled ANOVA residuals
+#'  (\code{"none"} by default, giving no tests). Any or all of the following
+#'  character input is accepted (as a single string or a character vector;
+#'  case-insensitive): \code{"W"} (Shapiro-Wilk), \code{"K2"}
+#'  (D'Agostino-Pearson), \code{"A2"} (Anderson-Darling), \code{"JB"}
+#'  (Jarque-Bera); see \code{\link{norm_tests}}. The option \code{"all"} selects
+#'  all four previous tests at the same time.
+#'@param norm_plots If \code{TRUE} and \code{norm_tests} is not \code{"none"},
+#'  displays density, histogram, and Q-Q plots (and scatter plots for paired
+#'  tests) for the pooled residuals.#'
+#'@param var_tests Logical, \code{FALSE} by default. If \code{TRUE} (and there
+#'  are any between-subject factors), runs variance equality tests via
+#'  \code{\link{var_tests}} for all combinations of the between-subject factors
+#'  within each level of within-subject factor combinations; see Details.
 #'@param bf_added Logical. If \code{TRUE} (default), inclusion Bayes factor is
 #'  calculated and displayed. (Note: with multiple factors and/or larger
 #'  dataset, the calculation can take considerable time.)
 #'@param bf_sample Number of samples used to estimate Bayes factor (\code{10000}
 #'  by default).
-#'@param test_title String, \code{"--- neat ANOVA ---"} by default. Simply
-#'  displayed in printing preceding the statistics.
+#'@param test_title String, \code{"--- ANOVA ---"} by default. Simply displayed
+#'  in printing preceding the statistics.
 #'@param welch If \code{TRUE} (default), calculates Welch's ANOVA via
 #'  \code{\link[stats:oneway.test]{stats::oneway.test}} in case of a single
 #'  factor (one-way) between-subject design. If \code{FALSE}, calculates via
@@ -87,13 +101,22 @@
 #'original full BF number is available in the returned named vector as
 #'\code{bf}.)
 #'
-#'Levene's test is returned for between-subject design without Welch's
-#'correction, while Mauchly's sphericity test is returned for repeated measures
-#'with more than two levels. If Mauchly's test is significant, epsilon
-#'correction may be applied (see the \code{e_correction} parameter). If Levene's
-#'test is significant and the data is unbalanced (unequal group sample sizes),
-#'you should either consider the results respectively or choose a different
-#'test.
+#'Mauchly's sphericity test is returned for repeated measures with more than two
+#'levels. If Mauchly's test is significant, epsilon correction may be applied
+#'(see the \code{e_correction} parameter).
+#'
+#'Variance equality tests (if \code{var_tests} is \code{TRUE}): Brown-Forsythe
+#'and Fligner-Killeen tests are performed for each within-subject factor level
+#'(or, in case of several factors, each combination) via
+#'\code{\link{var_tests}}. Note that variance testing is generally not
+#'recommended (see e.g., Zimmerman, 2004). In case of a one-way between-subject
+#'ANOVA, Welch-corrected results are reported by default, which corrects for
+#'unequal variances. In case of multiple between-subject factors, the
+#'\code{white.adjust} parameter can be set to \code{TRUE} (or \code{"hc3"}) to
+#'apply \code{"hc3"} correction for unequal variances. In case of a mixed ANOVA
+#'(both between-subject and within-subject factors), if the tests are
+#'significant and the data is unbalanced (unequal group sample sizes), you
+#'should either consider the results respectively or choose a different test.
 #'
 #'In case of multiple values (column names) that match identical levels for all
 #'factors, the given columns will be merged into a single column taking the mean
@@ -117,8 +140,8 @@
 #'  \code{\link[BayesFactor]{anovaBF}} object, named \code{bf_models}; including
 #'  all models on which the inclusion BFs are based.
 #'
-#'@note All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
-#'  including Levene's test and Mauchly's sphericity test. (But Welch's ANOVA is
+#'@note The F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
+#'  including Mauchly's sphericity test. (But Welch's ANOVA is
 #'  calculated in case of one-way between-subject designs via
 #'  \code{\link[stats:oneway.test]{stats::oneway.test}}, unless the \code{welch}
 #'  parameter is set to \code{FALSE}.)
@@ -177,6 +200,11 @@
 #'tests of close fit in the analysis of variance and contrast analysis.
 #'Psychological Methods, 9(2), 164-182.
 #'\doi{https://doi.org/10.1037/1082-989X.9.2.164}
+#'
+#'
+#'Zimmerman, D. W. (2004). A note on preliminary tests of equality of variances.
+#'British Journal of Mathematical and Statistical Psychology, 57(1), 173–181.
+#'https://doi.org/10.1348/000711004849222
 #'
 #' @seealso \code{\link{plot_neat}}, \code{\link{t_neat}}
 #' @examples
@@ -378,9 +406,12 @@ anova_neat = function(data_per_subject,
                       within_ids = NULL,
                       between_vars = NULL,
                       ci = 0.90,
+                      norm_tests = 'none',
+                      norm_plots = FALSE,
+                      var_tests = FALSE,
                       bf_added = FALSE,
                       bf_sample = 10000,
-                      test_title = "--- neat ANOVA ---",
+                      test_title = "--- ANOVA ---",
                       welch = TRUE,
                       e_correction = NULL,
                       type = 2,
@@ -396,6 +427,9 @@ anova_neat = function(data_per_subject,
             val_arg(within_ids, c('null', 'char', 'list'), 1),
             val_arg(between_vars, c('null', 'char')),
             val_arg(ci, c('num'), 1),
+            val_arg(norm_tests, c('char')),
+            val_arg(norm_plots, c('bool'), 1),
+            val_arg(var_tests, c('bool')),
             val_arg(bf_added, c('bool'), 1),
             val_arg(bf_sample, c('num'), 1),
             val_arg(test_title, c('char'), 1),
@@ -491,6 +525,7 @@ anova_neat = function(data_per_subject,
     data_wide[[id_col]] = as.character(seq.int(nrow(data_wide)))
     w_anova = NULL
     if (length(values) > 1) {
+        withname = "within_factor"
         data_reshaped = stats::reshape(
             data_wide,
             direction = 'long',
@@ -512,9 +547,11 @@ anova_neat = function(data_per_subject,
         } else if (is.list(within_ids)) {
             within_vars = names(within_ids)
             names(data_reshaped)[names(data_reshaped) == 'within_factor'] = names(within_ids)
+            withname = names(within_ids)
         }  else if (is.character(within_ids)) {
             within_vars = within_ids
             names(data_reshaped)[names(data_reshaped) == 'within_factor'] = within_ids
+            withname = within_ids
         } else {
             within_vars = 'within_factor'
         }
@@ -614,6 +651,18 @@ anova_neat = function(data_per_subject,
         bf_inc = NULL
         bf_models = NULL
     }
+    if (var_tests == TRUE && !is.null(bv_copy)) {
+        prnt('--- Equality of variances ---')
+        if (is.null(within_vars)) {
+            neatStats::var_tests(value_col, bv_copy, this_data)
+        } else {
+            for (fact in unique(this_data[[withname]])) {
+                cat(fact, ': ', sep = '', fill = TRUE)
+                neatStats::var_tests(value_col, bv_copy,
+                          this_data[this_data[[withname]] == fact, ])
+            }
+        }
+    }
     to_return = anova_apa(
         ezANOVA_out = ez_anova_out,
         ci = ci,
@@ -632,30 +681,11 @@ anova_apa = function(ezANOVA_out,
                      ci = 0.90,
                      bf_added = NULL,
                      bf_models = NULL,
-                     test_title = "--- neat ANOVA ---",
+                     test_title = "--- ANOVA ---",
                      welch = NULL,
                      e_correction = '',
                      hush = FALSE,
                      dat_tot = NULL) {
-    levene = ezANOVA_out$"Levene's Test for Homogeneity of Variance"
-    ezANOVA_out$ANOVA$'p<.05' = NULL
-    if ((!is.null(levene)) && (is.null(welch))) {
-        if ('Levene' %in%  ezANOVA_out$ANOVA$Effect) {
-            stop(
-                'Sorry, the name "Levene" is reserved for this function. Remove or rename this factor.'
-            )
-        }
-        levene_post = ''
-        levene$'p<.05' = NULL
-        levene$ges = NA
-        levene = data.frame(Effect = "Levene", levene)
-        if (round(levene$p, 3) < 0.05) {
-            levene_pre = "Levene's test indicates unequal variances (p < 0.05): "
-        } else {
-            levene_pre = "Levene's test does not indicate unequal variances (p >= 0.05): "
-        }
-        ezANOVA_out$ANOVA = rbind(levene, ezANOVA_out$ANOVA)
-    }
     ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
     ezANOVA_out$ANOVA$Effect = as.character(ezANOVA_out$ANOVA$Effect)
     if (hush == FALSE) {
@@ -728,55 +758,30 @@ anova_apa = function(ezANOVA_out,
         the_ci = paste0(", ", ro(ci * 100, 0), "% CI [")
         getas = ezANOVA_out$ANOVA$ges[indx]
         nG2 = sub('.', '', ro(getas, 3))
-
-        if (f_name == 'Levene') {
-            out = paste0(
-                levene_pre,
-                "F(",
-                df_n,
-                ",",
-                df_d,
-                ")",
-                " = ",
-                ro(F_val, 2),
-                ", p = ",
-                ro(pvalue, 3),
-                ", CHAR_ETAp2 = ",
-                np2,
-                the_ci,
-                lower,
-                ", ",
-                upper,
-                "]",
-                bf_out,
-                levene_post
-            )
-        } else {
-            out = paste0(
-                "F(",
-                df_n,
-                ", ",
-                df_d,
-                ")",
-                " = ",
-                ro(F_val, 2),
-                ", p = ",
-                ro(pvalue, 3),
-                epsilon = eps_added,
-                ", CHAR_ETAp2 = ",
-                np2,
-                the_ci,
-                lower,
-                ", ",
-                upper,
-                "], CHAR_ETAG2 = ",
-                nG2,
-                bf_out,
-                " (",
-                f_name,
-                ")"
-            )
-        }
+        out = paste0(
+            "F(",
+            df_n,
+            ", ",
+            df_d,
+            ")",
+            " = ",
+            ro(F_val, 2),
+            ", p = ",
+            ro(pvalue, 3),
+            epsilon = eps_added,
+            ", CHAR_ETAp2 = ",
+            np2,
+            the_ci,
+            lower,
+            ", ",
+            upper,
+            "], CHAR_ETAG2 = ",
+            nG2,
+            bf_out,
+            " (",
+            f_name,
+            ")"
+        )
         if (hush == FALSE) {
             prnt(out)
         }

@@ -10,9 +10,12 @@ anova_neat(
   within_ids = NULL,
   between_vars = NULL,
   ci = 0.9,
+  norm_tests = "none",
+  norm_plots = FALSE,
+  var_tests = FALSE,
   bf_added = FALSE,
   bf_sample = 10000,
-  test_title = "--- neat ANOVA ---",
+  test_title = "--- ANOVA ---",
   welch = TRUE,
   e_correction = NULL,
   type = 2,
@@ -58,6 +61,23 @@ variable (representing between-subject factors).}
 \item{ci}{Numeric; confidence level for returned CIs. (Default: \code{.9};
 Lakens, 2014; Steiger, 2004.)}
 
+\item{norm_tests}{Normality tests for the pooled ANOVA residuals
+(\code{"none"} by default, giving no tests). Any or all of the following
+character input is accepted (as a single string or a character vector;
+case-insensitive): \code{"W"} (Shapiro-Wilk), \code{"K2"}
+(D'Agostino-Pearson), \code{"A2"} (Anderson-Darling), \code{"JB"}
+(Jarque-Bera); see \code{\link{norm_tests}}. The option \code{"all"} selects
+all four previous tests at the same time.}
+
+\item{norm_plots}{If \code{TRUE} and \code{norm_tests} is not \code{"none"},
+displays density, histogram, and Q-Q plots (and scatter plots for paired
+tests) for the pooled residuals.#'}
+
+\item{var_tests}{Logical, \code{FALSE} by default. If \code{TRUE} (and there
+are any between-subject factors), runs variance equality tests via
+\code{\link{var_tests}} for all combinations of the between-subject factors
+within each level of within-subject factor combinations; see Details.}
+
 \item{bf_added}{Logical. If \code{TRUE} (default), inclusion Bayes factor is
 calculated and displayed. (Note: with multiple factors and/or larger
 dataset, the calculation can take considerable time.)}
@@ -65,8 +85,8 @@ dataset, the calculation can take considerable time.)}
 \item{bf_sample}{Number of samples used to estimate Bayes factor (\code{10000}
 by default).}
 
-\item{test_title}{String, \code{"--- neat ANOVA ---"} by default. Simply
-displayed in printing preceding the statistics.}
+\item{test_title}{String, \code{"--- ANOVA ---"} by default. Simply displayed
+in printing preceding the statistics.}
 
 \item{welch}{If \code{TRUE} (default), calculates Welch's ANOVA via
 \code{\link[stats:oneway.test]{stats::oneway.test}} in case of a single
@@ -142,13 +162,22 @@ smaller than 1 (i.e., supports null hypothesis), the reciprocal is calculated
 original full BF number is available in the returned named vector as
 \code{bf}.)
 
-Levene's test is returned for between-subject design without Welch's
-correction, while Mauchly's sphericity test is returned for repeated measures
-with more than two levels. If Mauchly's test is significant, epsilon
-correction may be applied (see the \code{e_correction} parameter). If Levene's
-test is significant and the data is unbalanced (unequal group sample sizes),
-you should either consider the results respectively or choose a different
-test.
+Mauchly's sphericity test is returned for repeated measures with more than two
+levels. If Mauchly's test is significant, epsilon correction may be applied
+(see the \code{e_correction} parameter).
+
+Variance equality tests (if \code{var_tests} is \code{TRUE}): Brown-Forsythe
+and Fligner-Killeen tests are performed for each within-subject factor level
+(or, in case of several factors, each combination) via
+\code{\link{var_tests}}. Note that variance testing is generally not
+recommended (see e.g., Zimmerman, 2004). In case of a one-way between-subject
+ANOVA, Welch-corrected results are reported by default, which corrects for
+unequal variances. In case of multiple between-subject factors, the
+\code{white.adjust} parameter can be set to \code{TRUE} (or \code{"hc3"}) to
+apply \code{"hc3"} correction for unequal variances. In case of a mixed ANOVA
+(both between-subject and within-subject factors), if the tests are
+significant and the data is unbalanced (unequal group sample sizes), you
+should either consider the results respectively or choose a different test.
 
 In case of multiple values (column names) that match identical levels for all
 factors, the given columns will be merged into a single column taking the mean
@@ -157,8 +186,8 @@ factor and retesting the remaining factors.) Explicit warning messages are
 shown in each such case.
 }
 \note{
-All F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
- including Levene's test and Mauchly's sphericity test. (But Welch's ANOVA is
+The F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
+ including Mauchly's sphericity test. (But Welch's ANOVA is
  calculated in case of one-way between-subject designs via
  \code{\link[stats:oneway.test]{stats::oneway.test}}, unless the \code{welch}
  parameter is set to \code{FALSE}.)
@@ -409,6 +438,11 @@ Steiger, J. H. (2004). Beyond the F test: effect size confidence intervals and
 tests of close fit in the analysis of variance and contrast analysis.
 Psychological Methods, 9(2), 164-182.
 \doi{https://doi.org/10.1037/1082-989X.9.2.164}
+
+
+Zimmerman, D. W. (2004). A note on preliminary tests of equality of variances.
+British Journal of Mathematical and Statistical Psychology, 57(1), 173–181.
+https://doi.org/10.1348/000711004849222
 }
 \seealso{
 \code{\link{plot_neat}}, \code{\link{t_neat}}
