@@ -56,7 +56,7 @@
 #'  dataset, the calculation can take considerable time.)
 #'@param bf_sample Number of samples used to estimate Bayes factor (\code{10000}
 #'  by default).
-#'@param test_title String, \code{"--- ANOVA ---"} by default. Simply displayed
+#'@param test_title String, \code{"--- neat ANOVA ---"} by default. Simply displayed
 #'  in printing preceding the statistics.
 #'@param welch If \code{TRUE} (default), calculates Welch's ANOVA via
 #'  \code{\link[stats:oneway.test]{stats::oneway.test}} in case of a single
@@ -411,7 +411,7 @@ anova_neat = function(data_per_subject,
                       var_tests = FALSE,
                       bf_added = FALSE,
                       bf_sample = 10000,
-                      test_title = "--- ANOVA ---",
+                      test_title = "--- neat ANOVA ---",
                       welch = TRUE,
                       e_correction = NULL,
                       type = 2,
@@ -651,8 +651,35 @@ anova_neat = function(data_per_subject,
         bf_inc = NULL
         bf_models = NULL
     }
-    if (var_tests == TRUE && !is.null(bv_copy)) {
-        prnt('--- Equality of variances ---')
+    resids = ez_anova_out$aov$residuals
+    if (is.null(resids)) {
+        aov_proj = stats::proj(ez_anova_out$aov)
+        resids = aov_proj[[length(aov_proj)]][, "Residuals"]
+        fitt = stats::fitted(ez_anova_out$aov[[length(ez_anova_out$aov)]])
+    } else {
+        fitt = ez_anova_out$aov$fitted
+    }
+    if (norm_tests  != 'none' &
+        hush == FALSE) {
+        prnt('--- Normality of the Residuals ---')
+        norm_tests_in(
+            var1 = resids,
+            var2 = NULL,
+            pair = FALSE,
+            norm_tests = norm_tests,
+            alpha = 0.05,
+            hush = FALSE,
+            plots = norm_plots,
+            tneet = FALSE,
+            nonparametric = FALSE,
+            aspect_ratio = 1,
+            anov = TRUE
+        )
+    }
+    if (var_tests == TRUE && !is.null(bv_copy) &
+        hush == FALSE
+    ) {
+        prnt('--- Equality of Variances ---')
         if (is.null(within_vars)) {
             neatStats::var_tests(value_col, bv_copy, this_data)
         } else {
@@ -672,7 +699,9 @@ anova_neat = function(data_per_subject,
         welch = w_anova,
         e_correction = e_correction,
         hush = hush,
-        dat_tot = dat_tot
+        dat_tot = dat_tot,
+        resids = resids,
+        fitt = fitt
     )
     invisible(to_return)
 }
@@ -681,11 +710,13 @@ anova_apa = function(ezANOVA_out,
                      ci = 0.90,
                      bf_added = NULL,
                      bf_models = NULL,
-                     test_title = "--- ANOVA ---",
+                     test_title = "--- neat ANOVA ---",
                      welch = NULL,
                      e_correction = '',
                      hush = FALSE,
-                     dat_tot = NULL) {
+                     dat_tot = NULL,
+                     fitt = NULL,
+                     resids = NULL) {
     ezANOVA_out$ANOVA$pes = ezANOVA_out$ANOVA$SSn / (ezANOVA_out$ANOVA$SSn + ezANOVA_out$ANOVA$SSd)
     ezANOVA_out$ANOVA$Effect = as.character(ezANOVA_out$ANOVA$Effect)
     if (hush == FALSE) {
@@ -694,13 +725,13 @@ anova_apa = function(ezANOVA_out,
     mauchly = ezANOVA_out$"Mauchly's Test for Sphericity"
     if (!is.null(mauchly)) {
         if (hush == FALSE) {
-            prnt("- Mauchly's sphericity test:")
+            prnt("--- Mauchly's Sphericity Test ---")
         }
         eps_p_corrs = get_e_corrs(mauchly,
                                   ezANOVA_out$"Sphericity Corrections",
                                   e_correction, hush)
         if (hush == FALSE) {
-            prnt("- ANOVA:")
+            prnt("--- ANOVA ---")
         }
     } else {
         eps_p_corrs = NULL
@@ -798,6 +829,8 @@ anova_apa = function(ezANOVA_out,
     stat_list = list(effects = stat_list,
                   ez_anova = ezANOVA_out,
                   bf_models = bf_models,
-                  totals = dat_tot)
+                  totals = dat_tot,
+                  residuals = resids,
+                  fitted = fitt)
     invisible(stat_list)
 }

@@ -6,7 +6,9 @@
 \usage{
 dems_neat(
   data_per_subject,
-  group_by = NULL,
+  group_by = NULLL,
+  gender_col = NULL,
+  age_col = NULL,
   percent = FALSE,
   round_perc = 0,
   show_fem = NULL
@@ -14,19 +16,26 @@ dems_neat(
 }
 \arguments{
 \item{data_per_subject}{Data frame from which demographics are to be
-calculated. Must contain columns named as "\code{age}" and as
-"\code{gender}" (or, alternatively, "\code{sex}"). The \code{age} column
-must contain only numbers or \code{NA}, while \code{gender} column must
-contain only \code{1} (= male) or \code{2} (= female), either as numbers or
-as strings, or \code{NA}. Alternatively, male can be indicated, instead of
-\code{1}, with the string \code{male} (or its abbreviations, e.g.
-\code{m}), while in that case female can be indicated, instead of \code{2},
-with the string \code{female} (or its abbreviations, e.g. \code{f} or
-\code{fem} ). (Lettercases do not matter, e.g. \code{Male} or \code{MALE}
-are both evaluated same as \code{male}.)}
+calculated. Should contain columns named as "\code{age}" and as
+"\code{gender}" (or, alternatively, "\code{sex}"). Alternatively, these
+columns can be specified via the \code{gender_col} and \code{age_col}
+parameters. The \code{age} column must contain only numbers or \code{NA},
+while \code{gender} column must contain only \code{1} (= male) or \code{2}
+(= female), either as numbers or as strings, or \code{NA}. Alternatively,
+male can be indicated, instead of \code{1}, with the string \code{male} (or
+its abbreviations, e.g. \code{m}), while in that case female can be
+indicated, instead of \code{2}, with the string \code{female} (or its
+abbreviations, e.g. \code{f} or \code{fem} ). (Lettercases do not matter,
+e.g. \code{Male} or \code{MALE} are both evaluated same as \code{male}.)}
 
 \item{group_by}{Optionally the name(s) of column(s) from the data frame
 provided as \code{data_per_subject} to group by.}
+
+\item{gender_col}{Optionally the name of column from the data frame
+that contains the gender (sex) information.}
+
+\item{age_col}{Optionally the name of column from the data frame
+that contains the age information.}
 
 \item{percent}{Logical. If \code{TRUE}, gender ratios (and the
 "unknown" ratios based on \code{NA} values) are presented as percentage. If
@@ -46,16 +55,17 @@ Prints participant count, age mean and SD, and gender ratio,
   from given dataset.
 }
 \details{
-The function will first look for columns named precisely "\code{age}"
-and as "\code{gender}". If either is not found, the function looks for the
-same names but with any lettercase (e.g. "\code{AGE}" or "\code{Gender}"). If
-still no "\code{gender}" column is found, the function looks for "\code{sex}"
-column in the same manner. alternatively, "\code{sex}". (No columns found for
-either variable will result in error message.)
+If \code{gender_col} and/or \code{age_col} are not specified, the
+ function will first look for columns named precisely "\code{age}" and as
+ "\code{gender}". If either is not found, the function looks for the same
+ names but with any lettercase (e.g. "\code{AGE}" or "\code{Gender}"). If
+ still no "\code{gender}" column is found, the function looks for
+ "\code{sex}" column in the same manner. If no column is found for either,
+ all related values will be counted as "unkown" (\code{NA}).
 
-If \code{NA} values are found in either the \code{age} or \code{gender}
-column, the ratio (or count) of unknown cases will be displayed everywhere.
-Otherwise it will simply not be displayed anywhere.
+ If \code{NA} values are found in either the \code{age} or \code{gender}
+ column, the ratio (or count) of unknown cases will be displayed everywhere.
+ Otherwise it will simply not be displayed anywhere.
 }
 \examples{
 # below is an illustrative example dataset
@@ -83,5 +93,27 @@ dat = data.frame(
 )
 # again print demographics per "conditions":
 dems_neat(dat, group_by = 'conditions')
+
+# another dataset, with no "age"/"gender" columns
+dat = data.frame(
+    subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+    conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
+    geschlecht = c(2, 2, NA, NA, 1, 1, 1, 2, NA, NA),
+    alter = c(6, 7, 8.5, 6, 5, 16, NA, 16, 45, 77),
+    measure_y = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
+    stringsAsFactors = TRUE
+)
+
+# the folliwing will return "unknowns"
+dems_neat(dat, group_by = 'conditions')
+
+# age column specified
+dems_neat(dat, group_by = 'conditions', gender_col = 'geschlecht')
+
+# both columns specified
+dems_neat(dat,
+          group_by = 'conditions',
+          age_col = 'alter',
+          gender_col = 'geschlecht')
 
 }

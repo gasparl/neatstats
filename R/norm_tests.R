@@ -104,15 +104,21 @@ norm_tests_in = function(var1,
                          plots,
                          tneet,
                          nonparametric,
-                         aspect_ratio) {
+                         aspect_ratio,
+                         anov = FALSE) {
     if (pair == TRUE) {
         diff = var2 - var1
     }
     if (plots == TRUE) {
+        if (anov == TRUE) {
+            v1lab = 'Residuals'
+        } else {
+            v1lab = 'Var 1'
+        }
         qqclrs = c('#000099', '#e60000', '#ff5555')
         pv1q = ggpubr::ggqqplot(var1, shape = 1) +
             xlab('Theoretical quantiles') +
-            ylab('Var 1 quantiles') +
+            ylab(paste(v1lab, 'quantiles')) +
             theme(aspect.ratio = aspect_ratio)
         pv1q$layers[[1]]$aes_params$colour <- qqclrs[1]
         pv1q$layers[[2]]$aes_params$colour <- qqclrs[2]
@@ -127,7 +133,7 @@ norm_tests_in = function(var1,
         )
         pv1 = plot_neat(values = var1,
                         parts = parts,
-                        part_colors = part_colors) + xlab('var 1') +
+                        part_colors = part_colors) + xlab(v1lab) +
             theme(aspect.ratio = aspect_ratio)
         if (!is.null(var2)) {
             pv2q = ggpubr::ggqqplot(var2, shape = 1) +
@@ -141,7 +147,7 @@ norm_tests_in = function(var1,
                 values = var2,
                 parts = parts,
                 part_colors = part_colors
-            ) + xlab('var 2') +
+            ) + xlab('Var 2') +
                 theme(aspect.ratio = aspect_ratio)
             if (pair == TRUE) {
                 pv21q = ggpubr::ggqqplot(diff, shape = 1) +
@@ -154,7 +160,7 @@ norm_tests_in = function(var1,
                 pv21 = plot_neat(values = diff,
                                  parts = parts,
                                  part_colors = part_colors) +
-                    xlab('difference (var 2 - var 1)') +
+                    xlab('Difference (Var 2 - Var 1)') +
                     theme(aspect.ratio = aspect_ratio)
                 var12 = data.frame(v1 = var1, v2 = var2)
                 pscat = ggplot(var12, aes(x = .data$v1,
@@ -167,7 +173,7 @@ norm_tests_in = function(var1,
                         size = 0.8
                     ) +
                     geom_point(shape = 23)  +
-                    xlab('var 1')  + ylab('var 2') + theme_bw() +
+                    xlab('Var 1')  + ylab('Var 2') + theme_bw() +
                     theme(aspect.ratio = aspect_ratio)
                 graphics::plot(ggpubr::ggarrange(pv1q, pv2q, pv21q))
                 graphics::plot(ggpubr::ggarrange(pv1, pv2, pv21, pscat))

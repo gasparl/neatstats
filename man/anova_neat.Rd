@@ -15,7 +15,7 @@ anova_neat(
   var_tests = FALSE,
   bf_added = FALSE,
   bf_sample = 10000,
-  test_title = "--- ANOVA ---",
+  test_title = "--- neat ANOVA ---",
   welch = TRUE,
   e_correction = NULL,
   type = 2,
@@ -85,7 +85,7 @@ dataset, the calculation can take considerable time.)}
 \item{bf_sample}{Number of samples used to estimate Bayes factor (\code{10000}
 by default).}
 
-\item{test_title}{String, \code{"--- ANOVA ---"} by default. Simply displayed
+\item{test_title}{String, \code{"--- neat ANOVA ---"} by default. Simply displayed
 in printing preceding the statistics.}
 
 \item{welch}{If \code{TRUE} (default), calculates Welch's ANOVA via

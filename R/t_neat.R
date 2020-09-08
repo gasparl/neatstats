@@ -311,7 +311,7 @@ t_neat = function(var1,
             message("NA values omitted.")
         }
     }
-    if (norm_tests  != 'none' &
+    if (norm_tests != 'none' &
         hush == FALSE) {
         norm_tests_in(
             var1 = var1,
