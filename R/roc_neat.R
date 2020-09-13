@@ -12,11 +12,13 @@
 #'  one-sided test: either "1" (\code{roc1} AUC expected to be greater than
 #'  \code{roc2} AUC) or "2" (\code{roc2} AUC expected to be greater than
 #'  \code{roc2} AUC). If \code{NULL} (default), the test is two-sided.
+#'@param ci Numeric; confidence level for the returned CIs (raw difference).
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'
 #'@return Prints DeLong's test results for the comparison of the two given AUCs
-#'  in APA style. Furthermore, when assigned, returns a named vector with the
-#'  following two elements: \code{stat} (D value), \code{p} (p value).
+#'  in APA style, as well as corresponding CI for the AUC difference.
+#'  Furthermore, when assigned, returns a named vector with the following two
+#'  elements: \code{stat} (D value), \code{p} (p value).
 #'@note
 #'The test statistics are calculated via
 #'\code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both paired
@@ -26,6 +28,10 @@
 #'\code{\link[pROC:roc]{pROC::roc}}.
 #'
 #'@references
+#'
+#'Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
+#'from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
+#'
 #'DeLong, E. R., DeLong, D. M., & Clarke-Pearson, D. L. (1988). Comparing the
 #'areas under two or more correlated receiver operating characteristic curves: a
 #'nonparametric approach. Biometrics, 44(3), 837-845.
@@ -57,12 +63,14 @@ roc_neat = function(roc1,
                     roc2,
                     pair = FALSE,
                     greater = NULL,
+                    ci = .95,
                     hush = FALSE) {
     validate_args(
         match.call(),
         list(
             val_arg(pair, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+            val_arg(ci, c('num'), 1),
             val_arg(hush, c('bool'), 1)
         )
     )
@@ -78,15 +86,48 @@ roc_neat = function(roc1,
     roc_stat = roc_test$statistic
     df = roc_test$parameter
     p_value = roc_test$p.value
+
+    roc_test_ts = pROC::roc.test(roc1, roc2, paired = pair)
+    auc_diff = as.numeric(roc1$auc) - as.numeric(roc2$auc)
+    z_norm = -0.862 + sqrt(0.743 - 2.404 * log(roc_test_ts$p.value))
+    auc_se = abs(auc_diff / z_norm)
+    z_c = stats::qnorm(1 - (1 - ci) / 2)
+    auc_low = auc_diff - auc_se * z_c
+    auc_upp = auc_diff + auc_se * z_c
+    ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
+
     if (pair == FALSE) {
-        out = paste0("D(",
-                     ro(df, 1),
-                     ") = ",
-                     ro(roc_stat, 2),
-                     ", p = ",
-                     ro(p_value, 3))
+        out = paste0(
+            "D(",
+            ro(df, 1),
+            ") = ",
+            ro(roc_stat, 2),
+            ", p = ",
+            ro(p_value, 3),
+            " (AUC difference: ",
+            ro(auc_diff, 3, leading_zero = FALSE),
+            ci_disp,
+            " [",
+            ro(auc_low, 3, leading_zero = FALSE),
+            ", ",
+            ro(auc_upp, 3, leading_zero = FALSE),
+            "])"
+        )
     } else {
-        out = paste0("D = ", ro(roc_stat, 2), ", p = ", ro(p_value, 3))
+        out = paste0(
+            "D = ",
+            ro(roc_stat, 2),
+            ", p = ",
+            ro(p_value, 3),
+            " (AUC difference: ",
+            ro(auc_diff, 3, leading_zero = FALSE),
+            ci_disp,
+            " [",
+            ro(auc_low, 3, leading_zero = FALSE),
+            ", ",
+            ro(auc_upp, 3, leading_zero = FALSE),
+            "])"
+        )
     }
     if (hush == FALSE) {
         prnt(out)

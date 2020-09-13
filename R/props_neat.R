@@ -53,23 +53,24 @@
 #'  happens). (For details, see \code{\link[BayesFactor]{contingencyTableBF}},
 #'  or e.g. 'Chapter 17 Bayesian statistics' in Navarro, 2019.)
 #'
-#'@references Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence
-#'  interval from a P value. Bmj, 343(d2090).
-#'  \doi{https://doi.org/10.1136/bmj.d2090}
+#'@references
 #'
-#'  Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika,
-#'  34(1/2), 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
+#'Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
+#'from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
 #'
-#'  Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
-#'  association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
-#'  \doi{https://doi.org/10.1002/sim.3531}
+#'Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika, 34(1/2),
+#'123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
 #'
-#'  Navarro, D. (2019). Learning statistics with R.
-#'  \url{https://learningstatisticswithr.com/}
+#'Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
+#'association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
+#'\doi{https://doi.org/10.1002/sim.3531}
 #'
-#'  Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for
-#'  the 2 times 2 binomial trial. Journal of the Royal Statistical Society:
-#'  Series A (General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
+#'Navarro, D. (2019). Learning statistics with R.
+#'\url{https://learningstatisticswithr.com/}
+#'
+#'Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for the
+#'2 times 2 binomial trial. Journal of the Royal Statistical Society: Series A
+#'(General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
 #'
 #'@examples
 #' props_neat(

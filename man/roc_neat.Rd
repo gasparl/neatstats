@@ -4,7 +4,7 @@
 \alias{roc_neat}
 \title{Difference of Two Areas Under the Curves}
 \usage{
-roc_neat(roc1, roc2, pair = FALSE, greater = NULL, hush = FALSE)
+roc_neat(roc1, roc2, pair = FALSE, greater = NULL, ci = 0.95, hush = FALSE)
 }
 \arguments{
 \item{roc1}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
@@ -21,12 +21,15 @@ one-sided test: either "1" (\code{roc1} AUC expected to be greater than
 \code{roc2} AUC) or "2" (\code{roc2} AUC expected to be greater than
 \code{roc2} AUC). If \code{NULL} (default), the test is two-sided.}
 
+\item{ci}{Numeric; confidence level for the returned CIs (raw difference).}
+
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
 }
 \value{
 Prints DeLong's test results for the comparison of the two given AUCs
- in APA style. Furthermore, when assigned, returns a named vector with the
- following two elements: \code{stat} (D value), \code{p} (p value).
+ in APA style, as well as corresponding CI for the AUC difference.
+ Furthermore, when assigned, returns a named vector with the following two
+ elements: \code{stat} (D value), \code{p} (p value).
 }
 \description{
 Comparison of two \code{\link[=t_neat]{areas under the receiver
@@ -56,6 +59,9 @@ results2 = t_neat(v3, v4, auc_added = TRUE)
 roc_neat(results1$roc_obj, results2$roc_obj, greater = "1")
 }
 \references{
+Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
+from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
+
 DeLong, E. R., DeLong, D. M., & Clarke-Pearson, D. L. (1988). Comparing the
 areas under two or more correlated receiver operating characteristic curves: a
 nonparametric approach. Biometrics, 44(3), 837-845.
