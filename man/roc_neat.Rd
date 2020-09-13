@@ -4,7 +4,7 @@
 \alias{roc_neat}
 \title{Difference of Two Areas Under the Curves}
 \usage{
-roc_neat(roc1, roc2, pair = FALSE, greater = NULL, ci = 0.95, hush = FALSE)
+roc_neat(roc1, roc2, pair = FALSE, greater = NULL, ci = NULL, hush = FALSE)
 }
 \arguments{
 \item{roc1}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{

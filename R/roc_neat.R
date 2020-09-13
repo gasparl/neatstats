@@ -63,24 +63,36 @@ roc_neat = function(roc1,
                     roc2,
                     pair = FALSE,
                     greater = NULL,
-                    ci = .95,
+                    ci = NULL,
                     hush = FALSE) {
     validate_args(
         match.call(),
         list(
             val_arg(pair, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
-            val_arg(ci, c('num'), 1),
+            val_arg(ci, c('null', 'num'), 1),
             val_arg(hush, c('bool'), 1)
         )
     )
     greater = toString(greater)
     if (greater == "1") {
+        if (hush == FALSE) {
+            message("One-sided test (with 90% CI default)! H1: first is greater than second.")
+        }
         alt = "greater"
     } else if (greater == "2") {
+        if (hush == FALSE) {
+            message("One-sided test (with 90% CI default)! H1: second is greater than first.")
+        }
         alt = "less"
     } else {
         alt = "two.sided"
+        if (is.null(ci)) {
+            ci = 0.95
+        }
+    }
+    if (is.null(ci)) {
+        ci = 0.90
     }
     roc_test = pROC::roc.test(roc1, roc2, paired = pair, alternative = alt)
     roc_stat = roc_test$statistic
