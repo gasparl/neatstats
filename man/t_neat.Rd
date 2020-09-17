@@ -116,10 +116,10 @@ indicate means of each of the two variables. If \code{nonparametric} is set
 to \code{TRUE}, medians are calculated for these dashed lines instead of
 means. When \code{auc_added} is \code{TRUE} (and the AUC is at least .5),
 the best threshold value for classification (maximal differentiation
-accuracy) is added to the plot as solid vertical line. (In case of multiple
-best thresholds with identical overall accuracy, all are added.) If
-\code{NULL}, same as if \code{TRUE} except that histogram is added to the
-background.}
+accuracy using Youden's index) is added to the plot as solid vertical line.
+(In case of multiple best thresholds with identical overall accuracy, all
+are added.) If \code{NULL}, same as if \code{TRUE} except that histogram is
+added to the background.}
 
 \item{rug_size}{Numeric (\code{4} by default): size of the rug ticks below the
 density plot. Set to \code{0} (zero) to omit rug plotting.}

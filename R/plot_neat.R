@@ -539,7 +539,7 @@ plot_neat = function(data_per_subject = NULL,
         panels %in% fact_names && length(fact_names) == 3) {
         fact_names = c(fact_names[!fact_names == panels], panels)
     }
-    if (reverse == TRUE && onefact == FALSE) {
+    if (reverse == TRUE && onefact != TRUE) {
         fact_names[c(1, 2)] = fact_names[c(2, 1)]
     }
     if (!is.null(within_vars)) {
