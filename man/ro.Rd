@@ -4,7 +4,7 @@
 \alias{ro}
 \title{Neat rounding}
 \usage{
-ro(num, round_to = 2, leading_zero = TRUE)
+ro(num, round_to = 2, leading_zero = TRUE, signi = FALSE)
 }
 \arguments{
 \item{num}{Number to be rounded.}
@@ -14,6 +14,13 @@ point), to round to.}
 
 \item{leading_zero}{Logical, \code{TRUE} by default. If \code{FALSE}, omits
 leading zero (e.g. returns ".17" instead of "0.17").}
+
+\item{signi}{Logical, \code{FALSE} by default. If \code{TRUE}, rounds to a
+fractional digit that allows at least the first \code{N} non-zero digits
+displayed in all numbers, where \code{N} is specified by the
+\code{round_to} parameter. (This differs from the base \code{\link{signif}}
+function mainly in that integers are never rounded, and also that all
+numbers will have uniform trailing zeroes.)}
 }
 \value{
 Number as string: \code{num} rounded to \code{round_to} digits, with

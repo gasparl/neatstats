@@ -24,7 +24,7 @@ Calculates approximate confidence interval (CI) for any given
 }
 \note{
 Check the Altman & Bland (2011) paper for details! (The calculation for
-protportions is not implemented here.)
+proportions is not implemented here.)
 }
 \examples{
 

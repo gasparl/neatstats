@@ -44,9 +44,9 @@
 #'  by default). More samples (e.g. \code{10000}) take longer time but give more
 #'  stable BF.
 #'@param auc_added Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
-#'  calculated and displayed (including TPR and FPR, i.e., true positive and
+#'  calculated and displayed (including TPR and TNR, i.e., true positive and
 #'  true negative rates, i.e. sensitivity and specificity, using an optimal
-#'  cutoff value, i.e. threshold, that provides maximal TPR and FPR).
+#'  cutoff value, i.e. threshold, that provides maximal TPR and TNR).
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
 #'  calculated and displayed in case of paired comparison.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display

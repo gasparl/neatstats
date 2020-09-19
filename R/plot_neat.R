@@ -378,13 +378,20 @@ plot_neat = function(data_per_subject = NULL,
                      parts = c('h', 'd', 'n', 'b'),
                      part_colors = NULL,
                      binwidth = NULL) {
+    if (is.null(values) &&
+        is.atomic(data_per_subject)) {
+        values = data_per_subject
+        data_per_subject = NULL
+    }
     if (is.null(data_per_subject)) {
-        return(neat_plot2(
-            values = values,
-            parts = parts,
-            part_colors = part_colors,
-            binwidth = binwidth
-        ))
+        return(
+            neat_plot2(
+                values = values,
+                parts = parts,
+                part_colors = part_colors,
+                binwidth = binwidth
+            )
+        )
     }
     data_wide = data_per_subject
     validate_args(
