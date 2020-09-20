@@ -17,7 +17,7 @@
 mean_ci = function(x,
                    distance_only = TRUE,
                    ci = 0.95) {
-    m_c = mean(x)
+    m_c = mean(x, na.rm = TRUE)
     se_c = se(x)
     z_c = stats::qnorm(1 - (1 - ci) / 2)
     dist = z_c * se_c

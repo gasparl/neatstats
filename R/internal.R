@@ -560,19 +560,6 @@ val_wi_id = function(func_used, id_arg, val_cols) {
   return(val_levels)
 }
 
-# from https://stackoverflow.com/questions/
-# 5173692/how-to-return-number-of-decimal-places-in-r
-
-countDecimalPlaces <- function(x) {
-    if ((x %% 1) != 0) {
-        strs <- strsplit(as.character(format(x, scientific = F)), "\\.")
-        n <- nchar(strs[[1]][2])
-    } else {
-        n <- 0
-    }
-    return(n)
-}
-
 
 ## all below: rank BF functions from J. van Doorn
 

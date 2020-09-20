@@ -33,13 +33,13 @@ ro = function(num,
         value = as.numeric(as.character(num))
     }
     if (signi == TRUE) {
-        round_to = max(sapply(signif(value, round_to), FUN = countDecimalPlaces))
+        value = formatC(value, format = "fg", digits = round_to)
+    } else {
+        value = format(round(value, round_to),
+                       nsmall = round_to,
+                       scientific = FALSE)
     }
-    formtd = gsub(" ", "", format(
-        round(value, round_to),
-        nsmall = round_to,
-        scientific = FALSE
-    ))
+    formtd = gsub(" ", "", value)
     if (leading_zero == FALSE) {
         formtd = sub("0.", ".", formtd, fixed = TRUE)
     }

@@ -9,5 +9,5 @@
 #'
 #' @export
 se = function(x) {
-    return(stats::sd(x) / sqrt(length(x)))
+    return(stats::sd(x, na.rm = TRUE) / sqrt(length(na.omit(x))))
 }
