@@ -22,18 +22,9 @@
 #'
 #' @return The given function results and plots by group.
 #'
-#'
-#'
-#
-
-.
 #' @examples
-#' ro( 1.2345 ) # returns "1.23"
 #'
-#' ro( 0.12345, 1 ) # returns "0.1"
-#'
-#' ro( 12.3, 4 ) # returns "12.3000"
-#'
+#' @export
 peek_neat = function(num,
               round_to = 2,
               leading_zero = TRUE) {
