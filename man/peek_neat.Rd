@@ -10,8 +10,8 @@ peek_neat(
   group_by = NULL,
   filt = NULL,
   sep = ", ",
-  fun_print = NULL,
-  fun_plot = NULL,
+  f_print = NULL,
+  f_plot = NULL,
   iqr_times = 3,
   round_to = 4,
   group_n = TRUE,
@@ -34,24 +34,24 @@ column names alone; see Examples.}
 
 \item{sep}{String (comma by default) for separating group names.}
 
-\item{fun_print}{Printing function; see details.}
+\item{f_print}{Printing function; see details.}
 
-\item{fun_plot}{Plotting function; see details. (Provide string to skip
+\item{f_plot}{Plotting function; see details. (Provide string to skip
 plotting.)}
 
 \item{iqr_times}{The multiplication of IQR to calculate Tukey's fences, when
-using default \code{fun_print} (\code{NULL}); see Details. The default is
+using default \code{f_print} (\code{NULL}); see Details. The default is
 \code{3} to spot Tukey's "far outliers" (e.g. by comparing the fences with
 min and max values). (Note that the usual fences, e.g. for box plots, use
 \code{1.5}).}
 
-\item{round_to}{Number of significant digits to round to, when using default
-\code{fun_print} (\code{NULL}).}
+\item{round_to}{Number of \code{\link[neatStats:ro]{significant fractional
+digits to round to}}, when using default \code{f_print} (\code{NULL}).}
 
 \item{group_n}{Logical. If \code{TRUE}, adds sample sizes (\code{n}) per
-group to plots when using default \code{fun_plot} (\code{NULL}).}
+group to plots when using default \code{f_plot} (\code{NULL}).}
 
-\item{...}{Any arguments to be passed to the \code{fun_plot} function.}
+\item{...}{Any arguments to be passed to the \code{f_plot} function.}
 }
 \value{
 Data frame with the printed values (if possible).
@@ -67,14 +67,14 @@ mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
 the upper and lower limits with distances of \code{X} times the
 \code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
 the \code{iqr_times} parameter. Returns (invisibly) the same values,
-unrounded, via a data frame. If alternative \code{fun_print} is given, prints
+unrounded, via a data frame. If alternative \code{f_print} is given, prints
 whatever value is returned from the given function (and attempts, if possible,
 to create a data frame).
 
 Creates and displays box plot(s) (per group) by default, aling with overlayed
 violin plot (densities proportionate to sample sizes). If alternative
-\code{fun_plot} is given, the first argument will be the values per group, and
-all plots will be \code{\link[ggpubr::ggarrange]{arranged}} into a single plot
+\code{f_plot} is given, the first argument will be the values per group, and
+all plots will be \code{\link[ggpubr:ggarrange]{arranged}} into a single plot
 and displayed together. To skip plotting, just give any character as argument
 (e.g. \code{"none"} or just \code{""}).
 }

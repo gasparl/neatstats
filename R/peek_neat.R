@@ -11,19 +11,19 @@
 #'   data frame before performing the aggregation. The expression should use
 #'   column names alone; see Examples.
 #' @param sep String (comma by default) for separating group names.
-#' @param fun_print Printing function; see details.
-#' @param fun_plot Plotting function; see details. (Provide string to skip
+#' @param f_print Printing function; see details.
+#' @param f_plot Plotting function; see details. (Provide string to skip
 #'   plotting.)
 #' @param iqr_times The multiplication of IQR to calculate Tukey's fences, when
-#'   using default \code{fun_print} (\code{NULL}); see Details. The default is
+#'   using default \code{f_print} (\code{NULL}); see Details. The default is
 #'   \code{3} to spot Tukey's "far outliers" (e.g. by comparing the fences with
 #'   min and max values). (Note that the usual fences, e.g. for box plots, use
 #'   \code{1.5}).
-#' @param round_to Number of significant digits to round to, when using default
-#'   \code{fun_print} (\code{NULL}).
+#' @param round_to Number of \code{\link[neatStats:ro]{significant fractional
+#'   digits to round to}}, when using default \code{f_print} (\code{NULL}).
 #' @param group_n Logical. If \code{TRUE}, adds sample sizes (\code{n}) per
-#'   group to plots when using default \code{fun_plot} (\code{NULL}).
-#' @param ... Any arguments to be passed to the \code{fun_plot} function.
+#'   group to plots when using default \code{f_plot} (\code{NULL}).
+#' @param ... Any arguments to be passed to the \code{f_plot} function.
 #'
 #'@details
 #'
@@ -34,14 +34,14 @@
 #'the upper and lower limits with distances of \code{X} times the
 #'\code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
 #'the \code{iqr_times} parameter. Returns (invisibly) the same values,
-#'unrounded, via a data frame. If alternative \code{fun_print} is given, prints
+#'unrounded, via a data frame. If alternative \code{f_print} is given, prints
 #'whatever value is returned from the given function (and attempts, if possible,
 #'to create a data frame).
 #'
 #'Creates and displays box plot(s) (per group) by default, aling with overlayed
 #'violin plot (densities proportionate to sample sizes). If alternative
-#'\code{fun_plot} is given, the first argument will be the values per group, and
-#'all plots will be \code{\link[ggpubr::ggarrange]{arranged}} into a single plot
+#'\code{f_plot} is given, the first argument will be the values per group, and
+#'all plots will be \code{\link[ggpubr:ggarrange]{arranged}} into a single plot
 #'and displayed together. To skip plotting, just give any character as argument
 #'(e.g. \code{"none"} or just \code{""}).
 #'
@@ -49,12 +49,31 @@
 #'
 #' @examples
 #'
-#'
 #' data("mtcars") # load base R example dataset
 #'
 #' # overall info for wt (Weight)
 #' peek_neat(mtcars, 'wt')
 #'
+#' # same without quotes
+#' peek_neat(mtcars, wt)
+#'
+#' # now groupped by cyl (Number of cylinders)
+#' peek_neat(mtcars, wt, group_by = 'cyl')
+#'
+#' # grouped by cyl and gear
+#' peek_neat(mtcars, wt, group_by = c('cyl', 'gear'))
+#'
+#' # filter to only have cyl larger than  4
+#' peek_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
+#'
+#' # without plots
+#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = "")
+#'
+#' # with histogramms etc, using plot_neat
+#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = plot_neat)
+#'
+#' # with Q-Q plots, via ggpubr
+#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = ggpubr::ggqqplot)
 #'
 #' @export
 peek_neat = function(dat,
@@ -62,8 +81,8 @@ peek_neat = function(dat,
                      group_by = NULL,
                      filt = NULL,
                      sep = ", ",
-                     fun_print = NULL,
-                     fun_plot = NULL,
+                     f_print = NULL,
+                     f_plot = NULL,
                      iqr_times = 3,
                      round_to = 4,
                      group_n = TRUE,
@@ -76,8 +95,8 @@ peek_neat = function(dat,
                       val_arg(dat, c('df')),
                       val_arg(group_by, c('null', 'char')),
                       val_arg(sep, c('char')),
-                      val_arg(fun_print, c('function', 'null')),
-                      val_arg(fun_plot, c('function', 'null', 'char')),
+                      val_arg(f_print, c('function', 'null')),
+                      val_arg(f_plot, c('function', 'null', 'char')),
                       val_arg(iqr_times, c('num'), 1),
                       val_arg(round_to, c('num'), 1),
                       val_arg(group_n, c('bool'), 1)
@@ -135,24 +154,30 @@ peek_neat = function(dat,
             cat(grp, ':', fill = TRUE, sep = '')
         }
         valstemp = vals[group_by == grp]
-        if (is.null(fun_print)) {
+        if (is.null(f_print)) {
             to_merg = sum_neat(valstemp, iqr_times = iqr_times, round_to = round_to)
         } else {
-            to_merg = fun_print(valstemp)
+            to_merg = f_print(valstemp)
         }
         if (class(to_merg) == 'data.frame' |
             length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
             dat_merg = rbind(dat_merg, data.frame(as.list((to_merg))))
         }
-        if (!is.null(fun_plot) && class(fun_plot) != "character") {
-            plot_list = plot_list[[length(plot_list)]] = fun_plot(vals, ...)
+        if (!is.null(f_plot) && class(f_plot) != "character") {
+            if (group_n == TRUE) {
+                xtitl = paste0(grp, '\n(n = ',
+                               length(valstemp), ')')
+            } else {
+                xtitl = grp
+            }
+            plot_list[[length(plot_list) + 1]] = f_plot(valstemp, ...) +
+                xlab(xtitl)
         }
     }
-
-    if (!is.null(fun_plot)) {
-        graphics::plot(ggpubr::ggarrange(plot_list))
-    } else if (class(fun_plot) != "character") {
+    if (is.null(f_plot)) {
         graphics::plot(box_neat(vals, group_by, group_n = group_n))
+    } else if (class(f_plot) != "character") {
+        graphics::plot(ggpubr::ggarrange(plotlist = plot_list))
     }
     invisible(dat_merg)
 }
