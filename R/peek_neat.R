@@ -1,40 +1,163 @@
 #' @title Cursory Summaries and Plots per Group
 #'
 #' @description Cursory summaries and plots per group.
-#' @param dat Data frame or vector.
-#' @param values Values.
-#' @param group_by Character.
-#' @param iqr_times Numeric.
-#' @param display_n Logical.
+#' @param dat Data frame (or name of data frame as string).
+#' @param values The name of the column in the \code{dat} data frame, that
+#'   contains the vector.
+#' @param group_by String, or vector of strings: the name(s) of the column(s) in
+#'   the \code{dat} data frame, containing the vector(s) of factors by which the
+#'   statistics are grouped.
+#' @param filt An expression to filter, by column values, the entire \code{dat}
+#'   data frame before performing the aggregation. The expression should use
+#'   column names alone; see Examples.
+#' @param sep String (comma by default) for separating group names.
+#' @param fun_print Printing function; see details.
+#' @param fun_plot Plotting function; see details. (Provide string to skip
+#'   plotting.)
+#' @param iqr_times The multiplication of IQR to calculate Tukey's fences, when
+#'   using default \code{fun_print} (\code{NULL}); see Details. The default is
+#'   \code{3} to spot Tukey's "far outliers" (e.g. by comparing the fences with
+#'   min and max values). (Note that the usual fences, e.g. for box plots, use
+#'   \code{1.5}).
+#' @param round_to Number of significant digits to round to, when using default
+#'   \code{fun_print} (\code{NULL}).
+#' @param group_n Logical. If \code{TRUE}, adds sample sizes (\code{n}) per
+#'   group to plots when using default \code{fun_plot} (\code{NULL}).
+#' @param ... Any arguments to be passed to the \code{fun_plot} function.
 #'
+#'@details
 #'
-#' @details
-#'
-#'By default, prints (and invisibly returns) the following data (per group):
-#'\code{mean}; 95% CI of the mean as \code{ci_low} and \code{ci_upp}; \code{sd};
-#'\code{median}; \code{quantile_1st} and \code{quantile_3rd} (first and third
-#'quantiles); "Tukey's fences" as \code{fence_low} and \code{fence_upp}. Tukey's
-#'fences are the upper and lower limits with distances of \code{X} times the
+#'Prints, by default, the following data (per group): \code{mean}; 95% CI of the
+#'mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
+#'\code{quantile_1st} and \code{quantile_3rd} (first and third quantiles);
+#'"Tukey's fences" as \code{fence_low} and \code{fence_upp}. Tukey's fences are
+#'the upper and lower limits with distances of \code{X} times the
 #'\code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
-#'the \code{iqr_times} parameter.
+#'the \code{iqr_times} parameter. Returns (invisibly) the same values,
+#'unrounded, via a data frame. If alternative \code{fun_print} is given, prints
+#'whatever value is returned from the given function (and attempts, if possible,
+#'to create a data frame).
 #'
+#'Creates and displays box plot(s) (per group) by default, aling with overlayed
+#'violin plot (densities proportionate to sample sizes). If alternative
+#'\code{fun_plot} is given, the first argument will be the values per group, and
+#'all plots will be \code{\link[ggpubr::ggarrange]{arranged}} into a single plot
+#'and displayed together. To skip plotting, just give any character as argument
+#'(e.g. \code{"none"} or just \code{""}).
 #'
-#'
-#' @return The given function results and plots by group.
+#' @return Data frame with the printed values (if possible).
 #'
 #' @examples
 #'
+#'
+#' data("mtcars") # load base R example dataset
+#'
+#' # overall info for wt (Weight)
+#' peek_neat(mtcars, 'wt')
+#'
+#'
 #' @export
-peek_neat = function(num,
-              round_to = 2,
-              leading_zero = TRUE) {
+peek_neat = function(dat,
+                     values,
+                     group_by = NULL,
+                     filt = NULL,
+                     sep = ", ",
+                     fun_print = NULL,
+                     fun_plot = NULL,
+                     iqr_times = 3,
+                     round_to = 4,
+                     group_n = TRUE,
+                     ...) {
+    if (typeof(dat) == "character") {
+        dat = eval(parse(text = dat))
+    }
     validate_args(match.call(),
-                  list(val_arg(leading_zero, c('bool'), 1)))
+                  list(
+                      val_arg(dat, c('df')),
+                      val_arg(group_by, c('null', 'char')),
+                      val_arg(sep, c('char')),
+                      val_arg(fun_print, c('function', 'null')),
+                      val_arg(fun_plot, c('function', 'null', 'char')),
+                      val_arg(iqr_times, c('num'), 1),
+                      val_arg(round_to, c('num'), 1),
+                      val_arg(group_n, c('bool'), 1)
+                  ))
+    name_taken('neat_unique_values', dat)
+    values = paste(deparse(substitute(values)), collapse = "")
+    values = trimws(values, whitespace = "['\"]")
+    if (values %in% names(dat)) {
+        dat$neat_unique_values = dat[[values]]
+    } else {
+        dat$neat_unique_values = eval(parse(text = values))
+    }
+    if (anyNA(dat$neat_unique_values)) {
+        dat = dat[!is.na(dat$neat_unique_values),]
+    }
+    filt = paste(deparse(substitute(filt)), collapse = "")
+    if (filt != "NULL") {
+        if (startsWith(filt, "'") | startsWith(filt, '"')) {
+            stop('The argument "filt" must be an expression (not string).')
+        }
+        filt_vec = eval(parse(text = paste0('with(data = dat, ',
+                                            filt,
+                                            ')')))
+        na_sum = sum(is.na(filt_vec))
+        if (na_sum > 0) {
+            message(
+                'Note: ',
+                na_sum,
+                ' NA values were replaced as FALSE for filtering.',
+                ' You may want to double-check your filtering expression.'
+            )
+            filt_vec[is.na(filt_vec)] = FALSE
+        }
+        dat = dat[filt_vec,]
 
-    return(formtd)
+    }
+    if (!is.null(group_by)) {
+        group_by = as.factor(eval(parse(
+            text = paste0(
+                'with(data = dat, paste(',
+                paste(group_by, collapse = ','),
+                ', sep = "',
+                sep,
+                '"))'
+            )
+        )))
+    } else {
+        group_by = as.factor(rep('0', nrow(dat)))
+    }
+    dat_merg = data.frame()
+    vals = dat$neat_unique_values
+    plot_list = list()
+    for (grp in unique(group_by)) {
+        if (length(unique(group_by)) > 1) {
+            cat(grp, ':', fill = TRUE, sep = '')
+        }
+        valstemp = vals[group_by == grp]
+        if (is.null(fun_print)) {
+            to_merg = sum_neat(valstemp, iqr_times = iqr_times, round_to = round_to)
+        } else {
+            to_merg = fun_print(valstemp)
+        }
+        if (class(to_merg) == 'data.frame' |
+            length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
+            dat_merg = rbind(dat_merg, data.frame(as.list((to_merg))))
+        }
+        if (!is.null(fun_plot) && class(fun_plot) != "character") {
+            plot_list = plot_list[[length(plot_list)]] = fun_plot(vals, ...)
+        }
+    }
+
+    if (!is.null(fun_plot)) {
+        graphics::plot(ggpubr::ggarrange(plot_list))
+    } else if (class(fun_plot) != "character") {
+        graphics::plot(box_neat(vals, group_by, group_n = group_n))
+    }
+    invisible(dat_merg)
 }
 
-sum_neat = function(numvec, iqr_times) {
+sum_neat = function(numvec, iqr_times, round_to) {
     quantile_1st = as.numeric(stats::quantile(numvec, .25, na.rm = TRUE))
     quantile_3rd = as.numeric(stats::quantile(numvec, .75, na.rm = TRUE))
     mycis = neatStats::mean_ci(numvec, distance_only = FALSE)
@@ -44,14 +167,14 @@ sum_neat = function(numvec, iqr_times) {
         ci_upp = as.numeric(mycis[2]),
         sd = sd(numvec, na.rm = TRUE),
         median = median(numvec, na.rm = TRUE),
-        quantile_1st = quantile_1st,
-        quantile_3rd = quantile_3rd,
+        quantl_1st = quantile_1st,
+        quantl_3rd = quantile_3rd,
         fence_low = quantile_1st - iqr_times * (quantile_3rd - quantile_1st),
         fence_upp = iqr_times * (quantile_3rd - quantile_1st) + quantile_3rd
     )
-    to_print = as.numeric(ro(out, 4, signi = TRUE))
+    to_print = as.numeric(ro(out, round_to, signi = TRUE))
     names(to_print) = names(out)
-    prnt(to_print)
+    print(to_print)
     invisible(out)
 }
 
