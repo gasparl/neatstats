@@ -78,15 +78,16 @@ for (file_name in enum(filenames)) {
                            response,
                            method = 'incorrect',
                            filt = (response %in% c('correct', 'incorrect')))$aggr_value
-    subject_line = data.frame(
+    rbind_loop(
+        subjects_merged,
         subject_id = subject_data$subject_num[1],
         condition = subject_data$condition[1],
         gender = subject_data$gender[1],
         age = subject_data$age[1],
         er_overall = er_overall,
-        subject_line
+        rts,
+        ers
     )
-    rbind_loop(subjects_merged, subject_line)
 }
 ```
 
@@ -143,13 +144,9 @@ ers = aggr_neat(
 )
 ```
 
-The `aggr_neat()` function returns the value names (e.g., `rt_green_negative`) and values as columns (with column names `aggr_group` and `aggr_value`). However, in the end we want all these values in a single row. To transform the RT and ER values into a single line (at the same time merging them), we can use the `table_neat()` function. The returned row is assigned to the `subject_line` variable, which will be eventually constitute a single row in the `subjects_merged` data frame.
+The `aggr_neat()` function returns the value names (e.g., `rt_green_negative`) and values as columns (with column names `aggr_group` and `aggr_value`). However, in the end we want all these values in a single row. To transform the RT and ER values into a single line (at the same time merging them together with the rest of the subject data), we can use the `rbind_loop()` function.
 
-```R
-subject_line = table_neat(list(rts, ers), transpose = TRUE)
-```
-
-There is however still some additional information we want to add to this row, although these will be single values. For one, we would like to get the overall ER (regardless of stimulus type), because we want to exclude participants with generally very high ER (they may not have been paying attention or had undisclosed vision problems, etc.). For this too, we can use the `aggr_neat()` function, only omitting the `group_by` argument, and appending, at the end, `$aggr_value`, in order to access the single value returned under this column. To note, the same value can also be quite easily obtained without `aggr_neat()`, by writing, for example, `nrow(subject_data[subject_data$response == 'incorrect',]) / nrow(subject_data[subject_data$response %in% c('correct', 'incorrect'),])`. But again, using `aggr_neat()` might be clearer.
+There is still some additional information we want to add, although these will be single values. For one, we would like to get the overall ER (regardless of stimulus type), because we want to exclude participants with generally very high ER (they may not have been paying attention or had undisclosed vision problems, etc.). For this too, we can use the `aggr_neat()` function, only omitting the `group_by` argument, and appending, at the end, `$aggr_value`, in order to access the single value returned under this column. To note, the same value can also be quite easily obtained without `aggr_neat()`, by writing, for example, `nrow(subject_data[subject_data$response == 'incorrect',]) / nrow(subject_data[subject_data$response %in% c('correct', 'incorrect'),])`. But again, using `aggr_neat()` might be clearer.
 
 ```R
 er_overall = aggr_neat(subject_data,
@@ -158,23 +155,19 @@ er_overall = aggr_neat(subject_data,
                        filt = (response %in% c('correct', 'incorrect')))$aggr_value
 ```
 
-We should now add the overall ER to the `subject_line`, as well as some additional information: _subject_num_, _condition_, _age_, and _gender_. These latter variables values are constant in their respective columns, so we might as well take them from any row, for example the first row (e.g., for _subject_num_: `subject_data$subject_num[1]`). We want to add all these values, as well as the overall ERs obtained previously, to the beginning of the row. The easiest way is probably to create a new data frame, where these single values constitute the first columns, and the original `subject_line` constitutes all the remaining columns.
+We now merge all this information, and a few additional values: _subject_num_, _condition_, _age_, and _gender_. These latter variables values are constant in their respective columns, so we might as well take them from any row, for example the first row (e.g., for _subject_num_: `subject_data$subject_num[1]`). This can be done via the following function, which initiates a `subjects_merged` data frame at the first cycle of the loop and "intelligently" merges all provided data transforming them into a single row (see `?rbind_loop` for details). Hint: if some data may be discrepant for some participants (e.g., some of the participants are tested with blue and yellow colors too), the matching columns are automatically paired (by name) and missing data is filled with NAs.
 
 ```R
-subject_line = data.frame(
+rbind_loop(
+    subjects_merged,
     subject_id = subject_data$subject_num[1],
     condition = subject_data$condition[1],
     gender = subject_data$gender[1],
     age = subject_data$age[1],
     er_overall = er_overall,
-    subject_line
+    rts,
+    ers
 )
-```
-
-Finally, we append (bind) the `subject_line` to `subjects_merged` if `subjects_merged` exists. If it does not yet exist (as in the first cycle of the loop), `subject_line` is assigned to `subjects_merged` as first row. Hint: if some data may be discrepant for some participants (e.g., some of the participants are tested with blue and yellow colors too), the matching columns are automatically paired (by name) and missing data is filled with NAs.
-
-```R
-rbind_loop(subjects_merged, subject_line)
 ```
 
 When running the full _for loop_, the above described steps are repeated for each data file. After the loop has been run, the `subjects_merged` data frame is ready for statistical analysis. It might be worth noting that, while there is a "subject_id" column in this `subjects_merged` data frame, this is merely to keep track of records, but none of the statistical functions below require it: each participant is represented by a single row in the data frame, hence no additional identifier is needed.
