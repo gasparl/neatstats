@@ -34,7 +34,7 @@ For details about each function, see [the manual](https://github.com/gasparl/nea
 Selected R tutorials and other useful sources:
 
 - Comprehensive and yet relatively concise and readable official R documentation (requires time and patience; prior programming knowledge advised): https://cran.r-project.org/doc/manuals/r-release/R-intro.html
-- Succint "to the point" intro (best for those with prior programming knowledge; the entire site is very useful): http://www.sthda.com/english/wiki/r-basics-quick-and-easy
+- Succinct "to the point" intro (best for those with prior programming knowledge; the entire site is very useful): http://www.sthda.com/english/wiki/r-basics-quick-and-easy
 - Another short and nice intro: https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf
 - Verbose, step by step intro: https://www.statmethods.net/r-tutorial/index.html
 - Shortcuts in Rstudio: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
@@ -43,7 +43,7 @@ Examples for useful RStudio shortcuts:
 
 - Run from document beginning to current line: Ctrl+Alt+B
 - Run from current line to document end: Ctrl+Alt+E
-- Run code sections: Ctrl+Alt+T _(Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)_
+- Run code sections: Ctrl+Alt+T (Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
 - Autoformat ("beautify") code: Ctrl+Shift+A
 - Comment/uncomment (any number of lines): Ctrl+Shift+C
 - Reflow Comment (format to lines with max 80 char): Ctrl+Shift+/
