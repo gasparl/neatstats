@@ -80,11 +80,30 @@ and displayed together. To skip plotting, just give any character as argument
 }
 \examples{
 
-
 data("mtcars") # load base R example dataset
 
 # overall info for wt (Weight)
 peek_neat(mtcars, 'wt')
 
+# same without quotes
+peek_neat(mtcars, wt)
+
+# now groupped by cyl (Number of cylinders)
+peek_neat(mtcars, wt, group_by = 'cyl')
+
+# grouped by cyl and gear
+peek_neat(mtcars, wt, group_by = c('cyl', 'gear'))
+
+# filter to only have cyl larger than  4
+peek_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
+
+# without plots
+peek_neat(mtcars, wt, group_by = 'cyl', f_plot = "")
+
+# with histogramms etc, using plot_neat
+peek_neat(mtcars, wt, group_by = 'cyl', f_plot = plot_neat)
+
+# with Q-Q plots, via ggpubr
+peek_neat(mtcars, wt, group_by = 'cyl', f_plot = ggpubr::ggqqplot)
 
 }

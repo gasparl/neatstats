@@ -195,7 +195,9 @@ sum_neat = function(numvec, iqr_times, round_to) {
         quantl_1st = quantile_1st,
         quantl_3rd = quantile_3rd,
         fence_low = quantile_1st - iqr_times * (quantile_3rd - quantile_1st),
-        fence_upp = iqr_times * (quantile_3rd - quantile_1st) + quantile_3rd
+        fence_upp = iqr_times * (quantile_3rd - quantile_1st) + quantile_3rd,
+        min = min(numvec, na.rm = TRUE),
+        max = max(numvec, na.rm = TRUE)
     )
     to_print = as.numeric(ro(out, round_to, signi = TRUE))
     names(to_print) = names(out)
