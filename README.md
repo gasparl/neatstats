@@ -39,7 +39,7 @@ Selected R tutorials and other useful sources:
 - Verbose, step by step intro: https://www.statmethods.net/r-tutorial/index.html
 - Shortcuts in Rstudio: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
 
-Examples for useful RStudio shortcuts:
+_Examples for useful RStudio shortcuts:_
 
 - Run from document beginning to current line: Ctrl+Alt+B
 - Run from current line to document end: Ctrl+Alt+E
