@@ -27,9 +27,10 @@ names.}
 Prints test results.
 }
 \description{
-Performs Brown-Forsythe and Fligner-Killeen variance equality
- tests (tests of homogeneity of variances). This is primarily a subfunction
- of \code{\link{anova_neat}}, but here it is available separately for other
+Displayed sample sizes and SDs and performs Brown-Forsythe and
+ Fligner-Killeen variance equality tests (tests of homogeneity of variances)
+ per group combinations. This is primarily a subfunction of
+ \code{\link{anova_neat}}, but here it is available separately for other
  potential purposes.
 }
 \note{

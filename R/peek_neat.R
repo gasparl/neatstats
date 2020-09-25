@@ -2,8 +2,8 @@
 #'
 #' @description Cursory summaries and plots per group.
 #' @param dat Data frame (or name of data frame as string).
-#' @param values The name of the column in the \code{dat} data frame, that
-#'   contains the vector.
+#' @param values String, or vector of strings: the name(s) of the column(s) in
+#'   the \code{dat} data frame, containing the vector(s) of values.
 #' @param group_by String, or vector of strings: the name(s) of the column(s) in
 #'   the \code{dat} data frame, containing the vector(s) of factors by which the
 #'   statistics are grouped.
@@ -11,6 +11,12 @@
 #'   data frame before performing the aggregation. The expression should use
 #'   column names alone; see Examples.
 #' @param sep String (comma by default) for separating group names.
+#' @param collapse Decides how to handle multiple columns of \code{values}. If
+#'   \code{NULL} (default), displayes each column of values as separate groups.
+#'   Alternatively, any function can be given using which the columns are
+#'   collapsed into a single column. For example, if \code{mean} is given for
+#'   this parameter, a single column will be calculated based on the means of
+#'   all given values columns. (\code{NA} is always ignored.)
 #' @param f_print Printing function; see details.
 #' @param f_plot Plotting function; see details. (Provide string to skip
 #'   plotting.)
@@ -30,8 +36,9 @@
 #'Prints, by default, the following data (per group): \code{mean}; 95% CI of the
 #'mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
 #'\code{quantile_1st} and \code{quantile_3rd} (first and third quantiles);
-#'"Tukey's fences" as \code{fence_low} and \code{fence_upp}. Tukey's fences are
-#'the upper and lower limits with distances of \code{X} times the
+#'"Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum and maximum
+#'values (\code{min}, \code{max}); number of \code{NA}s (\code{na}). Tukey's
+#'fences are the upper and lower limits with distances of \code{X} times the
 #'\code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
 #'the \code{iqr_times} parameter. Returns (invisibly) the same values,
 #'unrounded, via a data frame. If alternative \code{f_print} is given, prints
@@ -53,27 +60,36 @@
 #'
 #' # overall info for wt (Weight)
 #' peek_neat(mtcars, 'wt')
-#'
-#' # same without quotes
-#' peek_neat(mtcars, wt)
-#'
+#'#'
 #' # now groupped by cyl (Number of cylinders)
-#' peek_neat(mtcars, wt, group_by = 'cyl')
+#' peek_neat(mtcars, 'wt', group_by = 'cyl')
 #'
 #' # grouped by cyl and gear
-#' peek_neat(mtcars, wt, group_by = c('cyl', 'gear'))
+#' peek_neat(mtcars, 'wt', group_by = c('cyl', 'gear'))
 #'
 #' # filter to only have cyl larger than  4
-#' peek_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
+#' peek_neat(mtcars, 'wt', group_by = 'cyl', filt = cyl > 4)
 #'
 #' # without plots
-#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = "")
+#' peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = "")
 #'
 #' # with histogramms etc, using plot_neat
-#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = plot_neat)
+#' peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = plot_neat)
 #'
 #' # with Q-Q plots, via ggpubr
-#' peek_neat(mtcars, wt, group_by = 'cyl', f_plot = ggpubr::ggqqplot)
+#' peek_neat(mtcars, 'wt', group_by = 'cyl',
+#'           f_plot = ggpubr::ggqqplot)
+#'
+#'
+#' # skewness and kurtosis data via psych
+#' info_df = peek_neat(
+#'     mtcars,
+#'     'wt',
+#'     group_by = 'cyl',
+#'     f_print = psych::describe,
+#'     f_plot = ""
+#' )
+#' info_df # contains all data returns by psych::describe
 #'
 #' @export
 peek_neat = function(dat,
@@ -81,6 +97,7 @@ peek_neat = function(dat,
                      group_by = NULL,
                      filt = NULL,
                      sep = ", ",
+                     collapse = NULL,
                      f_print = NULL,
                      f_plot = NULL,
                      iqr_times = 3,
@@ -95,6 +112,7 @@ peek_neat = function(dat,
                       val_arg(dat, c('df')),
                       val_arg(group_by, c('null', 'char')),
                       val_arg(sep, c('char')),
+                      val_arg(collapse, c('function', 'null')),
                       val_arg(f_print, c('function', 'null')),
                       val_arg(f_plot, c('function', 'null', 'char')),
                       val_arg(iqr_times, c('num'), 1),
@@ -102,15 +120,29 @@ peek_neat = function(dat,
                       val_arg(group_n, c('bool'), 1)
                   ))
     name_taken('neat_unique_values', dat)
-    values = paste(deparse(substitute(values)), collapse = "")
-    values = trimws(values, whitespace = "['\"]")
-    if (values %in% names(dat)) {
+    if (length(values) > 1) {
+        if (is.null(collapse)) {
+            dat = stats::reshape(
+                dat,
+                direction = 'long',
+                varying = values,
+                timevar = "within_factor",
+                v.names = "neat_unique_values",
+                times = values
+            )
+            if (is.null(group_by)) {
+                group_by = "within_factor"
+            } else {
+                group_by = c(group_by, "within_factor")
+            }
+        } else {
+            dat$neat_unique_values = apply(subset(dat, select = values),
+                                           1, collapse, na.rm = TRUE)
+        }
+    } else if (values %in% names(dat)) {
         dat$neat_unique_values = dat[[values]]
     } else {
-        dat$neat_unique_values = eval(parse(text = values))
-    }
-    if (anyNA(dat$neat_unique_values)) {
-        dat = dat[!is.na(dat$neat_unique_values),]
+        stop("Column name specified for values not found.")
     }
     filt = paste(deparse(substitute(filt)), collapse = "")
     if (filt != "NULL") {
@@ -163,7 +195,9 @@ peek_neat = function(dat,
             length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
             dat_merg = rbind(dat_merg, data.frame(as.list((to_merg))))
         }
-        if (!is.null(f_plot) && class(f_plot) != "character") {
+        valstemp = valstemp[!is.na(valstemp)]
+        if (!is.null(f_plot) &&
+            length(valstemp) > 0 && class(f_plot) != "character") {
             if (group_n == TRUE) {
                 xtitl = paste0(grp, '\n(n = ',
                                length(valstemp), ')')
@@ -187,6 +221,7 @@ sum_neat = function(numvec, iqr_times, round_to) {
     quantile_3rd = as.numeric(stats::quantile(numvec, .75, na.rm = TRUE))
     mycis = neatStats::mean_ci(numvec, distance_only = FALSE)
     out = c(
+        n = length(numvec),
         mean = mean(numvec, na.rm = TRUE),
         ci_low = as.numeric(mycis[1]),
         ci_upp = as.numeric(mycis[2]),
@@ -197,7 +232,8 @@ sum_neat = function(numvec, iqr_times, round_to) {
         fence_low = quantile_1st - iqr_times * (quantile_3rd - quantile_1st),
         fence_upp = iqr_times * (quantile_3rd - quantile_1st) + quantile_3rd,
         min = min(numvec, na.rm = TRUE),
-        max = max(numvec, na.rm = TRUE)
+        max = max(numvec, na.rm = TRUE),
+        na = sum(is.na(numvec))
     )
     to_print = as.numeric(ro(out, round_to, signi = TRUE))
     names(to_print) = names(out)
@@ -207,6 +243,7 @@ sum_neat = function(numvec, iqr_times, round_to) {
 
 box_neat = function(values, group, group_n = TRUE) {
     plot_dat = data.frame(values = values, group = group)
+    plot_dat = plot_dat[!is.na(plot_dat$values),]
     if (group_n == TRUE) {
         plot_dat$group = paste0(plot_dat$group, '\n(n = ',
                                 table(plot_dat$group)[plot_dat$group], ')')

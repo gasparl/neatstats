@@ -1,8 +1,9 @@
 #'@title Variance Equality Tests
 #'
-#'@description Performs Brown-Forsythe and Fligner-Killeen variance equality
-#'  tests (tests of homogeneity of variances). This is primarily a subfunction
-#'  of \code{\link{anova_neat}}, but here it is available separately for other
+#'@description Displayed sample sizes and SDs and performs Brown-Forsythe and
+#'  Fligner-Killeen variance equality tests (tests of homogeneity of variances)
+#'  per group combinations. This is primarily a subfunction of
+#'  \code{\link{anova_neat}}, but here it is available separately for other
 #'  potential purposes.
 #'@param xvar Either a numeric vector (numbers of any given variable), or, if
 #'  \code{dat} is given, a column name specifying the variable in the given data
@@ -94,17 +95,26 @@ var_tests = function(xvar,
     }
     group_by = as.factor(as.character(group_by))
     df_mes = data.frame(xvar = xvar, group_by = group_by)
-    df_sds = aggr_neat(df_mes,
-                       'xvar',
-                       group_by = 'group_by',
-                       method = stats::sd)
-    sds_zip = paste(paste(df_sds$aggr_group,
-                          ro(df_sds$aggr_value, 2),
-                          sep = ': SD = '), collapse = '; ')
+    df_mes2 <<- df_mes
+    df_sds = aggr_neat(
+        df_mes,
+        'xvar',
+        group_by = 'group_by',
+        method = function(x) {
+            c(sd = stats::sd(x, na.rm = TRUE), n = length(na.omit(x)))
+        }
+    )
+    sds_zip = paste(paste0(df_sds$aggr_group,
+                           ': n = ',
+                           ro(df_sds$x.n, 2, signi = TRUE),
+                           ', SD = ',
+                          ro(df_sds$x.sd, 2)), collapse = '; ')
     lev_med = car::leveneTest(y = xvar, group = group_by)
     fk_med = stats::fligner.test(x = xvar, g = group_by)
     prnt(
-        "Brown-Forsythe: F(",
+        "  ",
+        sds_zip,
+        ".\n  Brown-Forsythe: F(",
         lev_med$Df[1],
         ",",
         lev_med$Df[2],
@@ -120,6 +130,6 @@ var_tests = function(xvar,
         ro(fk_med$statistic, 3),
         ", p = ",
         ro(fk_med$p.value, 3),
-        ' (', sds_zip, ').'
+        '.'
     )
 }

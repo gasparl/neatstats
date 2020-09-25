@@ -10,6 +10,7 @@ peek_neat(
   group_by = NULL,
   filt = NULL,
   sep = ", ",
+  collapse = NULL,
   f_print = NULL,
   f_plot = NULL,
   iqr_times = 3,
@@ -21,8 +22,8 @@ peek_neat(
 \arguments{
 \item{dat}{Data frame (or name of data frame as string).}
 
-\item{values}{The name of the column in the \code{dat} data frame, that
-contains the vector.}
+\item{values}{String, or vector of strings: the name(s) of the column(s) in
+the \code{dat} data frame, containing the vector(s) of values.}
 
 \item{group_by}{String, or vector of strings: the name(s) of the column(s) in
 the \code{dat} data frame, containing the vector(s) of factors by which the
@@ -33,6 +34,13 @@ data frame before performing the aggregation. The expression should use
 column names alone; see Examples.}
 
 \item{sep}{String (comma by default) for separating group names.}
+
+\item{collapse}{Decides how to handle multiple columns of \code{values}. If
+\code{NULL} (default), displayes each column of values as separate groups.
+Alternatively, any function can be given using which the columns are
+collapsed into a single column. For example, if \code{mean} is given for
+this parameter, a single column will be calculated based on the means of
+all given values columns. (\code{NA} is always ignored.)}
 
 \item{f_print}{Printing function; see details.}
 
@@ -63,8 +71,9 @@ Cursory summaries and plots per group.
 Prints, by default, the following data (per group): \code{mean}; 95% CI of the
 mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
 \code{quantile_1st} and \code{quantile_3rd} (first and third quantiles);
-"Tukey's fences" as \code{fence_low} and \code{fence_upp}. Tukey's fences are
-the upper and lower limits with distances of \code{X} times the
+"Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum and maximum
+values (\code{min}, \code{max}); number of \code{NA}s (\code{na}). Tukey's
+fences are the upper and lower limits with distances of \code{X} times the
 \code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
 the \code{iqr_times} parameter. Returns (invisibly) the same values,
 unrounded, via a data frame. If alternative \code{f_print} is given, prints
@@ -84,26 +93,35 @@ data("mtcars") # load base R example dataset
 
 # overall info for wt (Weight)
 peek_neat(mtcars, 'wt')
-
-# same without quotes
-peek_neat(mtcars, wt)
-
+#'
 # now groupped by cyl (Number of cylinders)
-peek_neat(mtcars, wt, group_by = 'cyl')
+peek_neat(mtcars, 'wt', group_by = 'cyl')
 
 # grouped by cyl and gear
-peek_neat(mtcars, wt, group_by = c('cyl', 'gear'))
+peek_neat(mtcars, 'wt', group_by = c('cyl', 'gear'))
 
 # filter to only have cyl larger than  4
-peek_neat(mtcars, wt, group_by = 'cyl', filt = cyl > 4)
+peek_neat(mtcars, 'wt', group_by = 'cyl', filt = cyl > 4)
 
 # without plots
-peek_neat(mtcars, wt, group_by = 'cyl', f_plot = "")
+peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = "")
 
 # with histogramms etc, using plot_neat
-peek_neat(mtcars, wt, group_by = 'cyl', f_plot = plot_neat)
+peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = plot_neat)
 
 # with Q-Q plots, via ggpubr
-peek_neat(mtcars, wt, group_by = 'cyl', f_plot = ggpubr::ggqqplot)
+peek_neat(mtcars, 'wt', group_by = 'cyl',
+          f_plot = ggpubr::ggqqplot)
+
+
+# skewness and kurtosis data via psych
+info_df = peek_neat(
+    mtcars,
+    'wt',
+    group_by = 'cyl',
+    f_print = psych::describe,
+    f_plot = ""
+)
+info_df # contains all data returns by psych::describe
 
 }

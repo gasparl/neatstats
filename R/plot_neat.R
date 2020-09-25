@@ -99,7 +99,7 @@
 #'@param parts For dispersion plots only (if no \code{data_per_subject} is
 #'  given). A vector of characters that specify which types of overlayed types
 #'  to plot: \code{"h"} for histogram, \code{"d"} for density, \code{"n"}
-#'  normally distribution density (using the mean and standard deviation of the
+#'  normally distributed density (using the mean and standard deviation of the
 #'  given variable), \code{"b"} for boxplot. (All are included by default:
 #'  \code{parts = c("h", "d", "n", "b")}).
 #'@param part_colors For dispersion plots only (if no \code{data_per_subject} is

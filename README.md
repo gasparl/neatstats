@@ -1,6 +1,6 @@
 ### neatStats
 
-This R package aims to give a most down-to-earth way possible to get clear, comprehensive, reportable stats out of data from simple (psychological) experiments. If you are looking for advanced and fancy methods, look elsewhere.
+This R package aims to give a most down-to-earth way possible to get clear, comprehensive, reportable stats out of data from simple (psychological) experiments.
 
 One main point is that all functions use data frames with single row per subjects. Not because "it's like that in SPSS", but because that's the clear and logical way, and because all the reshaping/melting/casting/dcasting is a tiresome fuss even for those not new to it, let alone novices, and leads to a lot of totally unnecessary confusion and problems.
 
@@ -43,10 +43,26 @@ Examples for useful RStudio shortcuts:
 
 - Run from document beginning to current line: Ctrl+Alt+B
 - Run from current line to document end: Ctrl+Alt+E
-- Run code sections: Ctrl+Alt+T (Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
+- Run code sections: Ctrl+Alt+T 
+(Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
 - Autoformat ("beautify") code: Ctrl+Shift+A
 - Comment/uncomment (any number of lines): Ctrl+Shift+C
 - Reflow Comment (format to lines with max 80 char): Ctrl+Shift+/
+
+Data visualization:
+
+- ggplot2: https://datacarpentry.org/R-ecology-lesson/04-visualization-ggplot2.html
+- ggpubr: http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/
+- Shiny R (online interactive sites): https://shiny.rstudio.com/tutorial/
+- plotly for making ggplots interactive: https://plotly.com/ggplot2/
+
+Significance tests:
+
+- General detailed tutorial on statistics (via R), see e.g. chapters 14 and 16 for ANOVA, 15 for linear modelling: https://learningstatisticswithr.com/book/index.html
+- ANOVA assumptions (discussion and basic solution): https://stats.stackexchange.com/questions/485022/
+- Equal variances: https://uc-r.github.io/assumptions_homogeneity
+- Linear modelling R tutorial (lme4): https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf
+- "The perfect t-test": https://github.com/Lakens/perfect-t-test
 
 ### Support
 
