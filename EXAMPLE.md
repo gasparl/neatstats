@@ -214,33 +214,11 @@ plot_neat(
 )
 ```
 
-![Mean+sd plot.](example_images/example_image_1.png)
+![Mean+CI plot.](example_images/example_fig6.tiff)
 
-All seems as expected. But how certain are we about these apparent differences? Even before statistical comparisons, we can take a look at the 95% CIs of the means.
+All seems as expected. The error bars show, by default the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
 
-```R
-plot_neat(
-    data_per_subject = subjects_merged,
-    values = c(
-        'rt_green_negative',
-        'rt_green_positive',
-        'rt_red_negative',
-        'rt_red_positive'
-    ),
-    within_ids = list(
-        color = c('green', 'red'),
-        valence = c('positive', 'negative')
-    ),
-    between_vars = 'condition',
-    eb_method = mean_ci
-)
-```
-
-![Mean+ci plot.](example_images/example_image_2.png)
-
-Seems convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) 
-
-The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
+To illustrate variance instead of certainty, SDs could be specified for the error bars as `eb_method = sd`. The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
 
 The plots could be repeated for error rates by simply replacing "rt_" with "er_" in the four variable names for the `values` parameter. Similarly, all the tests below would be the same for ERs (except for changing the variable input), but these are omitted here for brevity.
 
