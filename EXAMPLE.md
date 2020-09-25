@@ -214,7 +214,7 @@ plot_neat(
 )
 ```
 
-![Mean+CI plot.](example_images/example_fig6.tiff)
+![Mean+CI plot.](example_images/example_fig_factorial.png)
 
 All seems as expected. The error bars show, by default the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
 
