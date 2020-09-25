@@ -168,7 +168,7 @@ By default, a \code{\link[ggplot2]{ggplot}} plot object. (This object
 Primarily for line and bar \code{\link[ggplot2:ggplot]{plots}}
  for factorial designs. Otherwise (if no \code{data_per_subject} is given)
  descriptive dispersion plots (histogram, density, or box plots) for a
- continous variable. (For the latter, only the parameters \code{values},
+ continuous variable. (For the latter, only the parameters \code{values},
  \code{parts}, \code{part_colors}, and \code{binwidth} are used, the rest are
  ignored.)
 }

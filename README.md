@@ -38,6 +38,7 @@ General introduction to R:
 - Another short and nice intro: https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf
 - Verbose, step by step intro: https://www.statmethods.net/r-tutorial/index.html
 - Shortcuts in Rstudio: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
+    - Run current line (or selection): Ctrl+Enter
     - Run from document beginning to current line: Ctrl+Alt+B
     - Run from current line to document end: Ctrl+Alt+E
     - Run code sections: Ctrl+Alt+T (Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
