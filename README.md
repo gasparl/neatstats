@@ -31,23 +31,19 @@ For details about each function, see [the manual](https://github.com/gasparl/nea
 
 ### Useful Links
 
-Selected R tutorials and other useful sources:
+General introduction to R:
 
 - Comprehensive and yet relatively concise and readable official R documentation (requires time and patience; prior programming knowledge advised): https://cran.r-project.org/doc/manuals/r-release/R-intro.html
 - Succinct "to the point" intro (best for those with prior programming knowledge; the entire site is very useful): http://www.sthda.com/english/wiki/r-basics-quick-and-easy
 - Another short and nice intro: https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf
 - Verbose, step by step intro: https://www.statmethods.net/r-tutorial/index.html
 - Shortcuts in Rstudio: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
-
-_Examples for useful RStudio shortcuts:_
-
-- Run from document beginning to current line: Ctrl+Alt+B
-- Run from current line to document end: Ctrl+Alt+E
-- Run code sections: Ctrl+Alt+T 
-(Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
-- Autoformat ("beautify") code: Ctrl+Shift+A
-- Comment/uncomment (any number of lines): Ctrl+Shift+C
-- Reflow Comment (format to lines with max 80 char): Ctrl+Shift+/
+    - Run from document beginning to current line: Ctrl+Alt+B
+    - Run from current line to document end: Ctrl+Alt+E
+    - Run code sections: Ctrl+Alt+T (Any comment line which includes at least four trailing dashes (-), equal signs (=), or pound signs (#) automatically creates a code section.)
+    - Autoformat ("beautify") code: Ctrl+Shift+A
+    - Comment/uncomment (any number of lines): Ctrl+Shift+C
+    - Reflow Comment (format to lines with max 80 char): Ctrl+Shift+/
 
 Data visualization:
 
@@ -59,7 +55,7 @@ Data visualization:
 Significance tests:
 
 - General detailed tutorial on statistics (via R), see e.g. chapters 14 and 16 for ANOVA, 15 for linear modelling: https://learningstatisticswithr.com/book/index.html
-- ANOVA assumptions (discussion and basic solution): https://stats.stackexchange.com/questions/485022/
+- ANOVA assumptions (discussion and basic solution for normality): https://stats.stackexchange.com/questions/485022/
 - Equal variances: https://uc-r.github.io/assumptions_homogeneity
 - Linear modelling R tutorial (lme4): https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf
 - "The perfect t-test": https://github.com/Lakens/perfect-t-test
