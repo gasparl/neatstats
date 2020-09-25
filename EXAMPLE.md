@@ -216,13 +216,13 @@ plot_neat(
 
 ![Mean+CI plot.](example_images/example_fig_factorial.png)
 
-All seems as expected. The error bars show, by default the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
+All seems as expected. The error bars show, by default, the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
 
 To illustrate variance instead of certainty, SDs could be specified for the error bars as `eb_method = sd`. The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
 
 The plots could be repeated for error rates by simply replacing "rt_" with "er_" in the four variable names for the `values` parameter. Similarly, all the tests below would be the same for ERs (except for changing the variable input), but these are omitted here for brevity.
 
-Now let's do an actual test: ANOVA on RTs for the Color x Valence x Group interaction. The arguments are identical to the ones for `plot_neat()` (and have the same logic), only here we add `bf_added = FALSE`: the calculation of Bayes factors (BFs) can take some time with this many factors, so for now we omit it.
+Now let's do an actual test: ANOVA on RTs for the Color x Valence x Group interaction. The arguments are identical to the ones for `plot_neat()` (and have the same logic).
 
 ```R
 anova_neat(
@@ -237,8 +237,7 @@ anova_neat(
         color = c('green', 'red'),
         valence = c('positive', 'negative')
     ),
-    between_vars = 'condition',
-    bf_added = FALSE
+    between_vars = 'condition'
 )
 ```
 
@@ -269,11 +268,13 @@ anova_neat(
     within_ids = list(
         color = c('green', 'red'),
         valence = c('positive', 'negative')
-    )
+    ),
+    bf_added = TRUE
 )
 ```
 
-Here I did not omit BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fractional digits) due to its inherent random sampling process. My specific out put is:
+Here I added BFs. While the rest of the numbers will always be identical for the same data, the BF can vary slightly (typically only in fractional digits) due to its inherent random sampling process. My specific out put is:
+
 >F(1,88) = 13114.19, p < .001, ηp2 = .993, 90% CI [.991, .995], ηG2 = .990. ((Intercept))  
 >F(1,88) = 0.72, p = .398, ηp2 = .008, 90% CI [0, .064], ηG2 = .001, BF01 = 6.25. (color)  
 >F(1,88) = 117.52, p < .001, ηp2 = .572, 90% CI [.456, .650], ηG2 = .107, BF10 = 2.15 × 10^16. (valence)  
@@ -295,11 +296,13 @@ anova_neat(
     within_ids = list(
         color = c('green', 'red'),
         valence = c('positive', 'negative')
-    )
+    ),
+    bf_added = TRUE
 )
 ```
 
 My output is:
+
  >F(1,86) = 16701.63, p < .001, ηp2 = .995, 90% CI [.993, .996], ηG2 = .992. ((Intercept))  
  >F(1,86) = 0.15, p = .699, ηp2 = .002, 90% CI [0, .041], ηG2 < .001, BF01 = 8.11. (color)  
  >F(1,86) = 106.02, p < .001, ηp2 = .552, 90% CI [.432, .635], ηG2 = .117, BF10 = 4.15 × 10^12. (valence)  
