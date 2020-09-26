@@ -61,6 +61,8 @@ Significance tests:
 - Equal variances: https://uc-r.github.io/assumptions_homogeneity
 - Equal variances discussion: https://stats.stackexchange.com/a/185368/237231
 - More ANOVA diagnostics (residuals vs. fitted values): https://arc.lib.montana.edu/book/statistics-with-r-textbook/item/57
+- ANOVA multiple-testing issue: http://daniellakens.blogspot.com/2016/01/error-control-in-exploratory-anovas-how.html
+- Pairwise comparisons (and corrections) in R: http://www.sthda.com/english/wiki/two-way-anova-test-in-r#multiple-pairwise-comparison-between-the-means-of-groups
 - Linear modelling R tutorial (lme4): https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf
 - "The perfect t-test": https://github.com/Lakens/perfect-t-test
 - Various robust statistics: https://cran.r-project.org/web/views/Robust.html
