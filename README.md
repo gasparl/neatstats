@@ -52,14 +52,18 @@ Data visualization:
 - ggpubr: http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/
 - Shiny R (online interactive sites): https://shiny.rstudio.com/tutorial/
 - plotly for making ggplots interactive: https://plotly.com/ggplot2/
+- Principles: http://biostat.mc.vanderbilt.edu/wiki/pub/Main/StatGraphCourse/graphscourse.pdf
 
 Significance tests:
 
 - General detailed tutorial on statistics (via R), see e.g. chapters 14 and 16 for ANOVA, 15 for linear modelling: https://learningstatisticswithr.com/book/index.html
 - ANOVA assumptions (discussion and basic solution for normality): https://stats.stackexchange.com/questions/485022/
 - Equal variances: https://uc-r.github.io/assumptions_homogeneity
+- Equal variances discussion: https://stats.stackexchange.com/a/185368/237231
+- More ANOVA diagnostics (residuals vs. fitted values): https://arc.lib.montana.edu/book/statistics-with-r-textbook/item/57
 - Linear modelling R tutorial (lme4): https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf
 - "The perfect t-test": https://github.com/Lakens/perfect-t-test
+- Various robust statistics: https://cran.r-project.org/web/views/Robust.html
 
 ### Support
 
