@@ -2,7 +2,7 @@
 
 ### Material
 
-The data used for the example is available at https://osf.io/49sq5/, under the _example_data_ folder. The data was created artificially to simulate results from a hypothetical experiment. Each file represents the results of a participant who completed a task with positive and negative words (e.g. "happy", "peaceful" or "terror", "evil") displayed in green or red, classifying each word with key presses according to valence (positive vs. negative). The hypotheses are that (a) negative words have slower responses (lower response times; RTs) in general (Valence main effect), and (b) positive words displayed in red and negative words displayed in green have slower responses (Valence x Color interaction). Error rates (ERs) should follow similar pattern (i.e. more incorrect responses are expected in cases where slower responses are expected). However, for about half of the participants, the green and red words were presented in separate blocks: all words shown first in green, and then again all words in red, or vice versa (all in red, then all in green). For these participants, color effects should be absent (due to no polarity-correspondance): no Valence x Color interaction expected in this group.
+The data used for the example is available at https://osf.io/49sq5/, under the _example_data_ folder. The data was created artificially to simulate results from a hypothetical experiment. Each file represents the results of a participant who completed a task with positive and negative words (e.g. "happy", "peaceful" or "terror", "evil") displayed in green or red, classifying each word with key presses according to valence (positive vs. negative). The hypotheses are that (a) negative words have slower responses (lower response times; RTs) in general (Valence main effect), and (b) positive words displayed in red and negative words displayed in green have slower responses (Valence x Color interaction). Error rates (ERs) should follow similar pattern (i.e. more incorrect responses are expected in cases where slower responses are expected). However, for about half of the participants, the green and red words were presented in separate blocks: all words shown first in green, and then again all words in red, or vice versa (all in red, then all in green). For these participants, color effects should be absent (due to no polarity): no Valence x Color interaction expected in this group.
 
 Each participant's data is given as a simple text file with _.txt_ extention, whose file name contains the experiment title "expsim_color_valence", the given condition ("separate" or "mixed"), and the subject number (1-180), hence, for example, "expsim_color_valence_mixed_1.txt".
 
@@ -18,6 +18,9 @@ In this simplified case, each file contains the following data columns:
 - _gender_: gender of the participant (_1_, for male, or _2_, for female).
 
 (The values for _subject_num_, _condition_, _age_, and _gender_ are of course constant for each participant, i.e., have same value in every row.)
+
+
+![Raw data.](example_images/example_fig_data1.png)
 
 The script that is below presented step by step and described in detail, is also available with only brief inline comments at https://osf.io/49sq5/ (as "example_analysis.R").
 
@@ -43,7 +46,12 @@ To collect all file names in the directory, you can use the `list.files()` funct
 filenames = list.files(pattern = "^expsim_color_valence_.*txt$")
 ```
 
-Now that you have the list of all the file names (in the `filenames` variable), you can loop through it, and, for each file name, read in the data from the corresponding file and extract the data that you need. The data from the participants will be merged together in one data frame, named `subjects_merged`, which will contain in each of its row the extracted data of a single participant: namely, condition, age, gender, as well as the mean (aggregated) RTs and error rates for each stimulus type (detailed explanation will follow later).
+Now that you have the list of all the file names (in the `filenames` variable), you can loop through it, and, for each file name, read in the data from the corresponding file and extract the data that you need. The data from the participants will be merged together in one data frame, named `subjects_merged`, which will contain in each of its row the extracted data of a single participant: namely, condition, age, gender, as well as the mean (aggregated) RTs and error rates for each stimulus type; as shown below.
+
+![Aggregated data.](example_images/example_fig_data2.png)
+
+
+Detailed explanation follows the code below.
 
 ```R
 for (file_name in enum(filenames)) {
@@ -73,7 +81,6 @@ for (file_name in enum(filenames)) {
         prefix = 'er',
         filt = (response %in% c('correct', 'incorrect'))
     )
-    subject_line = table_neat(list(rts, ers), transpose = TRUE)
     er_overall = aggr_neat(subject_data,
                            response,
                            method = 'incorrect',
@@ -91,7 +98,9 @@ for (file_name in enum(filenames)) {
 }
 ```
 
-A preliminary note: to test the code within the loop in detail, we can assign a single file name to the `file_name` variable (e.g., as `file_name = 'expsim_color_valence_mixed_1.txt'`), and then proceed to execute the following lines one by one and check the corresponding results.
+The `enum()` function prepends numbering to the file names (`1` for first, `2` for second, etc.; this can be disabled via the enumerate parameter) merely for display, and, more importantly, it indicates a newly initiated loop for the rbind_loop function (see later).
+
+A preliminary note: to test the code within the loop in detail, we can assign a single file name to the `file_name` variable (e.g., as `file_name = c(0, 'expsim_color_valence_mixed_1.txt')`), and then proceed to execute the following lines one by one and check the corresponding results.
 
 The `cat(file_name, fill = TRUE)` line just prints the present file name to the console, to let you know which file is currently being processed. This is especially useful when the script is stopped due to an error: in that case you know which file caused the error.
 
@@ -144,9 +153,9 @@ ers = aggr_neat(
 )
 ```
 
-The `aggr_neat()` function returns the value names (e.g., `rt_green_negative`) and values as columns (with column names `aggr_group` and `aggr_value`). However, in the end we want all these values in a single row. To transform the RT and ER values into a single line (at the same time merging them together with the rest of the subject data), we can use the `rbind_loop()` function.
+The `aggr_neat()` function returns the value names (e.g., `rt_green_negative`) and values as columns (with column names `aggr_group` and `aggr_value`). The RT and ER values will eventually be transformed and merged into a single line together with the other subject information.
 
-There is still some additional information we want to add, although these will be single values. For one, we would like to get the overall ER (regardless of stimulus type), because we want to exclude participants with generally very high ER (they may not have been paying attention or had undisclosed vision problems, etc.). For this too, we can use the `aggr_neat()` function, only omitting the `group_by` argument, and appending, at the end, `$aggr_value`, in order to access the single value returned under this column. To note, the same value can also be quite easily obtained without `aggr_neat()`, by writing, for example, `nrow(subject_data[subject_data$response == 'incorrect',]) / nrow(subject_data[subject_data$response %in% c('correct', 'incorrect'),])`. But again, using `aggr_neat()` might be clearer.
+We would also like to get the overall ER (regardless of stimulus type), because we want to exclude participants with generally very high ER. (They may not have been paying attention or had undisclosed vision problems, etc.). For this too, we can use the `aggr_neat()` function, only omitting the `group_by` argument, and appending, at the end, `$aggr_value`, in order to access the single value returned under this column. To note, the same value can also be quite easily obtained without `aggr_neat()`, by writing, for example, `nrow(subject_data[subject_data$response == 'incorrect',]) / nrow(subject_data[subject_data$response %in% c('correct', 'incorrect'),])`. But again, using `aggr_neat()` might be clearer.
 
 ```R
 er_overall = aggr_neat(subject_data,
@@ -155,7 +164,9 @@ er_overall = aggr_neat(subject_data,
                        filt = (response %in% c('correct', 'incorrect')))$aggr_value
 ```
 
-We now merge all this information, and a few additional values: _subject_num_, _condition_, _age_, and _gender_. These latter variables values are constant in their respective columns, so we might as well take them from any row, for example the first row (e.g., for _subject_num_: `subject_data$subject_num[1]`). This can be done via the following function, which initiates a `subjects_merged` data frame at the first cycle of the loop and "intelligently" merges all provided data transforming them into a single row (see `?rbind_loop` for details). Hint: if some data may be discrepant for some participants (e.g., some of the participants are tested with blue and yellow colors too), the matching columns are automatically paired (by name) and missing data is filled with NAs.
+Finally, we also want the subject number, condition, age, and gender. These latter variables are constant in their respective columns, so we might as well take them from any row, for example the first row (e.g., for _subject_num_: `subject_data$subject_num[1]`). 
+
+We can now use the `rbind_loop` function that initiates a given data frame (here: `subjects_merged`) at the first cycle of the loop (internally detected via `enum()`) and adds a new row in each cycle by “intelligently” merging all provided data and transforming them into a single row (see `?rbind_loop` for details).
 
 ```R
 rbind_loop(
@@ -195,34 +206,11 @@ The console output is:
 >Group < mixed >: 87 subjects (age = 24.2±3.8, 49 male)  
 >Group < separate >: 89 subjects (age = 24.8±3.3, 45 male)
 
-To start with the main analysis, we can first take a look at the means of the main independent variables in a factorial plot. Since each participant may have several variables of interest (in case of a within-subject design such as in this example), all variables to be included in the test are given using their column names (as strings) in a string vector (or, in case of no within-subject factors, as a single string element), as the `values` parameter. To determine which within-subject factors we want to contrast in the plot (using the given `values`), there is a `within_ids` parameter that accepts a list as argument. In this list, the name of each element is the chosen display name for each factor; in this case "color" and "valence" (but we could use any other names as well). Each element must contain a vector of names that are used to identify which of the value names (given as `values`) belong to which factor. For example, the Color factor is given as `color = c('green', 'red')`: using the given words `'green'` and `'red'`, the given variable (or value) names `'rt_green_negative'` and `'rt_green_positive'` will be automatically identified as `'green'` (since they contain the string `'green'`), while the values `'rt_red_negative'` and `'rt_red_positive'` will be identified as `'red'` (since they contain the string `'red'`). The between subject variables can simply given assigned to the `between_vars` parameter as a string vector, or, in case of only one between-subject factor (as in this example), as a single string element.
 
-```R
-plot_neat(
-    data_per_subject = data_final,
-    values = c(
-        'rt_green_negative',
-        'rt_green_positive',
-        'rt_red_negative',
-        'rt_red_positive'
-    ),
-    within_ids = list(
-        color = c('green', 'red'),
-        valence = c('positive', 'negative')
-    ),
-    between_vars = 'condition'
-)
-```
+The main test is an ANOVA for the interaction Valence (positive vs. negative) × Color (green vs. red) × Group (separate vs. mixed). Since each participant may have several variables of interest (in case of a within-subject design such as in this example), all variables to be included in the test are given using their column names (as strings) in a string vector (or, in case of no within-subject factors, as a single string element), as the `values` parameter. To determine which within-subject factors we want to contrast in the ANOVA (using the given `values`), there is a `within_ids` parameter that accepts a list as argument. In this list, the name of each element is the chosen display name for each factor; in this case "color" and "valence" (but we could use any other names as well). Each element must contain a vector of names that are used to identify which of the value names (given as `values`) belong to which factor. For example, the Color factor is given as `color = c('green', 'red')`. Using the given strings `'green'` and `'red'`, the given variable (or value) names `'rt_green_negative'` and `'rt_green_positive'` will be automatically identified as `'green'` (since they contain the string `'green'`), while the values `'rt_red_negative'` and `'rt_red_positive'` will be identified as `'red'` (since they contain the string `'red'`). The between subject variables can simply given assigned to the `between_vars` parameter as a string vector, or, in case of only one between-subject factor (as in this example), as a single string element.
 
-![Mean+CI plot.](example_images/example_fig_factorial.png)
+In addition, here I specify adding factorial plot (`plot_means`), normality tests (`norm_tests`), and variance descriptive statistics and tests (`var_tests`).
 
-All seems as expected. The error bars show, by default, the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.)
-
-To illustrate variance instead of certainty, SDs could be specified for the error bars as `eb_method = sd`. The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers and see whether the picture changes then. (The corresponding error bars could be median absolute deviation; `eb_method = mad`.)
-
-The plots could be repeated for error rates by simply replacing "rt_" with "er_" in the four variable names for the `values` parameter. Similarly, all the tests below would be the same for ERs (except for changing the variable input), but these are omitted here for brevity.
-
-Now let's do an actual test: ANOVA on RTs for the Color x Valence x Group interaction. The arguments are identical to the ones for `plot_neat()` (and have the same logic).
 
 ```R
 anova_neat(
@@ -237,11 +225,23 @@ anova_neat(
         color = c('green', 'red'),
         valence = c('positive', 'negative')
     ),
-    between_vars = 'condition'
+    between_vars = 'condition',
+    plot_means = TRUE,
+    norm_tests = 'all',
+    var_tests = TRUE
 )
 ```
 
-The output is:
+The following plot is returned.
+
+
+![Mean+CI plot.](example_images/example_fig_factorial.png)
+
+All seems as expected. The error bars show, by default, the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) Note that the plots is implemented via the plot_neat function. Several features are customizable; see `?plot_neat` (to which arguments can also be passed via `anova_neat`). For example, to illustrate variation instead of certainty, we can display, with the error bars, the SDs of the means by adding the `eb_method = sd`. The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers. (The corresponding error bars could be median absolute deviations; `eb_method = mad`.)
+
+Here I do not go into details of all output; suffices to say that neither normality nor equal variances tests are violates; though the former is better checked via plotting the residuals (set `norm_plots = TRUE`) and the latter via checking whether the sample sizes and SDs between the groups are similar within each within-subject level combination (as it is returned when setting `var_tests = TRUE`).
+
+The main ANOVA output is:
 
 >F(1,174) = 29507.56, p < .001, ηp2 = .994, 90% CI [.993, .995], ηG2 = .991. ((Intercept))  
 >F(1,174) = 27.03, p < .001, ηp2 = .134, 90% CI [.065, .213], ηG2 = .094. (condition)  
@@ -253,6 +253,8 @@ The output is:
 >F(1,174) = 34.92, p < .001, ηp2 = .167, 90% CI [.090, .248], ηG2 = .024. (color × condition × valence)  
 
 Without going into details, the three-way interaction is significant. (To note, the statistics are as close to as possible to reportable format, but italics, subscripts, and superscripts are not well supported as console outputs - hence these have to be adjusted when preparing a manuscript.)
+
+The ANOVA could be repeated for error rates by simply replacing "rt_" with "er_" in the four variable names for the `values` parameter. Similarly, all the tests below would be the same for ERs (except for changing the variable input), but these are omitted here for brevity.
 
 You follow up (as preregistered of course) with two separate ANOVAs to show the absence of Color x Valence interaction `separate` condition, and its presence in the `mixed` condition.
 
@@ -313,7 +315,7 @@ Interaction significant as expected. Now to explore the interaction in the `mixe
 First, for convenience, I create a new data frame with only `mixed` condition.
 
 ```R
-subjects_mx = data_final[data_final$condition == 'mixed',]
+subjects_mx = excl_neat(data_final, condition == 'mixed')
 ```
 
 Now test red versus green for positive words.
