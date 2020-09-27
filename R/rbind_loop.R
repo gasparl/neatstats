@@ -1,6 +1,6 @@
 #' @title Merge by Columns in Loops
 #'
-#' @description Merges raws by columns in a loop using the \code{\link{enum}}
+#' @description Merges rows by columns in a loop using the \code{\link{enum}}
 #'   function. On first iteration, indicated by \code{\link{enum}}, initiates a
 #'   new data frame with the data to merge as first row. On all following
 #'   iterations, adds data to merge as subsequent rows (using

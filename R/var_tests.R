@@ -95,13 +95,13 @@ var_tests = function(xvar,
     }
     group_by = as.factor(as.character(group_by))
     df_mes = data.frame(xvar = xvar, group_by = group_by)
-    df_mes2 <<- df_mes
     df_sds = aggr_neat(
         df_mes,
         'xvar',
         group_by = 'group_by',
         method = function(x) {
-            c(sd = stats::sd(x, na.rm = TRUE), n = length(na.omit(x)))
+            c(sd = stats::sd(x, na.rm = TRUE),
+              n = length(stats::na.omit(x)))
         }
     )
     sds_zip = paste(paste0(df_sds$aggr_group,

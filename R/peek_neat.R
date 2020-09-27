@@ -12,7 +12,7 @@
 #'   column names alone; see Examples.
 #' @param sep String (comma by default) for separating group names.
 #' @param collapse Decides how to handle multiple columns of \code{values}. If
-#'   \code{NULL} (default), displayes each column of values as separate groups.
+#'   \code{NULL} (default), displays each column of values as separate groups.
 #'   Alternatively, any function can be given using which the columns are
 #'   collapsed into a single column. For example, if \code{mean} is given for
 #'   this parameter, a single column will be calculated based on the means of
@@ -45,7 +45,7 @@
 #'whatever value is returned from the given function (and attempts, if possible,
 #'to create a data frame).
 #'
-#'Creates and displays box plot(s) (per group) by default, aling with overlayed
+#'Creates and displays box plot(s) (per group) by default, along with overlayed
 #'violin plot (densities proportionate to sample sizes). If alternative
 #'\code{f_plot} is given, the first argument will be the values per group, and
 #'all plots will be \code{\link[ggpubr:ggarrange]{arranged}} into a single plot
@@ -82,6 +82,7 @@
 #'
 #'
 #' # skewness and kurtosis data via psych
+#' \dontrun{
 #' info_df = peek_neat(
 #'     mtcars,
 #'     'wt',
@@ -90,6 +91,7 @@
 #'     f_plot = ""
 #' )
 #' info_df # contains all data returns by psych::describe
+#'}
 #'
 #' @export
 peek_neat = function(dat,
@@ -225,8 +227,8 @@ sum_neat = function(numvec, iqr_times, round_to) {
         mean = mean(numvec, na.rm = TRUE),
         ci_low = as.numeric(mycis[1]),
         ci_upp = as.numeric(mycis[2]),
-        sd = sd(numvec, na.rm = TRUE),
-        median = median(numvec, na.rm = TRUE),
+        sd = stats::sd(numvec, na.rm = TRUE),
+        median = stats::median(numvec, na.rm = TRUE),
         quantl_1st = quantile_1st,
         quantl_3rd = quantile_3rd,
         fence_low = quantile_1st - iqr_times * (quantile_3rd - quantile_1st),

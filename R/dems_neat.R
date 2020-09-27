@@ -37,7 +37,7 @@
 #'  names but with any lettercase (e.g. "\code{AGE}" or "\code{Gender}"). If
 #'  still no "\code{gender}" column is found, the function looks for
 #'  "\code{sex}" column in the same manner. If no column is found for either,
-#'  all related values will be counted as "unkown" (\code{NA}).
+#'  all related values will be counted as "unknown" (\code{NA}).
 #'
 #'  If \code{NA} values are found in either the \code{age} or \code{gender}
 #'  column, the ratio (or count) of unknown cases will be displayed everywhere.

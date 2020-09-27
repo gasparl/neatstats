@@ -32,7 +32,7 @@ plot_neat(
 \item{data_per_subject}{Data frame containing all values
 (measurements/observations for a factorial design) in a single row per each
 subject. Otherwise, if no data frame is given (default: \code{NULL}),
-histogram, density, or box plots will be returned for a continous variable
+histogram, density, or box plots will be returned for a continuous variable
 (numeric vector).}
 
 \item{values}{For plots of means (factorial designs): vector of strings;
@@ -173,7 +173,7 @@ Primarily for line and bar \code{\link[ggplot2:ggplot]{plots}}
  ignored.)
 }
 \note{
-More than three factors is not allowied: it would make little sense and
+More than three factors is not allowed: it would make little sense and
   it would be difficult to clearly depict in a simple figure. (However, you
   can build an appropriate graph using \code{\link[ggplot2]{ggplot}}
   directly; but you can also just divide the data to produce several

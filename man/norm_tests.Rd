@@ -34,15 +34,15 @@ is accepted (as a single string or a character vector; case-insensitive):
 time.}
 
 \item{alpha}{Numeric (\code{.05} by default), alpha level: if any p value if
-below this alpha level, the funtion returns \code{TRUE}, otherwise
+below this alpha level, the function returns \code{TRUE}, otherwise
 \code{FALSE}.}
 
-\item{plots}{Logical: if \code{TRUE} adds histrogram, density, and Q-Q plots.
+\item{plots}{Logical: if \code{TRUE} adds histogram, density, and Q-Q plots.
 (Note: in case of paired samples, Q-Q plots are plotted on a separate
 figure. In RStudio, press on "Previous plot" under "Plots" to see these Q-Q
 plots.)}
 
-\item{aspect_ratio}{Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
+\item{aspect_ratio}{Aspect ratio of the plots: \code{1} (\code{1}/\code{1}) by
 default. (Set to \code{NULL} for dynamic aspect ratio.)}
 
 \item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}

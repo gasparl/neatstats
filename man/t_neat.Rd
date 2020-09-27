@@ -124,7 +124,7 @@ added to the background.}
 \item{rug_size}{Numeric (\code{4} by default): size of the rug ticks below the
 density plot. Set to \code{0} (zero) to omit rug plotting.}
 
-\item{aspect_ratio}{Apect ratio of the plots: \code{1} (\code{1}/\code{1}) by
+\item{aspect_ratio}{Aspect ratio of the plots: \code{1} (\code{1}/\code{1}) by
 default. (Set to \code{NULL} for dynamic aspect ratio.)}
 
 \item{y_label}{String or \code{NULL}; the label for the \code{y} axis.

@@ -36,7 +36,7 @@ column names alone; see Examples.}
 \item{sep}{String (comma by default) for separating group names.}
 
 \item{collapse}{Decides how to handle multiple columns of \code{values}. If
-\code{NULL} (default), displayes each column of values as separate groups.
+\code{NULL} (default), displays each column of values as separate groups.
 Alternatively, any function can be given using which the columns are
 collapsed into a single column. For example, if \code{mean} is given for
 this parameter, a single column will be calculated based on the means of
@@ -80,7 +80,7 @@ unrounded, via a data frame. If alternative \code{f_print} is given, prints
 whatever value is returned from the given function (and attempts, if possible,
 to create a data frame).
 
-Creates and displays box plot(s) (per group) by default, aling with overlayed
+Creates and displays box plot(s) (per group) by default, along with overlayed
 violin plot (densities proportionate to sample sizes). If alternative
 \code{f_plot} is given, the first argument will be the values per group, and
 all plots will be \code{\link[ggpubr:ggarrange]{arranged}} into a single plot
@@ -115,6 +115,7 @@ peek_neat(mtcars, 'wt', group_by = 'cyl',
 
 
 # skewness and kurtosis data via psych
+\dontrun{
 info_df = peek_neat(
     mtcars,
     'wt',
@@ -123,5 +124,6 @@ info_df = peek_neat(
     f_plot = ""
 )
 info_df # contains all data returns by psych::describe
+}
 
 }
