@@ -19,13 +19,14 @@
 #'  in APA style, as well as corresponding CI for the AUC difference.
 #'  Furthermore, when assigned, returns a named vector with the following two
 #'  elements: \code{stat} (D value), \code{p} (p value).
-#'@note
-#'The test statistics are calculated via
-#'\code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both paired
-#'and unpaired). The \code{roc_neat} function merely prints it in APA style.
+#'@note The main test statistics are calculated via
+#'  \code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both
+#'  paired and unpaired). The \code{roc_neat} function merely prints it in APA
+#'  style. The CI is calculated based on the p value, as described by Altman and
+#'  Bland (2011).
 #'
-#'The ROC object may be calculated via \code{\link{t_neat}}, or directly with
-#'\code{\link[pROC:roc]{pROC::roc}}.
+#'  The ROC object may be calculated via \code{\link{t_neat}}, or directly with
+#'  \code{\link[pROC:roc]{pROC::roc}}.
 #'
 #'@references
 #'

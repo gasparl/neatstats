@@ -43,7 +43,7 @@
 #'@note Barnard's unconditional exact test is calculated via
 #'  \code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
 #'
-#'  The CIs for the proportion difference is calculated based on the p value, as
+#'  The CI for the proportion difference is calculated based on the p value, as
 #'  described by Altman and Bland (2011).
 #'
 #'  The Bayes factor is calculated via
