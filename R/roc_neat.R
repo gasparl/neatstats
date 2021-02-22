@@ -185,6 +185,7 @@ plot_roc = function(roc_list,
     tps = c()
     tns = c()
     cases = c()
+    casenames = c()
     count = 0
     ths = list()
     for (rocx in roc_list) {
@@ -195,19 +196,20 @@ plot_roc = function(roc_list,
             cases = c(cases, c(rep(
                 paste("ROC", count), length(rocx$specificities)
             )))
+            casenames = c(casenames, paste("ROC", count))
         } else {
             cases = c(cases, c(rep(
                 roc_labels[count], length(rocx$specificities)
             )))
+            casenames = c(casenames, roc_labels[count])
         }
         ths[[count]] =
             pROC::coords(rocx, pROC::coords(rocx, x = "best")$threshold[1])
     }
-
+    cases = factor(cases, levels = casenames, labels = casenames)
     roc_dat = data.frame(tp = tps,
                          tn = tns,
                          Case = cases)
-
     rocnum = length(roc_list)
     if (rocnum < 3) {
         lin_cols = c('#86b300', '#19004d')
