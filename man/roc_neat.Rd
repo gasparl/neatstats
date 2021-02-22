@@ -4,14 +4,26 @@
 \alias{roc_neat}
 \title{Difference of Two Areas Under the Curves}
 \usage{
-roc_neat(roc1, roc2, pair = FALSE, greater = NULL, ci = NULL, hush = FALSE)
+roc_neat(
+  roc1,
+  roc2 = NULL,
+  pair = FALSE,
+  greater = NULL,
+  ci = NULL,
+  hush = FALSE,
+  plot_rocs = FALSE,
+  roc_labels = "",
+  roc_cutoff = TRUE
+)
 }
 \arguments{
 \item{roc1}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
-object}}.}
+object}}, or, for plotting only, a \code{\link{list}} including any number
+of such ROC objects.}
 
 \item{roc2}{Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
-object}}.}
+object}}, or, for plotting only, leave it as \code{NULL} (default) and
+provide list for the first parameter (\code{roc1}).}
 
 \item{pair}{Logical. If \code{TRUE}, the test is conducted for paired samples.
 Otherwise (default) for independent samples.}
@@ -23,17 +35,27 @@ one-sided test: either "1" (\code{roc1} AUC expected to be greater than
 
 \item{ci}{Numeric; confidence level for the returned CIs (raw difference).}
 
-\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console.}
+\item{hush}{Logical. If \code{TRUE}, prevents printing any details to console
+(and plotting).}
+
+\item{plot_rocs}{Logical. If \code{TRUE}, plots and returns ROC curves.}
+
+\item{roc_labels}{Optional character vector to provide legend label texts (in
+the order of the provided ROC objects) for the ROC plot.}
+
+\item{roc_cutoff}{Logical. If \code{TRUE} (default), indicates optimal cutoffs
+on the ROC plots.}
 }
 \value{
 Prints DeLong's test results for the comparison of the two given AUCs
  in APA style, as well as corresponding CI for the AUC difference.
- Furthermore, when assigned, returns a named vector with the following two
- elements: \code{stat} (D value), \code{p} (p value).
+ Furthermore, when assigned, returns a list  with \code{stat} (D value),
+ \code{p} (p value), and, when plot is added, \code{roc_plot}.
 }
 \description{
-Comparison of two \code{\link[=t_neat]{areas under the receiver
- operating characteristic curves}} (AUCs).
+Comparison of two \code{\link[t_neat]{areas under the receiver
+ operating characteristic curves}} (AUCs) and plotting any number of ROC
+ curves.
 }
 \note{
 The main test statistics are calculated via

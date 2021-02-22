@@ -1,11 +1,14 @@
 #'@title Difference of Two Areas Under the Curves
 #'
-#'@description Comparison of two \code{\link[=t_neat]{areas under the receiver
-#'  operating characteristic curves}} (AUCs).
+#'@description Comparison of two \code{\link[t_neat]{areas under the receiver
+#'  operating characteristic curves}} (AUCs) and plotting any number of ROC
+#'  curves.
 #'@param roc1 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
-#'  object}}.
+#'  object}}, or, for plotting only, a \code{\link{list}} including any number
+#'  of such ROC objects.
 #'@param roc2 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
-#'  object}}.
+#'  object}}, or, for plotting only, leave it as \code{NULL} (default) and
+#'  provide list for the first parameter (\code{roc1}).
 #'@param pair Logical. If \code{TRUE}, the test is conducted for paired samples.
 #'  Otherwise (default) for independent samples.
 #'@param greater \code{NULL} or string (or number); optionally specifies
@@ -13,12 +16,17 @@
 #'  \code{roc2} AUC) or "2" (\code{roc2} AUC expected to be greater than
 #'  \code{roc2} AUC). If \code{NULL} (default), the test is two-sided.
 #'@param ci Numeric; confidence level for the returned CIs (raw difference).
-#'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
-#'
+#'@param hush Logical. If \code{TRUE}, prevents printing any details to console
+#'  (and plotting).
+#'@param plot_rocs Logical. If \code{TRUE}, plots and returns ROC curves.
+#'@param roc_labels Optional character vector to provide legend label texts (in
+#'  the order of the provided ROC objects) for the ROC plot.
+#'@param roc_cutoff Logical. If \code{TRUE} (default), indicates optimal cutoffs
+#'  on the ROC plots.
 #'@return Prints DeLong's test results for the comparison of the two given AUCs
 #'  in APA style, as well as corresponding CI for the AUC difference.
-#'  Furthermore, when assigned, returns a named vector with the following two
-#'  elements: \code{stat} (D value), \code{p} (p value).
+#'  Furthermore, when assigned, returns a list  with \code{stat} (D value),
+#'  \code{p} (p value), and, when plot is added, \code{roc_plot}.
 #'@note The main test statistics are calculated via
 #'  \code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both
 #'  paired and unpaired). The \code{roc_neat} function merely prints it in APA
@@ -61,20 +69,31 @@
 #' @export
 
 roc_neat = function(roc1,
-                    roc2,
+                    roc2 = NULL,
                     pair = FALSE,
                     greater = NULL,
                     ci = NULL,
-                    hush = FALSE) {
+                    hush = FALSE,
+                    plot_rocs = FALSE,
+                    roc_labels = "",
+                    roc_cutoff = TRUE) {
     validate_args(
         match.call(),
         list(
             val_arg(pair, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
             val_arg(ci, c('null', 'num'), 1),
-            val_arg(hush, c('bool'), 1)
+            val_arg(hush, c('bool'), 1),
+            val_arg(roc_labels, c('char')),
+            val_arg(roc_cutoff, c('bool'), 1)
         )
     )
+    if (roc_labels == "") {
+        roc_labels = NA
+    }
+    if (is.null(roc2)) {
+        return(plot_roc(roc1, roc_labels, roc_cutoff))
+    }
     greater = toString(greater)
     if (greater == "1") {
         if (hush == FALSE) {
@@ -145,5 +164,115 @@ roc_neat = function(roc1,
     if (hush == FALSE) {
         prnt(out)
     }
-    invisible(c(stat = as.numeric(roc_stat), p = p_value))
+    if (plot_rocs == TRUE) {
+        plotted = plot_roc(list(roc1, roc2), roc_labels, roc_cutoff)
+        if (hush == FALSE) {
+            plot(plotted)
+        }
+    } else {
+        plotted = NA
+    }
+    invisible(list(
+        stat = as.numeric(roc_stat),
+        p = p_value,
+        roc_plot = plotted
+    ))
+}
+
+plot_roc = function(roc_list,
+                    roc_labels = NA,
+                    roc_cutoff = TRUE) {
+    tps = c()
+    tns = c()
+    cases = c()
+    count = 0
+    ths = list()
+    for (rocx in roc_list) {
+        count = count + 1
+        tps = c(tps, rocx$sensitivities)
+        tns = c(tns, rocx$specificities)
+        if (is.na(roc_labels[count])) {
+            cases = c(cases, c(rep(
+                paste("ROC", count), length(rocx$specificities)
+            )))
+        } else {
+            cases = c(cases, c(rep(
+                roc_labels[count], length(rocx$specificities)
+            )))
+        }
+        ths[[count]] =
+            pROC::coords(rocx, pROC::coords(rocx, x = "best")$threshold[1])
+    }
+
+    roc_dat = data.frame(tp = tps,
+                         tn = tns,
+                         Case = cases)
+
+    rocnum = length(roc_list)
+    if (rocnum < 3) {
+        lin_cols = c('#86b300', '#19004d')
+    } else {
+        lin_cols = viridis::viridis(rocnum, end = .85)
+    }
+    lin_a = 1
+    rocplot = ggplot(roc_dat, aes(x = tn, y = tp, color = Case)) +
+        labs(x = "True Negative Rate (Specificity)",
+             y = "True Positive Rate (Sensitivity)") +
+        annotate(
+            'segment',
+            x = 1,
+            xend = 0,
+            y = 0,
+            yend = 1,
+            color = '#dfdfdf',
+            size = 0.7
+        )
+    count = 0
+    if (roc_cutoff == TRUE) {
+        for (thre in ths) {
+            count = count + 1
+            rocplot = rocplot +
+                annotate(
+                    'segment',
+                    x = 1,
+                    xend = thre$specificity,
+                    y = thre$sensitivity,
+                    yend = thre$sensitivity,
+                    alpha = lin_a,
+                    color = lin_cols[count],
+                    linetype = 'dotted'
+                ) +
+                annotate(
+                    'segment',
+                    x = thre$specificity,
+                    xend = thre$specificity,
+                    y = 0,
+                    yend = thre$sensitivity,
+                    alpha = lin_a,
+                    color = lin_cols[count],
+                    linetype = 'dotted'
+                )
+        }
+    }
+    rocplot = rocplot +
+        scale_color_manual(values = lin_cols) + geom_path(size = 0.7) +
+        scale_x_reverse() + theme_bw() +
+        theme(aspect.ratio = 1, legend.title = element_blank(),
+              text = element_text(family = "serif", size = 17))
+    if (rocnum == 1) {
+        rocplot = rocplot + theme(legend.position = "none")
+    }
+    if (roc_cutoff == TRUE) {
+        for (thre in ths) {
+            rocplot = rocplot +
+                annotate(
+                    'point',
+                    x = thre$specificity,
+                    y = thre$sensitivity,
+                    color = '#1a1a1a',
+                    size = 1
+                )
+        }
+    }
+    return(rocplot)
 }
