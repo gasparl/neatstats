@@ -16,8 +16,8 @@ plot_neat(
   panels = NULL,
   type = "line",
   dodge = NULL,
-  bar_colors = c("#333333", "#AAAAAA"),
-  line_colors = c("#555555", "#000000"),
+  bar_colors = "viridis",
+  line_colors = "viridis",
   row_number = 1,
   method = mean,
   eb_method = neatStats::mean_ci,
@@ -105,15 +105,15 @@ plots, and \code{0.9} for \code{bar} plots.)}
 \item{bar_colors}{Vector of strings, specifying colors from which all colors
 for any number of differing adjacent bars are interpolated. (If the number
 of given colors equal the number of different bars, the precise colors will
-correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-color gradient from dark gray to light gray. (In case of a single factor,
-the first given colors is taken.)}
+correspond to each bar.) The default \code{'viridis'} gives a color gradient
+based on \code{\link[viridis:viridis]{viridis}}. (In case of a single
+factor, the first given colors is taken.)}
 
 \item{line_colors}{Vector of strings, specifying colors from which all colors
 for any number of differing vertically aligned dots and corresponding lines
-are interpolated. The default \code{c('#555555', '#000000')} gives a color
-gradient from dark gray to black. (In case of a single factor, the first
-given colors is taken.)}
+are interpolated. The default \code{'viridis'} gives a color gradient based
+on \code{\link[viridis:viridis]{viridis}}. (In case of a single factor, the
+first given colors is taken.)}
 
 \item{row_number}{Number. In case of multiple panels, the number of rows in
 which the panels should be arranged. For example, with the default

@@ -71,14 +71,14 @@
 #'@param bar_colors Vector of strings, specifying colors from which all colors
 #'  for any number of differing adjacent bars are interpolated. (If the number
 #'  of given colors equal the number of different bars, the precise colors will
-#'  correspond to each bar.) The default \code{c('#333333', '#AAAAAA')} gives a
-#'  color gradient from dark gray to light gray. (In case of a single factor,
-#'  the first given colors is taken.)
+#'  correspond to each bar.) The default \code{'viridis'} gives a color gradient
+#'  based on \code{\link[viridis:viridis]{viridis}}. (In case of a single
+#'  factor, the first given colors is taken.)
 #'@param line_colors Vector of strings, specifying colors from which all colors
 #'  for any number of differing vertically aligned dots and corresponding lines
-#'  are interpolated. The default \code{c('#555555', '#000000')} gives a color
-#'  gradient from dark gray to black. (In case of a single factor, the first
-#'  given colors is taken.)
+#'  are interpolated. The default \code{'viridis'} gives a color gradient based
+#'  on \code{\link[viridis:viridis]{viridis}}. (In case of a single factor, the
+#'  first given colors is taken.)
 #'@param row_number Number. In case of multiple panels, the number of rows in
 #'  which the panels should be arranged. For example, with the default
 #'  \code{row_number = 1}, all panels will be displayed in one vertically
@@ -368,8 +368,8 @@ plot_neat = function(data_per_subject = NULL,
                      panels = NULL,
                      type = 'line',
                      dodge = NULL,
-                     bar_colors = c('#333333', '#AAAAAA'),
-                     line_colors = c('#555555', '#000000'),
+                     bar_colors = 'viridis',
+                     line_colors = 'viridis',
                      row_number = 1,
                      method = mean,
                      eb_method = neatStats::mean_ci,
@@ -408,7 +408,7 @@ plot_neat = function(data_per_subject = NULL,
             val_arg(panels, c('null', 'char'), 1),
             val_arg(type, c('char'), 1, c('bar', 'line')),
             val_arg(dodge, c('null', 'num')),
-            val_arg(bar_colors, c('char'), 0),
+            val_arg(bar_colors, c('char')),
             val_arg(line_colors, c('char')),
             val_arg(row_number, c('num'), 1),
             val_arg(method, c('function'), 1),
@@ -588,6 +588,9 @@ plot_neat = function(data_per_subject = NULL,
     if (onefact == TRUE) {
         p_mid = fact_names[1]
         if (type == 'line')  {
+            if (substr(line_colors, 1, 1) == 'v')  {
+                line_colors = '#333333'
+            }
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_close]],
@@ -596,6 +599,9 @@ plot_neat = function(data_per_subject = NULL,
                                        )) +
                 geom_line(color = line_colors[1]) + geom_point(color = line_colors[1])
         } else {
+            if (substr(bar_colors, 1, 1) == 'v')  {
+                bar_colors = '#333333'
+            }
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_close]],
@@ -607,10 +613,21 @@ plot_neat = function(data_per_subject = NULL,
                          fill = bar_colors[1])
         }
     } else {
+        colornum = length(unique(to_plot[[p_close]]))
         p_mid = fact_names[2]
         if (type == 'line') {
-            color_gen = grDevices::colorRampPalette(line_colors)
-            palcolors = color_gen(length(unique(to_plot[[p_close]])))
+            if (substr(line_colors, 1, 1) == 'v')  {
+                if (colornum == 2) {
+                    palcolors = viridis::viridis(colornum, end = 0.5)
+                } else if (colornum == 3) {
+                    palcolors = viridis::viridis(colornum, end = 0.7)
+                } else {
+                    palcolors = viridis::viridis(colornum, end = 0.85)
+                }
+            } else {
+                color_gen = grDevices::colorRampPalette(line_colors)
+                palcolors = color_gen(colornum)
+            }
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_mid]],
@@ -626,8 +643,18 @@ plot_neat = function(data_per_subject = NULL,
                 scale_color_manual(values = palcolors,
                                    name = re_n(p_close, factor_names))
         } else {
-            color_gen = grDevices::colorRampPalette(bar_colors)
-            palcolors = color_gen(length(unique(to_plot[[p_close]])))
+            if (substr(bar_colors, 1, 1) == 'v')  {
+                if (colornum == 2) {
+                    palcolors = viridis::viridis(colornum, end = 0.5)
+                } else if (colornum == 3) {
+                    palcolors = viridis::viridis(colornum, end = 0.7)
+                } else {
+                    palcolors = viridis::viridis(colornum, end = 0.85)
+                }
+            } else {
+                color_gen = grDevices::colorRampPalette(bar_colors)
+                palcolors = color_gen(colornum)
+            }
             the_plot = ggplot2::ggplot(data = to_plot,
                                        aes(
                                            x = .data[[p_mid]],
@@ -696,7 +723,6 @@ plot_neat = function(data_per_subject = NULL,
         return(the_plot)
     }
 }
-
 
 neat_plot2 = function(values,
                      binwidth = NULL,

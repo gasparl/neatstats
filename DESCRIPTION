@@ -1,7 +1,7 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.5.2
-Date: 2020-10-18
+Version: 1.5.3
+Date: 2021-02-22
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
   "Kleinberg", email = "bennettkleinberg@gmail.com", role = c("ctb"), comment =
@@ -15,10 +15,10 @@ Description: User-friendly, clear and simple statistics, primarily for
   experimental designs.
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.6.0)
-Imports: PoweR, plyr, bayestestR, pROC, MBESS, car, ez, BayesFactor, Exact,
-  ggplot2, ggpubr, logspline, grDevices, stats, graphics
+Imports: viridis, PoweR, plyr, bayestestR, pROC, MBESS, car, ez, BayesFactor,
+   Exact, ggplot2, ggpubr, logspline, grDevices, stats, graphics
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
