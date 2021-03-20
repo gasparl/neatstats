@@ -118,11 +118,9 @@ props_neat = function(case1,
     # to add: McNemar for paired; corresponding BF
     prop_1 = case1 / n1
     prop_2 = case2 / n2
-    p_diff = prop_1 - prop_2
     matr = matrix(c(case1, case2, n1 - case1, n2 - case2), 2, 2)
     exact_res = Exact::exact.test(matr, to.plot = FALSE)
     z_norm = -0.862 + sqrt(0.743 - 2.404 * log(exact_res$p.value))
-    p_se = abs(p_diff / z_norm)
     if (greater == "1") {
         if (hush == FALSE) {
             message("One-sided exact-test (with 90% CI default)! H1: first is greater than second.")
@@ -141,6 +139,8 @@ props_neat = function(case1,
     if (is.null(ci)) {
         ci = 0.90
     }
+    p_diff = prop_1 - prop_2
+    p_se = abs(p_diff / z_norm)
     z_c = stats::qnorm(1 - (1 - ci) / 2)
     p_low = p_diff - p_se * z_c
     p_upp = p_diff + p_se * z_c
@@ -179,9 +179,9 @@ props_neat = function(case1,
     } else {
         h_out = ''
     }
-    p_diff_out = edges(p_diff, 2, no_null = TRUE)
-    p_low_out = edges(p_low, 2, no_null = TRUE)
-    p_upp_out = edges(p_upp, 2, no_null = TRUE)
+    p_diff_out = edges(p_diff, 3, no_null = TRUE)
+    p_low_out = edges(p_low, 3, no_null = TRUE)
+    p_upp_out = edges(p_upp, 3, no_null = TRUE)
 
     out = paste0(
         'Z = ',
