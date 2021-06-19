@@ -639,10 +639,11 @@ anova_neat = function(data_per_subject,
                     ', whichModels = "withmain")'
                 )
         ))
-        if (is.null(within_vars) && length( to_c(between_vars) ) == 1 ) {
+        if (is.null(within_vars) && length(to_c(between_vars)) == 1) {
             bf_inc = as.vector(bf)
         } else {
             bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = TRUE)
+            bf_inc$BF = exp(bf_inc$log_BF)
             bf_inc = stats::setNames(object = bf_inc$BF, nm = rownames(bf_inc))
         }
         bf_models = bf
