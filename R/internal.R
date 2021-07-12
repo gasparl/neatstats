@@ -77,13 +77,65 @@ bf_names = function(the_names) {
     return(new_names)
 }
 
+docv_auc = function(v_large,
+                    v_small,
+                    cv_rep,
+                    cv_fold) {
+    allvs = sort(c(v_large, v_small))
+    allths =  rep(NA, length(allvs))
+    for (th_i in 2:length(allvs)) {
+        allths[th_i] = mean(allvs[(th_i - 1):th_i])
+    }
+    allths[1] = -Inf
+    allths = c(allths, Inf)
+
+    cv_vec = 1:cv_fold
+    all_tps = c()
+    all_tns = c()
+    optimal_ths = c()
+    for (i in 1:cv_rep) {
+        v_L = split(sample(v_large), cv_vec)
+        v_S = split(sample(v_small), cv_vec)
+        maxtps = c()
+        maxtns = c()
+        maxths = c()
+        for (cvnum in cv_vec) {
+            maxsum = 0
+            for (thres in allths) {
+                trainL = unlist(v_L[-cvnum])
+                trainS = head(unlist(v_S[-cvnum]), length(trainL))
+                trainL = head(trainL, length(trainS))
+                newsum = sum(trainL > thres) / length(trainL) + sum(trainS < thres) / length(trainS)
+                if (newsum > maxsum) {
+                    maxsum = newsum
+                    thethres = thres
+                }
+            }
+            maxtps = c(maxtps, sum(v_L[[cvnum]] > thethres) / length(v_L[[cvnum]]))
+            maxtns = c(maxtns, sum(v_S[[cvnum]] < thethres) / length(v_S[[cvnum]]))
+            maxths = c(maxths, thethres)
+        }
+        all_tps = c(all_tps, mean(maxtps))
+        all_tns = c(all_tns, mean(maxtns))
+        optimal_ths = c(optimal_ths, mean(maxths))
+    }
+    return(list(
+        TPRs = all_tps,
+        TNRs = all_tns,
+        thresholds = optimal_ths
+    ))
+}
+
 show_auc = function(theroc,
                     ci = 0.95,
                     round_to = 3,
                     for_table = FALSE,
                     thres = NULL,
                     best_tp = NULL,
-                    best_fp = NULL) {
+                    best_tn = NULL,
+                    sd_tp = '',
+                    sd_tn = '',
+                    sd_th = '') {
     if (for_table == TRUE) {
         ci_disp = ""
     } else {
@@ -95,16 +147,19 @@ show_auc = function(theroc,
     upper = edges(auc_ci[3], round_to)
     thres = ro(thres, round_to)
     best_tp = edges(best_tp, round_to)
-    best_fp = edges(best_fp, round_to)
+    best_tn = edges(best_tn, round_to)
     if (thres == Inf | thres == -Inf) {
       rates_optim = " (below chance level)"
     } else {
       rates_optim = paste0(" (TPR = ",
                            best_tp,
+                           sd_tp,
                            ", TNR = ",
-                           best_fp,
+                           best_tn,
+                           sd_tn,
                            ", with the optimal cutoff ",
                            thres,
+                           sd_th,
                            ")")
     }
     prnt(

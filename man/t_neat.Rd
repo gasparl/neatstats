@@ -82,9 +82,14 @@ by default). More samples (e.g. \code{10000}) take longer time but give more
 stable BF.}
 
 \item{auc_added}{Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
-calculated and displayed (including TPR and TNR, i.e., true positive and
-true negative rates, i.e. sensitivity and specificity, using an optimal
-cutoff value, i.e. threshold, that provides maximal TPR and TNR).}
+calculated and displayed. Includes TPR and TNR, i.e., true positive and true
+negative rates, i.e. sensitivity and specificity, using an optimal cutoff
+value, i.e. threshold, that provides maximal TPR and TNR. These values may
+be cross-validated: see \code{cv_rep}. (Note that what is designated as
+"positive" or "negative" depends on the scenario: this function always
+assumes \code{var1} as positive and \code{var2} as negative. If your
+scenario or preference differs, you can simply switch the names or values
+when reporting the results.)}
 
 \item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is
 calculated and displayed in case of paired comparison.}
@@ -112,9 +117,10 @@ or numeric, a cross-validation is performed for the calculation of TPRs and
 TNRs. Numeric value specifies the number of repetitions, while, if
 \code{TRUE}, it defaults to \code{100} repetitions. In each repetition, the
 data is divided into \code{k} random parts ("folds"; see \code{cv_fold}),
-and the optimal accuracy is obtained k times from a k-1 training set, and
-the TPR and TNR are calculated from the remaining test set (different each
-time).}
+and the optimal accuracy is obtained k times from a k-1 training set
+(\code{var1} and \code{var2} truncated to equal length, if needed, in each
+case within each repetition), and the TPR and TNR are calculated from the
+remaining test set (different each time).}
 
 \item{cv_fold}{Numeric. The number of folds into which the data is divided for
 cross-validation (default: 10).}
@@ -163,14 +169,16 @@ Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
  (overall accuracy using the most optimal classification threshold), and
  \code{youden} (Youden's index: \code{specificity + sensitivity - 1}). The
  latter three are \code{NULL} when \code{auc_added} is \code{FALSE}. When
- \code{auc_added} is \code{TRUE}, there are also two additional elements of
- the list. One is '\code{roc_obj}', which is a \code{\link[pROC]{roc}}
- object, to be used e.g. with the \code{\link{roc_neat}} function. The other
- is '\code{best_thresholds}', which contains the best threshold value(s) for
- classification, along with corresponding specificity and sensitivity.
- Finally, if \code{plots} is \code{TRUE} (or \code{NULL}), the plot is
- displayed as well as returned as a \code{\link[ggplot2]{ggplot}} object,
- named \code{t_plot}.
+ \code{auc_added} is \code{TRUE}, there are also two or three additional
+ elements of the list. One is '\code{roc_obj}', which is a
+ \code{\link[pROC]{roc}} object, to be used e.g. with the
+ \code{\link{roc_neat}} function. Another is '\code{best_thresholds}', which
+ contains the best threshold value(s) for classification, along with
+ corresponding specificity and sensitivity. The third '\code{cv_results}'
+ contains the results, if any, of the cross-validation of TPRs and TNRs
+ (means per repetition). Finally, if \code{plots} is \code{TRUE} (or
+ \code{NULL}), the plot is displayed as well as returned as a
+ \code{\link[ggplot2]{ggplot}} object, named \code{t_plot}.
 }
 \description{
 Welch's \code{\link[stats:t.test]{t-test}} results including
