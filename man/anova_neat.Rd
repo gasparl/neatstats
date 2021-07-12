@@ -66,12 +66,11 @@ Lakens, 2014; Steiger, 2004.)}
 character input is accepted (as a single string or a character vector;
 case-insensitive): \code{"W"} (Shapiro-Wilk), \code{"K2"}
 (D'Agostino-Pearson), \code{"A2"} (Anderson-Darling), \code{"JB"}
-(Jarque-Bera); see \code{\link{norm_tests}}. The option \code{"all"} selects
-all four previous tests at the same time.}
+(Jarque-Bera); see \code{\link{norm_tests}}. The option \code{"all"} (or
+\code{TRUE}) selects all four previous tests at the same time.}
 
-\item{norm_plots}{If \code{TRUE} and \code{norm_tests} is not \code{"none"},
-displays density, histogram, and Q-Q plots (and scatter plots for paired
-tests) for the pooled residuals.#'}
+\item{norm_plots}{If \code{TRUE}, displays density, histogram, and Q-Q plots
+(and scatter plots for paired tests) for the pooled residuals.}
 
 \item{var_tests}{Logical, \code{FALSE} by default. If \code{TRUE} (and there
 are any between-subject factors), runs variance equality tests via

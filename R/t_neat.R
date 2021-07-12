@@ -24,17 +24,16 @@
 #'  is accepted (as a single string or a character vector; case-insensitive):
 #'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. Two other options
-#'  are \code{"all"} (to choose all four previous tests at the same time) or
-#'  \code{"latent"} (default value; prints all tests only if
+#'  are \code{"all"} ((same as \code{TRUE}; to choose all four previous tests at
+#'  the same time) or \code{"latent"} (default value; prints all tests only if
 #'  \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
 #'  a p value below .05). Each normality test is performed for the difference
 #'  values between the two variables in case of paired samples, or for each of
 #'  the two variables for unpaired samples. Set to \code{"none"} to disable
 #'  (i.e., not to perform any normality tests).
-#'@param norm_plots If \code{TRUE} and \code{norm_tests} is not \code{"none"},
-#'  displays density, histogram, and Q-Q plots (and scatter plots for paired
-#'  tests) for each of the two variable (and differences for pairwise
-#'  observations, in case of paired samples).
+#'@param norm_plots If \code{TRUE}, displays density, histogram, and Q-Q plots
+#'  (and scatter plots for paired tests) for each of the two variable (and
+#'  differences for pairwise observations, in case of paired samples).
 #'@param ci Numeric; confidence level for returned CIs for Cohen's d and AUC.
 #'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
 #'  and displayed.
@@ -51,10 +50,9 @@
 #'  calculated and displayed in case of paired comparison.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
 #'  from the printed text.
-#'@param test_title String, "Descriptives:" by default. Simply displayed in
-#'  printing preceding the descriptive statistics. (Useful e.g. to distinguish
-#'  several different comparisons inside a \code{function} or a \code{for}
-#'  loop.)
+#'@param test_title \code{NULL} or string. If not \code{NULL}, simply displayed
+#'  in printing preceding the statistics. (Useful e.g. to distinguish several
+#'  different comparisons inside a \code{function} or a \code{for} loop.)
 #'@param round_descr Number \code{\link[=ro]{to round}} to the descriptive
 #'  statistics (means and SDs).
 #'@param round_auc Number \code{\link[=ro]{to round}} to the AUC and its CI.
@@ -63,6 +61,16 @@
 #'  \code{var1} expected to be greater for 'cases' than \code{var2} mean) or "2"
 #'  (\code{var2} expected to be greater for 'cases' than \code{var1}). Not to be
 #'  confused with one-sided tests; see Details.
+#'@param cv_rep \code{FALSE} (default), \code{TRUE}, or numeric. If \code{TRUE}
+#'  or numeric, a cross-validation is performed for the calculation of TPRs and
+#'  TNRs. Numeric value specifies the number of repetitions, while, if
+#'  \code{TRUE}, it defaults to \code{100} repetitions. In each repetition, the
+#'  data is divided into \code{k} random parts ("folds"; see \code{cv_fold}),
+#'  and the optimal accuracy is obtained k times from a k-1 training set, and
+#'  the TPR and TNR are calculated from the remaining test set (different each
+#'  time).
+#'@param cv_fold Numeric. The number of folds into which the data is divided for
+#'  cross-validation (default: 10).
 #'@param hush Logical. If \code{TRUE}, prevents printing any details to console.
 #'@param plots Logical (or \code{NULL}). If \code{TRUE}, creates a combined
 #'  density plot (i.e., \code{\link[stats:density]{Gaussian kernel density
@@ -240,10 +248,12 @@ t_neat = function(var1,
                   auc_added = FALSE,
                   r_added = TRUE,
                   for_table = FALSE,
-                  test_title = "Descriptives:",
+                  test_title = NULL,
                   round_descr = 2,
                   round_auc = 3,
                   auc_greater = '1',
+                  cv_rep = FALSE,
+                  cv_fold = 10,
                   hush = FALSE,
                   plots = FALSE,
                   rug_size = 4,
@@ -261,7 +271,7 @@ t_neat = function(var1,
             val_arg(pair, c('bool'), 1),
             val_arg(nonparametric, c('bool'), 1),
             val_arg(greater, c('null', 'char'), 1, c('1', '2')),
-            val_arg(norm_tests, c('char')),
+            val_arg(norm_tests, c('bool', 'char')),
             val_arg(norm_plots, c('bool'), 1),
             val_arg(ci, c('null', 'num'), 1),
             val_arg(bf_added, c('bool'), 1),
@@ -270,9 +280,11 @@ t_neat = function(var1,
             val_arg(auc_added, c('bool'), 1),
             val_arg(r_added, c('bool'), 1),
             val_arg(for_table, c('bool'), 1),
-            val_arg(test_title, c('char'), 1),
+            val_arg(test_title, c('char', 'null'), 1),
             val_arg(round_descr, c('num'), 1),
             val_arg(round_auc, c('num'), 1),
+            val_arg(cv_rep, c('num', 'bool'), 1),
+            val_arg(cv_fold, c('num'), 1),
             val_arg(auc_greater, c('char'), 1, c('1', '2')),
             val_arg(hush, c('bool'), 1),
             val_arg(plots, c('bool', 'null'), 1),
@@ -311,8 +323,15 @@ t_neat = function(var1,
             message("NA values omitted.")
         }
     }
-    if (norm_tests != 'none' &
+    if (norm_plots == TRUE &
+        (norm_tests == 'none' | norm_tests == FALSE)) {
+        norm_tests = 'all'
+    }
+    if (norm_tests != 'none' & norm_tests != FALSE &
         hush == FALSE) {
+        if (norm_tests == TRUE) {
+            norm_tests = 'all'
+        }
         norm_tests_in(
             var1 = var1,
             var2 = var2,
@@ -544,37 +563,39 @@ t_neat = function(var1,
                               df,
                               ") = ")
         }
+        if (!is.null(test_title) && hush == FALSE) {
+            cat(test_title, fill = TRUE)
+        }
         prnt(
-            test_title,
-            " MCHAR_PLUSMINSD = ",
-            descr_1,
-            " vs. ",
-            descr_2,
-            " (raw mean difference: ",
+            "Mean difference (var1CHAR_MINUSvar2): ",
             mean_dif,
             ci_disp,
             " [",
             ci_r_low,
             ", ",
             ci_r_upp,
-            "])"
+            "] ",
+            "(MCHAR_PLUSMINSD = ",
+            descr_1,
+            " vs. ",
+            descr_2,
+            "), ",
+            paste0(
+                outbegin,
+                ro(t, 2),
+                ", p = ",
+                ro(pvalue, 3),
+                ", ",
+                d,
+                ci_disp,
+                " [",
+                lower,
+                ", ",
+                upper,
+                "]",
+                bf_out
+            )
         )
-        out = paste0(
-            outbegin,
-            ro(t, 2),
-            ", p = ",
-            ro(pvalue, 3),
-            ", ",
-            d,
-            ci_disp,
-            " [",
-            lower,
-            ", ",
-            upper,
-            "]",
-            bf_out
-        )
-        prnt(out)
     }
     if (auc_added == TRUE) {
         if (auc_greater == "2") {
