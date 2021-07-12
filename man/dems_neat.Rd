@@ -9,9 +9,14 @@ dems_neat(
   group_by = NULL,
   gender_col = NULL,
   age_col = NULL,
+  male = "male",
+  female = "female",
   percent = FALSE,
   round_perc = 0,
-  show_fem = NULL
+  show_fem = NULL,
+  age_range = FALSE,
+  age_min = NULL,
+  age_max = NULL
 )
 }
 \arguments{
@@ -21,12 +26,7 @@ calculated. Should contain columns named as "\code{age}" and as
 columns can be specified via the \code{gender_col} and \code{age_col}
 parameters. The \code{age} column must contain only numbers or \code{NA},
 while \code{gender} column must contain only \code{1} (= male) or \code{2}
-(= female), either as numbers or as strings, or \code{NA}. Alternatively,
-male can be indicated, instead of \code{1}, with the string \code{male} (or
-its abbreviations, e.g. \code{m}), while in that case female can be
-indicated, instead of \code{2}, with the string \code{female} (or its
-abbreviations, e.g. \code{f} or \code{fem} ). (Lettercases do not matter,
-e.g. \code{Male} or \code{MALE} are both evaluated same as \code{male}.)}
+(= female), either as numbers or as strings, or \code{NA}. Alternatively, different gender coding can be set via the parameters \code{male} and \code{female} (but \code{1}/\code{2} will be checked for first in any case).}
 
 \item{group_by}{Optionally the name(s) of column(s) from the data frame
 provided as \code{data_per_subject} to group by.}
@@ -36,6 +36,15 @@ that contains the gender (sex) information.}
 
 \item{age_col}{Optionally the name of column from the data frame
 that contains the age information.}
+
+\item{male}{Alternative code for male: by default, it is the string
+\code{"male"}. Whatever string is given, its abbreviations will also be
+accepted (e.g. \code{"m"}). (Lettercases do not matter, e.g. \code{Male} or
+\code{MALE} are both evaluated same as \code{male}.)}
+
+\item{female}{Alternative code for female: by default, it is the string
+\code{"female"}. Whatever string is given, its abbreviations will also be
+accepted (e.g. \code{"fem"}). (Lettercases do not matter.)}
 
 \item{percent}{Logical. If \code{TRUE}, gender ratios (and the
 "unknown" ratios based on \code{NA} values) are presented as percentage. If
@@ -49,6 +58,15 @@ male and female are displayed. If \code{FALSE}, only the number of males is
 displayed. If \code{NULL} (default), only the number of males is displayed
 when there are no unknown cases, but both numbers are displayed when there
 are any unknown cases.}
+
+\item{age_range}{Logical, \code{FALSE} by default. If \code{TRUE}, also
+displays age range per group (minimum and maximum ages).}
+
+\item{age_min}{If numeric given, removes all ages below (exclusive!) the given
+number before any age calculation.#'}
+
+\item{age_max}{If numeric given, removes all ages above (exclusive!) the given
+number before any age calculation.}
 }
 \description{
 Prints participant count, age mean and SD, and gender ratio,
@@ -74,13 +92,25 @@ dat = data.frame(
     subject = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     conditions = c('x', 'y', 'x', 'y', 'y', 'x', 'x', 'x', 'y', 'x'),
     gender = c(2, 2, 1, 2, 1, 2, 2, 2, 1, 1),
-    age = c(6, 7, 8.5, 6, 5, 16, 17, 16, 45, 77),
+    age = c(6, 7, 8.5, 6, 5, 16.5, 17, 16, 45.8, 77),
     measure_x = c(83, 71, 111, 70, 92, 75, 110, 111, 110, 85),
     stringsAsFactors = TRUE
 )
 
 # print demographics (age and gender) per "conditions":
 dems_neat(dat, group_by = 'conditions')
+
+# replace unlikely ages with NAs
+dems_neat(dat,
+          group_by = 'conditions',
+          age_min = 8,
+          age_max = 50)
+
+# remove only high values, and display age ranges
+dems_neat(dat,
+          group_by = 'conditions',
+          age_max = 45,
+          age_range = TRUE)
 
 # another dataset, with some missing values
 dat = data.frame(
@@ -104,10 +134,10 @@ dat = data.frame(
     stringsAsFactors = TRUE
 )
 
-# the folliwing will return "unknowns"
+# the following will return "unknowns"
 dems_neat(dat, group_by = 'conditions')
 
-# age column specified
+# gender column specified
 dems_neat(dat, group_by = 'conditions', gender_col = 'geschlecht')
 
 # both columns specified

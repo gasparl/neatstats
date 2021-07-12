@@ -661,9 +661,9 @@ t_neat = function(var1,
                 sd_tn = NULL
                 sd_th = NULL
             } else {
-                sd_tp = paste0('CHAR_PLUSMIN', edges(sd(cv_cdrs$TPRs), round_auc))
-                sd_tn = paste0('CHAR_PLUSMIN', edges(sd(cv_cdrs$TNRs), round_auc))
-                sd_th = paste0('CHAR_PLUSMIN', edges(sd(cv_cdrs$thresholds), round_auc))
+                sd_tp = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$TPRs), round_auc))
+                sd_tn = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$TNRs), round_auc))
+                sd_th = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$thresholds), round_auc))
                 best_tp = mean(cv_cdrs$TPRs)
                 best_tn = mean(cv_cdrs$TNRs)
                 plot_thres = mean(cv_cdrs$thresholds)
