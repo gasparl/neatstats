@@ -77,17 +77,15 @@ roc_neat = function(roc1,
                     plot_rocs = FALSE,
                     roc_labels = "",
                     roc_cutoff = TRUE) {
-    validate_args(
-        match.call(),
-        list(
-            val_arg(pair, c('bool'), 1),
-            val_arg(greater, c('null', 'char'), 1, c('1', '2')),
-            val_arg(ci, c('null', 'num'), 1),
-            val_arg(hush, c('bool'), 1),
-            val_arg(roc_labels, c('char')),
-            val_arg(roc_cutoff, c('bool'), 1)
-        )
-    )
+    validate_args(match.call(),
+                  list(
+                      val_arg(pair, c('bool'), 1),
+                      val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+                      val_arg(ci, c('null', 'num'), 1),
+                      val_arg(hush, c('bool'), 1),
+                      val_arg(roc_labels, c('char')),
+                      val_arg(roc_cutoff, c('bool'), 1)
+                  ))
     if (roc_labels == "") {
         roc_labels = NA
     }
@@ -167,7 +165,7 @@ roc_neat = function(roc1,
     if (plot_rocs == TRUE) {
         plotted = plot_roc(list(roc1, roc2), roc_labels, roc_cutoff)
         if (hush == FALSE) {
-            plot(plotted)
+            graphics::plot(plotted)
         }
     } else {
         plotted = NA
@@ -217,7 +215,12 @@ plot_roc = function(roc_list,
         lin_cols = viridis::viridis(rocnum, end = .85)
     }
     lin_a = 1
-    rocplot = ggplot(roc_dat, aes(x = tn, y = tp, color = Case)) +
+    rocplot = ggplot(.data$roc_dat,
+                     aes(
+                         x = .data$tn,
+                         y = .data$tp,
+                         color = .data$Case
+                     )) +
         labs(x = "True Negative Rate (Specificity)",
              y = "True Positive Rate (Sensitivity)") +
         annotate(
@@ -259,8 +262,11 @@ plot_roc = function(roc_list,
     rocplot = rocplot +
         scale_color_manual(values = lin_cols) + geom_path(size = 0.7) +
         scale_x_reverse() + theme_bw() +
-        theme(aspect.ratio = 1, legend.title = element_blank(),
-              text = element_text(family = "serif", size = 17))
+        theme(
+            aspect.ratio = 1,
+            legend.title = element_blank(),
+            text = element_text(family = "serif", size = 17)
+        )
     if (rocnum == 1) {
         rocplot = rocplot + theme(legend.position = "none")
     }

@@ -605,15 +605,16 @@ t_neat = function(var1,
             )
         )
     }
+    cv_cdrs = NULL
     if (auc_added == TRUE) {
         if (auc_greater == "2") {
             auc_dir = ">" # v2 expected larger
-            v_large = v2
-            v_small = v1
+            v_large = var2
+            v_small = var1
         } else {
             auc_dir = "<" # v1 expected larger
-            v_large = v1
-            v_small = v2
+            v_large = var1
+            v_small = var2
         }
         the_roc = pROC::roc(
             response = c(rep(0, length(var2)), rep(1, length(var1))),
@@ -651,8 +652,6 @@ t_neat = function(var1,
                                v_small,
                                cv_rep,
                                cv_fold)
-        } else {
-            cv_cdrs = NULL
         }
         the_auc = pROC::auc(the_roc)
         if (hush == FALSE) {
@@ -756,11 +755,11 @@ plot_dens = function(v1,
         freed2 = 2 * stats::IQR(v2) / (length(v2) ^ (1 / 3))
         my_binwidth = min(max_1, max_2, freed1, freed2)
         the_plot = ggplot(dens_dat,
-                        aes(
-                            x = .data$vals,
-                            fill = .data$facts,
-                            color = .data$facts
-                        )) +
+                          aes(
+                              x = .data$vals,
+                              fill = .data$facts,
+                              color = .data$facts
+                          )) +
             geom_histogram(
                 aes(y = .data$..count..),
                 alpha = 0.1,
@@ -771,11 +770,11 @@ plot_dens = function(v1,
             geom_density(aes(y = .data$..count.. * my_binwidth), alpha = 0.3)
     } else {
         the_plot = ggplot(dens_dat,
-                        aes(
-                            x = .data$vals,
-                            fill = .data$facts,
-                            color = .data$facts
-                        )) +
+                          aes(
+                              x = .data$vals,
+                              fill = .data$facts,
+                              color = .data$facts
+                          )) +
             geom_density(aes(y = .data$..count.. / sum(.data$..count..)),
                          alpha = 0.3)
     }
@@ -813,9 +812,12 @@ plot_dens = function(v1,
     return(
         the_plot + scale_fill_manual(values = c('#004d00', '#8080ff'),
                                      name = factor_name) +
-            scale_color_manual(values = c('#004d00', '#8080ff'), guide = FALSE) +
+            scale_color_manual(
+                values = c('#004d00', '#8080ff'),
+                guide = FALSE
+            ) +
             geom_vline(
-                xintercept = c(xfunc(v1), xfunc(v2)),
+                xintercept = c(xfunc(.data$v1), xfunc(.data$v2)),
                 color = "#777777",
                 linetype = "dashed",
                 size = 0.5

@@ -103,8 +103,8 @@ docv_auc = function(v_large,
             maxsum = 0
             for (thres in allths) {
                 trainL = unlist(v_L[-cvnum])
-                trainS = head(unlist(v_S[-cvnum]), length(trainL))
-                trainL = head(trainL, length(trainS))
+                trainS = utils::head(unlist(v_S[-cvnum]), length(trainL))
+                trainL = utils::head(trainL, length(trainS))
                 newsum = sum(trainL > thres) / length(trainL) + sum(trainS < thres) / length(trainS)
                 if (newsum > maxsum) {
                     maxsum = newsum
