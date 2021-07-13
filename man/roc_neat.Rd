@@ -53,9 +53,9 @@ Prints DeLong's test results for the comparison of the two given AUCs
  \code{p} (p value), and, when plot is added, \code{roc_plot}.
 }
 \description{
-Comparison of two \code{\link[neatStats:t_neat]{areas under the receiver
- operating characteristic curves}} (AUCs) and plotting any number of ROC
- curves.
+Comparison of two \code{\link[neatStats:t_neat]{areas under the
+ receiver operating characteristic curves}} (AUCs) and plotting any number of
+ ROC curves.
 }
 \note{
 The main test statistics are calculated via

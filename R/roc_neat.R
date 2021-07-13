@@ -1,8 +1,8 @@
 #'@title Difference of Two Areas Under the Curves
 #'
-#'@description Comparison of two \code{\link[neatStats:t_neat]{areas under the receiver
-#'  operating characteristic curves}} (AUCs) and plotting any number of ROC
-#'  curves.
+#'@description Comparison of two \code{\link[neatStats:t_neat]{areas under the
+#'  receiver operating characteristic curves}} (AUCs) and plotting any number of
+#'  ROC curves.
 #'@param roc1 Receiver operating characteristic (ROC) \code{\link[pROC:roc]{
 #'  object}}, or, for plotting only, a \code{\link{list}} including any number
 #'  of such ROC objects.
