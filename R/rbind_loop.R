@@ -21,7 +21,7 @@
 #'   named automatically (e.g. \code{X.value.}).
 #'@details In each call, all data passed to the function (via \code{...}) will
 #'  be merged into a single row, and that single row will be added to the
-#'  \code{merged} data frame
+#'  \code{merged} data frame.
 #'
 #'  See an extensive example via https://github.com/gasparl/neatstats.
 #'@seealso \code{\link{enum}}

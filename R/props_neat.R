@@ -1,16 +1,37 @@
 #'@title Difference of Two Proportions
 #'
-#'@description \code{\link[Exact:exact.test]{ Unconditional exact test}} results
-#'  for the comparison of two independent proportions, including confidence
-#'  interval (CI) for the proportion difference, and corresponding
+#'@description Comparison of paired and unpaired proportions. For paired:
+#'  Pearson's chi-squared test or \code{\link[Exact:exact.test]{ unconditional
+#'  exact test}}, including confidence interval (CI) for the proportion
+#'  difference, and corresponding
 #'  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
-#'  contingency table Bayes factor}} (BF). Cohen's h and its CI are also
-#'  calculated.
+#'  contingency table Bayes factor}} (BF). (Cohen's h and its CI are also
+#'  calculated.) For paired tests, \code{\link[stats:prop.test]{classical
+#'  (asymptotic) McNemar test} (optionally with mid-P as well), including
+#'confidence interval (CI) for the proportion difference.
+#'@param var1 First variable containing classifications, in 'group 1', for the
+#'  first proportion (see Examples). If given, proportions will be defined using
+#'  \code{var1} and \code{var2} (see Details). To distinguish classification
+#'  ('cases' and 'controls'; e.g. positive outcomes vs. negative outcomes), any
+#'  two specific characters (or numbers) can be used. However, more than two
+#'  different elements (apart from \code{NA}s) will cause error.
+#'@param var2 Second variable containing classifications in, 'group 2', for the
+#'  second proportion, analogously to \code{var1}.
 #'@param case1 Number of 'cases' (as opposed to 'controls'; e.g. positive
-#'  outcomes vs. negative outcomes) in 'group 1'.
+#'  outcomes vs. negative outcomes) in 'group 1'. As counterpart, either
+#'  control numbers or sample sizes needs to be given (see Details).
 #'@param case2 Number of 'cases' in 'group 2'.
+#'@param control1 Number of 'controls' in 'group 1'. As counterpart, case
+#'  numbers need to be given (see Details).
+#'@param control2 Number of 'controls' in 'group 2'.
+#'@param prop1 Proportion in 'group 1'. As counterpart, sample sizes need to be
+#'  given (see Details).
+#'@param prop2 Proportion in 'group 2'.
 #'@param n1 Number; sample size of 'group 1'.
 #'@param n2 Number; sample size of 'group 2'.
+#'@param pair Logical. Set \code{TRUE} for paired proportions (McNemar, mid-P),
+#'  or \code{FALSE} (default) for unpaired (chi squared, or unconditional exact
+#'  test).
 #'@param greater \code{NULL} or string (or number); optionally specifies
 #'  one-sided exact test: either "1" (\code{case1/n1} proportion expected to be
 #'  greater than \code{case2/n2} proportion) or "2" (\code{case2/n2} proportion
@@ -18,8 +39,18 @@
 #'  (default), the test is two-sided.
 #'@param ci Numeric; confidence level for the returned CIs (proportion
 #'  difference and Cohen's h).
-#'@param bf_added Logical. If \code{TRUE} (default), Bayes factor is calculated
-#'  and displayed. (Always two-sided.)
+#'@param bf_added Logical. If \code{TRUE}, Bayes factor is calculated
+#'  and displayed. (Always two-sided!)
+#'@param yates Logical, \code{FALSE} by default. If \code{TRUE}, Yates'
+#'  continuity correction is applied to the McNemar test. Some authors advise
+#'  this correction for certain specific cases (e.g., small sample), but
+#'  evidence does not seem to support this (Pembury Smith & Ruxton, 2020).
+#'@param midp Logical, \code{FALSE} by default. If \code{TRUE}, displays an
+#'  additional 'mid-P' p value (using the formula by Pembury Smith & Ruxton,
+#'  2020) for McNemar's test (Fagerland et al., 2013). This provides better
+#'  control for Type I error (less false positive findings) than the classical
+#'  McNemar test, while it is also probably not much less robust (Pembury Smith
+#'  & Ruxton, 2020).
 #'@param h_added Logical. If \code{TRUE}, Cohen's h and its CI are calculated
 #'  and displayed. (\code{FALSE} by default.)
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
@@ -61,12 +92,21 @@
 #'Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika, 34(1/2),
 #'123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
 #'
+#'Fagerland, M. W., Lydersen, S., & Laake, P. (2013). The McNemar test for
+#'binary matched-pairs data: Mid-p and asymptotic are better than exact
+#'conditional. BMC Medical Research Methodology, 13(1), 91.
+#'\doi{https://doi.org/10.1186/1471-2288-13-91}
+#'
 #'Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
 #'association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
 #'\doi{https://doi.org/10.1002/sim.3531}
 #'
 #'Navarro, D. (2019). Learning statistics with R.
 #'\url{https://learningstatisticswithr.com/}
+#'
+#'Pembury Smith, M. Q. R., & Ruxton, G. D. (2020). Effective use of the McNemar
+#'test. Behavioral Ecology and Sociobiology, 74(11), 133.
+#'\doi{https://doi.org/10.1007/s00265-020-02916-y}
 #'
 #'Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for the
 #'2 times 2 binomial trial. Journal of the Royal Statistical Society: Series A
@@ -96,6 +136,7 @@ props_neat = function(case1,
                       greater = NULL,
                       ci = NULL,
                       bf_added = FALSE,
+                      yates = FALSE,
                       h_added = FALSE,
                       for_table = FALSE,
                       hush = FALSE) {
