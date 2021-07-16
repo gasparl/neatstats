@@ -5,27 +5,65 @@
 \title{Difference of Two Proportions}
 \usage{
 props_neat(
-  case1,
-  case2,
-  n1,
-  n2,
+  var1 = NULL,
+  var2 = NULL,
+  case1 = NULL,
+  case2 = NULL,
+  control1 = NULL,
+  control2 = NULL,
+  prop1 = NULL,
+  prop2 = NULL,
+  n1 = NULL,
+  n2 = NULL,
+  pair = FALSE,
   greater = NULL,
   ci = NULL,
   bf_added = FALSE,
+  round_to = 3,
+  exact = FALSE,
+  inverse = FALSE,
+  yates = FALSE,
+  midp = FALSE,
   h_added = FALSE,
   for_table = FALSE,
   hush = FALSE
 )
 }
 \arguments{
+\item{var1}{First variable containing classifications, in 'group 1', for the
+first proportion (see Examples). If given (strictly necessary for paired
+proportions), proportions will be defined using \code{var1} and \code{var2}
+(see Details). To distinguish classification ('cases' and 'controls'; e.g.
+positive outcomes vs. negative outcomes), any two specific characters (or
+numbers) can be used. However, more than two different elements (apart from
+\code{NA}s) will cause error.}
+
+\item{var2}{Second variable containing classifications in, 'group 2', for the
+second proportion, analogously to \code{var1}.}
+
 \item{case1}{Number of 'cases' (as opposed to 'controls'; e.g. positive
-outcomes vs. negative outcomes) in 'group 1'.}
+outcomes vs. negative outcomes) in 'group 1'. As counterpart, either control
+numbers or sample sizes needs to be given (see Details).}
 
 \item{case2}{Number of 'cases' in 'group 2'.}
+
+\item{control1}{Number of 'controls' in 'group 1'. As counterpart, case
+numbers need to be given (see Details).}
+
+\item{control2}{Number of 'controls' in 'group 2'.}
+
+\item{prop1}{Proportion in 'group 1'. As counterpart, sample sizes need to be
+given (see Details).}
+
+\item{prop2}{Proportion in 'group 2'.}
 
 \item{n1}{Number; sample size of 'group 1'.}
 
 \item{n2}{Number; sample size of 'group 2'.}
+
+\item{pair}{Logical. Set \code{TRUE} for paired proportions (McNemar, mid-P),
+or \code{FALSE} (default) for unpaired (chi squared, or unconditional exact
+test). Note: paired data must be given in \code{var1} and \code{var2}.}
 
 \item{greater}{\code{NULL} or string (or number); optionally specifies
 one-sided exact test: either "1" (\code{case1/n1} proportion expected to be
@@ -36,8 +74,35 @@ expected to be greater than \code{case1/n1} proportion). If \code{NULL}
 \item{ci}{Numeric; confidence level for the returned CIs (proportion
 difference and Cohen's h).}
 
-\item{bf_added}{Logical. If \code{TRUE} (default), Bayes factor is calculated
-and displayed. (Always two-sided.)}
+\item{bf_added}{Logical. If \code{TRUE}, Bayes factor is calculated and
+displayed. (Always two-sided!)}
+
+\item{round_to}{Number \code{\link[=ro]{to round}} to the proportion
+statistics (difference and CIs).}
+
+\item{exact}{Logical, \code{FALSE} by default. If \code{TRUE},
+\code{\link[Exact:exact.test]{ unconditional exact test}} is calculated and
+displayed, otherwise the default \code{\link[stats:prop.test]{Pearson's
+chi-squared test}}.}
+
+\item{inverse}{Logical, \code{FALSE} by default. When \code{var1} and
+\code{var2} are given to calculate proportion from, by default the factors'
+frequency determines which are 'cases' and which are 'controls' (so that the
+latter are more frequent). If the \code{inverse} argument is \code{TRUE}, it
+reverses the default proportion direction.}
+
+\item{yates}{Logical, \code{FALSE} by default. If \code{TRUE}, Yates'
+continuity correction is applied to the chi-squared (unpaired) or the
+McNemar (paired) test. Some authors advise this correction for certain
+specific cases (e.g., small sample), but evidence does not seem to support
+this (Pembury Smith & Ruxton, 2020).}
+
+\item{midp}{Logical, \code{FALSE} by default. If \code{TRUE}, displays an
+additional 'mid-P' p value (using the formula by Pembury Smith & Ruxton,
+2020) for McNemar's test (Fagerland et al., 2013). This provides better
+control for Type I error (less false positive findings) than the classical
+McNemar test, while it is also probably not much less robust (Pembury Smith
+& Ruxton, 2020).}
 
 \item{h_added}{Logical. If \code{TRUE}, Cohen's h and its CI are calculated
 and displayed. (\code{FALSE} by default.)}
@@ -55,29 +120,33 @@ Prints exact test statistics (including proportion difference with CI,
  \code{bf} (Bayes factor).
 }
 \description{
-\code{\link[Exact:exact.test]{ Unconditional exact test}} results
- for the comparison of two independent proportions, including confidence
- interval (CI) for the proportion difference, and corresponding
- \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
- contingency table Bayes factor}} (BF). Cohen's h and its CI are also
- calculated.
+
 }
 \details{
-The Bayes factor (BF) is always calculated with the default r-scale
- of \code{0.707}. BF supporting null hypothesis is denoted as BF01, while
- that supporting alternative hypothesis is denoted as BF10. When the BF is
- smaller than 1 (i.e., supports null hypothesis), the reciprocal is
- calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than
- or equal to 10000, scientific (exponential) form is reported for
- readability. (The original full BF number is available in the returned named
- vector as \code{bf}.)
+The proportion for the two groups can be given using any of the following
+combinations (a) two vectors (\code{var1} and \code{var2}), (b) cases and
+controls, (c) cases and sample sizes, or (d) proportions and sample sizes.
+Whenever multiple combinations are specified, only the first parameters (as
+given in the function and in the previous sentence) will be taken into
+account.
+
+The Bayes factor (BF), in case of unpaired samples, is always calculated with
+the default r-scale of \code{0.707}. BF supporting null hypothesis is denoted
+as BF01, while that supporting alternative hypothesis is denoted as BF10. When
+the BF is smaller than 1 (i.e., supports null hypothesis), the reciprocal is
+calculated (hence, BF10 = BF, but BF01 = 1/BF). When the BF is greater than or
+equal to 10000, scientific (exponential) form is reported for readability.
+(The original full BF number is available in the returned named vector as
+\code{bf}.)
 }
 \note{
 Barnard's unconditional exact test is calculated via
  \code{\link[Exact:exact.test]{Exact::exact.test}} ("z-pooled").
 
- The CI for the proportion difference is calculated based on the p value, as
- described by Altman and Bland (2011).
+ The CI for the proportion difference in case of the exact test is calculated
+ based on the p value, as described by Altman and Bland (2011). In case of
+ extremely large or extremely small p values, this can be biased and
+ misleading.
 
  The Bayes factor is calculated via
  \code{\link[BayesFactor:contingencyTableBF]{BayesFactor::contingencyTableBF}},
@@ -110,12 +179,21 @@ from a P value. Bmj, 343(d2090). \doi{https://doi.org/10.1136/bmj.d2090}
 Barnard, G. A. (1947). Significance tests for 2x2 tables. Biometrika, 34(1/2),
 123-138. \doi{https://doi.org/10.1093/biomet/34.1-2.123}
 
+Fagerland, M. W., Lydersen, S., & Laake, P. (2013). The McNemar test for
+binary matched-pairs data: Mid-p and asymptotic are better than exact
+conditional. BMC Medical Research Methodology, 13(1), 91.
+\doi{https://doi.org/10.1186/1471-2288-13-91}
+
 Lydersen, S., Fagerland, M. W., & Laake, P. (2009). Recommended tests for
 association in 2x2 tables. Statistics in medicine, 28(7), 1159-1175.
 \doi{https://doi.org/10.1002/sim.3531}
 
 Navarro, D. (2019). Learning statistics with R.
 \url{https://learningstatisticswithr.com/}
+
+Pembury Smith, M. Q. R., & Ruxton, G. D. (2020). Effective use of the McNemar
+test. Behavioral Ecology and Sociobiology, 74(11), 133.
+\doi{https://doi.org/10.1007/s00265-020-02916-y}
 
 Suissa, S., & Shuster, J. J. (1985). Exact unconditional sample sizes for the
 2 times 2 binomial trial. Journal of the Royal Statistical Society: Series A

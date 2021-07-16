@@ -67,7 +67,7 @@ tests for homogeneity of variances, with applications to the outer continental
 shelf bidding data. Technometrics, 23, 351–361.
 
 Fligner, M. A. & Killeen, T. J. (1976). Distribution-free two-sample tests for
-scale. ‘Journal of the American Statistical Association.’ 71(353), 210-213.
+scale. ‘Journal of the American Statistical Association. 71(353), 210-213.
 
 Fox, J. & Weisberg, S. (2019) An R Companion to Applied Regression, Third
 Edition, Sage.

@@ -34,7 +34,7 @@ Merges rows by columns in a loop using the \code{\link{enum}}
 \details{
 In each call, all data passed to the function (via \code{...}) will
  be merged into a single row, and that single row will be added to the
- \code{merged} data frame
+ \code{merged} data frame.
 
  See an extensive example via https://github.com/gasparl/neatstats.
 }
