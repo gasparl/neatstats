@@ -82,8 +82,8 @@ statistics (difference and CIs).}
 
 \item{exact}{Logical, \code{FALSE} by default. If \code{TRUE},
 \code{\link[Exact:exact.test]{ unconditional exact test}} is calculated and
-displayed, otherwise the default \code{\link[stats:prop.test]{Pearson's
-chi-squared test}}.}
+displayed, otherwise the default Pearson's
+\code{\link[stats:prop.test]{chi-squared test}}.}
 
 \item{inverse}{Logical, \code{FALSE} by default. When \code{var1} and
 \code{var2} are given to calculate proportion from, by default the factors'
@@ -120,8 +120,8 @@ Prints exact test statistics (including proportion difference with CI,
  \code{bf} (Bayes factor).
 }
 \description{
-Comparison of paired and unpaired proportions. For unpaired:
-\code{\link[stats:prop.test]{Pearson's chi-squared test}} or
+Comparison of paired and unpaired proportions. For unpaired: Pearson's
+\code{\link[stats:prop.test]{chi-squared test}} or
 \code{\link[Exact:exact.test]{ unconditional exact test}}, including
 confidence interval (CI) for the proportion difference, and corresponding
 \code{\link[BayesFactor:contingencyTableBF]{independent multinomial

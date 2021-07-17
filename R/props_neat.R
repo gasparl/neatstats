@@ -2,8 +2,8 @@
 #'
 #'@description
 #'
-#'Comparison of paired and unpaired proportions. For unpaired:
-#'\code{\link[stats:prop.test]{Pearson's chi-squared test}} or
+#'Comparison of paired and unpaired proportions. For unpaired: Pearson's
+#'\code{\link[stats:prop.test]{chi-squared test}} or
 #'\code{\link[Exact:exact.test]{ unconditional exact test}}, including
 #'confidence interval (CI) for the proportion difference, and corresponding
 #'\code{\link[BayesFactor:contingencyTableBF]{independent multinomial
@@ -49,8 +49,8 @@
 #'  statistics (difference and CIs).
 #'@param exact Logical, \code{FALSE} by default. If \code{TRUE},
 #'  \code{\link[Exact:exact.test]{ unconditional exact test}} is calculated and
-#'  displayed, otherwise the default \code{\link[stats:prop.test]{Pearson's
-#'  chi-squared test}}.
+#'  displayed, otherwise the default Pearson's
+#'  \code{\link[stats:prop.test]{chi-squared test}}.
 #'@param inverse Logical, \code{FALSE} by default. When \code{var1} and
 #'  \code{var2} are given to calculate proportion from, by default the factors'
 #'  frequency determines which are 'cases' and which are 'controls' (so that the
@@ -346,13 +346,11 @@ props_neat = function(var1 = NULL,
     }
     if (pair == TRUE) {
         p_diff = prop1 - prop2
-        propdat = xtabs(~ var2 + var1)
-        res = prop.test(
-            propdat[2, 1],
-            propdat[2, 1] + propdat[1, 2],
-            correct = yates,
-            conf.level = ci
-        )
+        propdat = stats::xtabs(~ var2 + var1)
+        res = stats::prop.test(propdat[2, 1],
+                               propdat[2, 1] + propdat[1, 2],
+                               correct = yates,
+                               conf.level = ci)
         discr = propdat[2, 1] + propdat[1, 2]
         p_low = (res$conf.int[1] * 2 - 1) * discr / sum(propdat)
         p_upp = (res$conf.int[2] * 2 - 1) * discr / sum(propdat)
@@ -381,7 +379,7 @@ props_neat = function(var1 = NULL,
                     "One-sided McNemar test (with 90% CI default)! H1: first is greater than second."
                 )
             }
-            res = prop.test(
+            res = stats::prop.test(
                 propdat[2, 1],
                 propdat[2, 1] + propdat[1, 2],
                 correct = yates,
@@ -394,7 +392,7 @@ props_neat = function(var1 = NULL,
                     "One-sided McNemar (with 90% CI default)! H1: second is greater than first."
                 )
             }
-            res = prop.test(
+            res = stats::prop.test(
                 propdat[2, 1],
                 propdat[2, 1] + propdat[1, 2],
                 correct = yates,
@@ -410,8 +408,9 @@ props_neat = function(var1 = NULL,
                 prop_b = propdat[2, 1]
                 prop_c = propdat[1, 2]
             }
-            midp = (2 * pbinom(prop_c, prop_c + prop_b, 0.5, lower.tail = TRUE)) - dbinom(prop_c, prop_c +
-                                                                                              prop_b, 0.5)
+            midp = (2 * stats::pbinom(prop_c,
+                                      prop_c + prop_b, 0.5, lower.tail = TRUE)) -
+                stats::dbinom(prop_c, prop_c + prop_b, 0.5)
             midp_inf = paste(', mid-P p =', ro(midp, 3))
         } else {
             midp = NULL
@@ -503,7 +502,7 @@ props_neat = function(var1 = NULL,
                         "One-sided chi-squared test test (with 90% CI default)! H1: first is greater than second."
                     )
                 }
-                res = prop.test(
+                res = stats::prop.test(
                     x = c(case1, case2),
                     n = c(n1, n2),
                     correct = yates,
@@ -516,7 +515,7 @@ props_neat = function(var1 = NULL,
                         "One-sided chi-squared test (with 90% CI default)! H1: second is greater than first."
                     )
                 }
-                res = prop.test(
+                res = stats::prop.test(
                     x = c(case1, case2),
                     n = c(n1, n2),
                     correct = yates,
@@ -524,7 +523,7 @@ props_neat = function(var1 = NULL,
                     alternative = "less"
                 )
             } else {
-                res = prop.test(
+                res = stats::prop.test(
                     x = c(case1, case2),
                     n = c(n1, n2),
                     correct = yates,
