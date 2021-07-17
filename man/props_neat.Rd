@@ -120,7 +120,15 @@ Prints exact test statistics (including proportion difference with CI,
  \code{bf} (Bayes factor).
 }
 \description{
-
+Comparison of paired and unpaired proportions. For unpaired:
+\code{\link[stats:prop.test]{Pearson's chi-squared test}} or
+\code{\link[Exact:exact.test]{ unconditional exact test}}, including
+confidence interval (CI) for the proportion difference, and corresponding
+\code{\link[BayesFactor:contingencyTableBF]{independent multinomial
+contingency table Bayes factor}} (BF). (Cohen's h and its CI are also
+calculated.) For paired tests, \code{\link[stats:prop.test]{classical
+(asymptotic) McNemar test}} (optionally with mid-P as well), including
+confidence interval (CI) for the proportion difference.
 }
 \details{
 The proportion for the two groups can be given using any of the following
@@ -156,21 +164,92 @@ Barnard's unconditional exact test is calculated via
  or e.g. 'Chapter 17 Bayesian statistics' in Navarro, 2019.)
 }
 \examples{
+# example data
+set.seed(1)
+outcomes_A = sample(c(rep('x', 490), rep('y', 10)))
+outcomes_B = sample(c(rep('x', 400), rep('y', 100)))
+
+# paired proportion test (McNemar)
+props_neat(var1 = outcomes_A,
+           var2 = outcomes_B,
+           pair = TRUE)
+
+# unpaired chi test for the same data (two independent samples assumed)
+# Yates correction applied
+# cf. http://www.sthda.com/english/wiki/two-proportions-z-test-in-r
 props_neat(
-    case1 = 35,
-    case2 = 48,
-    n1 = 80,
-    n2 = 77,
-    h_added = TRUE
+    var1 = outcomes_A,
+    var2 = outcomes_B,
+    pair = FALSE,
+    yates = TRUE
 )
 
+# above data given differently for unpaired test
+# (no Yates corrrection)
 props_neat(
-    case1 = 35,
-    case2 = 48,
-    n1 = 80,
-    n2 = 77,
-    greater = "2"
+    case1 = 490,
+    case2 = 400,
+    control1 = 10,
+    control2 = 100
 )
+
+# again differently
+props_neat(
+    case1 = 490,
+    case2 = 400,
+    n1 = 500,
+    n2 = 500
+)
+
+# other example data
+outcomes_A2 = c(rep(1, 707), rep(0, 212),  rep(1, 256), rep(0, 144))
+outcomes_B2 = c(rep(1, 707), rep(0, 212),  rep(0, 256), rep(1, 144))
+
+# paired test
+# cf. https://www.medcalc.org/manual/mcnemartest2.php
+props_neat(var1 = outcomes_A2,
+           var2 = outcomes_B2,
+           pair = TRUE)
+
+# show reverse proportions (otherwise the same)
+props_neat(
+    var1 = outcomes_A2,
+    var2 = outcomes_B2,
+    pair = TRUE,
+    inverse = TRUE
+)
+
+
+# two different sample sizes
+out_chi = props_neat(
+    case1 = 40,
+    case2 = 70,
+    n1 = 150,
+    n2 = 170
+)
+
+# exact test
+out_exact = props_neat(
+    case1 = 40,
+    case2 = 70,
+    n1 = 150,
+    n2 = 170,
+    exact = TRUE
+)
+
+# the two p values are just tiny bit different
+print(out_chi) # p 0.00638942
+print(out_exact) # p 0.006481884
+
+# one-sided test
+props_neat(
+    case1 = 40,
+    case2 = 70,
+    n1 = 150,
+    n2 = 170,
+    greater = '2'
+)
+
 }
 \references{
 Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval

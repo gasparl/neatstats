@@ -1,14 +1,17 @@
 #'@title Difference of Two Proportions
 #'
-#'@description Comparison of paired and unpaired proportions. For unpaired:
-#'  \code{\link[stats:prop.test]{Pearson's chi-squared test}} or
-#'  \code{\link[Exact:exact.test]{ unconditional exact test}}, including
-#'  confidence interval (CI) for the proportion difference, and corresponding
-#'  \code{\link[BayesFactor:contingencyTableBF]{independent multinomial
-#'  contingency table Bayes factor}} (BF). (Cohen's h and its CI are also
-#'  calculated.) For paired tests, \code{\link[stats:prop.test]{classical
-#'  (asymptotic) McNemar test} (optionally with mid-P as well), including
-#'  confidence interval (CI) for the proportion difference.
+#'@description
+#'
+#'Comparison of paired and unpaired proportions. For unpaired:
+#'\code{\link[stats:prop.test]{Pearson's chi-squared test}} or
+#'\code{\link[Exact:exact.test]{ unconditional exact test}}, including
+#'confidence interval (CI) for the proportion difference, and corresponding
+#'\code{\link[BayesFactor:contingencyTableBF]{independent multinomial
+#'contingency table Bayes factor}} (BF). (Cohen's h and its CI are also
+#'calculated.) For paired tests, \code{\link[stats:prop.test]{classical
+#'(asymptotic) McNemar test}} (optionally with mid-P as well), including
+#'confidence interval (CI) for the proportion difference.
+#'
 #'@param var1 First variable containing classifications, in 'group 1', for the
 #'  first proportion (see Examples). If given (strictly necessary for paired
 #'  proportions), proportions will be defined using \code{var1} and \code{var2}
@@ -137,21 +140,92 @@
 #'(General), 148(4), 317-327. \doi{https://doi.org/10.2307/2981892}
 #'
 #'@examples
+#' # example data
+#' set.seed(1)
+#' outcomes_A = sample(c(rep('x', 490), rep('y', 10)))
+#' outcomes_B = sample(c(rep('x', 400), rep('y', 100)))
+#'
+#' # paired proportion test (McNemar)
+#' props_neat(var1 = outcomes_A,
+#'            var2 = outcomes_B,
+#'            pair = TRUE)
+#'
+#' # unpaired chi test for the same data (two independent samples assumed)
+#' # Yates correction applied
+#' # cf. http://www.sthda.com/english/wiki/two-proportions-z-test-in-r
 #' props_neat(
-#'     case1 = 35,
-#'     case2 = 48,
-#'     n1 = 80,
-#'     n2 = 77,
-#'     h_added = TRUE
+#'     var1 = outcomes_A,
+#'     var2 = outcomes_B,
+#'     pair = FALSE,
+#'     yates = TRUE
 #' )
 #'
+#' # above data given differently for unpaired test
+#' # (no Yates corrrection)
 #' props_neat(
-#'     case1 = 35,
-#'     case2 = 48,
-#'     n1 = 80,
-#'     n2 = 77,
-#'     greater = "2"
+#'     case1 = 490,
+#'     case2 = 400,
+#'     control1 = 10,
+#'     control2 = 100
 #' )
+#'
+#' # again differently
+#' props_neat(
+#'     case1 = 490,
+#'     case2 = 400,
+#'     n1 = 500,
+#'     n2 = 500
+#' )
+#'
+#' # other example data
+#' outcomes_A2 = c(rep(1, 707), rep(0, 212),  rep(1, 256), rep(0, 144))
+#' outcomes_B2 = c(rep(1, 707), rep(0, 212),  rep(0, 256), rep(1, 144))
+#'
+#' # paired test
+#' # cf. https://www.medcalc.org/manual/mcnemartest2.php
+#' props_neat(var1 = outcomes_A2,
+#'            var2 = outcomes_B2,
+#'            pair = TRUE)
+#'
+#' # show reverse proportions (otherwise the same)
+#' props_neat(
+#'     var1 = outcomes_A2,
+#'     var2 = outcomes_B2,
+#'     pair = TRUE,
+#'     inverse = TRUE
+#' )
+#'
+#'
+#' # two different sample sizes
+#' out_chi = props_neat(
+#'     case1 = 40,
+#'     case2 = 70,
+#'     n1 = 150,
+#'     n2 = 170
+#' )
+#'
+#' # exact test
+#' out_exact = props_neat(
+#'     case1 = 40,
+#'     case2 = 70,
+#'     n1 = 150,
+#'     n2 = 170,
+#'     exact = TRUE
+#' )
+#'
+#' # the two p values are just tiny bit different
+#' print(out_chi) # p 0.00638942
+#' print(out_exact) # p 0.006481884
+#'
+#' # one-sided test
+#' props_neat(
+#'     case1 = 40,
+#'     case2 = 70,
+#'     n1 = 150,
+#'     n2 = 170,
+#'     greater = '2'
+#' )
+#'
 #' @export
 props_neat = function(var1 = NULL,
                       var2 = NULL,
@@ -237,14 +311,13 @@ props_neat = function(var1 = NULL,
                 ' two unique values (for the binary classification).'
             )
         } else {
-            if (sum(c(var1, var2) == thefactors[1]) < length(c(var1, var2)) / 2) {
+            if (sum(c(var1 == thefactors[1],
+                      var2 == thefactors[1])) > length(c(var1, var2)) / 2) {
                 thefactors = c(thefactors[2], thefactors[1])
             }
             if (inverse == TRUE) {
                 thefactors = c(thefactors[2], thefactors[1])
             }
-            var1 = relevel(var1, thefactors[1])
-            var2 = relevel(var2, thefactors[1])
         }
         n1 = length(var1)
         n2 = length(var2)
@@ -272,25 +345,31 @@ props_neat = function(var1 = NULL,
         ci = 0.95
     }
     if (pair == TRUE) {
-        propdat = xtabs( ~ var1 + var2)
+        p_diff = prop1 - prop2
+        propdat = xtabs(~ var2 + var1)
         res = prop.test(
             propdat[2, 1],
             propdat[2, 1] + propdat[1, 2],
             correct = yates,
             conf.level = ci
         )
-        p_diff = prop1 - prop2
         discr = propdat[2, 1] + propdat[1, 2]
         p_low = (res$conf.int[1] * 2 - 1) * discr / sum(propdat)
         p_upp = (res$conf.int[2] * 2 - 1) * discr / sum(propdat)
+        if (p_diff < p_low |
+            p_diff > p_upp) {
+            pcitemp = c(p_low, p_upp)
+            p_low = -pcitemp[2]
+            p_upp = -pcitemp[1]
+        }
         ci1diff = abs(p_diff - p_low)
         ci2diff = abs(p_diff - p_upp)
-        if (ci1diff > ci2diff) {
+        if (res$conf.int[2] == 1 & ci1diff > ci2diff) {
             p_upp = p_diff + ci1diff
             if (p_low < -1) {
                 p_low = -1
             }
-        } else if (ci1diff < ci2diff) {
+        } else if (res$conf.int[1] == -1 & ci1diff < ci2diff) {
             p_low = p_diff - ci2diff
             if (p_upp > 1) {
                 p_upp = 1
@@ -331,7 +410,8 @@ props_neat = function(var1 = NULL,
                 prop_b = propdat[2, 1]
                 prop_c = propdat[1, 2]
             }
-            midp = (2 * pbinom(prop_c, prop_b, 0.5, lower.tail = TRUE)) - dbinom(prop_c, prop_b, 0.5)
+            midp = (2 * pbinom(prop_c, prop_c + prop_b, 0.5, lower.tail = TRUE)) - dbinom(prop_c, prop_c +
+                                                                                              prop_b, 0.5)
             midp_inf = paste(', mid-P p =', ro(midp, 3))
         } else {
             midp = NULL
@@ -413,7 +493,7 @@ props_neat = function(var1 = NULL,
             z_c = stats::qnorm(1 - (1 - ci) / 2)
             p_low = p_diff - p_se * z_c
             p_upp = p_diff + p_se * z_c
-            z = exact_res$statistic
+            z = abs(exact_res$statistic)
             pvalue = exact_res$p.value
         } else {
             testtitle = 'X = '
