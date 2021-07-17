@@ -602,8 +602,9 @@ anova_neat = function(data_per_subject,
             this_data[, this_col] = to_fact(this_data[[this_col]])
         }
     }
+    ezANOVA = ez::ezANOVA
     a_text = paste0(
-        'ez::ezANOVA(data= this_data, dv=',
+        'ezANOVA(data= this_data, dv=',
         value_col,
         ', wid=',
         id_col,

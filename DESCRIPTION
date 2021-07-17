@@ -1,6 +1,6 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.7.1
+Version: 1.7.2
 Date: 2021-07-17
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
@@ -20,4 +20,5 @@ Imports: viridis, PoweR, plyr, bayestestR, pROC, MBESS, car, ez, BayesFactor,
 Suggests: rstudioapi
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
+LazyData: false
 RoxygenNote: 7.1.1
