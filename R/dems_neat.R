@@ -162,14 +162,12 @@ dems_neat = function(data_per_subject,
             }
         }
     }
-    no_age = FALSE
-    no_gender = FALSE
     if (!'age' %in% names(s_dat)) {
-        no_age = TRUE
+        message('No column for "age" found.')
         s_dat$age = NA
     }
     if (!'gender' %in% names(s_dat)) {
-        no_gender = TRUE
+        message('No column for "sex/gender" found.')
         s_dat$gender = NA
     }
     s_dat$gender = tolower(as.character(s_dat$gender))

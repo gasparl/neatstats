@@ -417,9 +417,9 @@ plot_neat = function(data_per_subject = NULL,
             val_arg(hush, c('bool'), 1)
         )
     )
-    str_meth = utils::tail(strsplit(paste(deparse(substitute(
-        method
-    )), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
+    str_meth = utils::tail(strsplit(paste(deparse(
+        substitute(method)
+    ), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
     str_ebmeth = utils::tail(strsplit(paste(deparse(
         substitute(eb_method)
     ), collapse = ""), '::', fixed = TRUE)[[1]], n = 1)
@@ -469,7 +469,7 @@ plot_neat = function(data_per_subject = NULL,
                 ' (using their mean value per observation).'
             )
             data_wide[[dup]] = rowMeans(data_wide[, to_collapse], na.rm =
-                                               TRUE)
+                                            TRUE)
             values = values[!(values %in% to_collapse)]
             values = c(values, dup)
         }
@@ -493,7 +493,9 @@ plot_neat = function(data_per_subject = NULL,
             for (fact_name in names(within_ids)) {
                 data_reshaped[[fact_name]] = fact_name
                 for (fact_x in within_ids[[fact_name]]) {
-                    data_reshaped[[fact_name]][grepl(fact_x, data_reshaped$within_factor, fixed = TRUE)] = fact_x
+                    data_reshaped[[fact_name]][grepl(fact_x,
+                                                     data_reshaped$within_factor,
+                                                     fixed = TRUE)] = fact_x
                 }
                 data_reshaped[[fact_name]] = as.factor(data_reshaped[[fact_name]])
             }
@@ -588,7 +590,7 @@ plot_neat = function(data_per_subject = NULL,
     if (onefact == TRUE) {
         p_mid = fact_names[1]
         if (type == 'line')  {
-            if (substr(line_colors, 1, 1) == 'v')  {
+            if (substr(line_colors[1], 1, 1) == 'v')  {
                 line_colors = '#333333'
             }
             the_plot = ggplot2::ggplot(data = to_plot,
@@ -599,7 +601,7 @@ plot_neat = function(data_per_subject = NULL,
                                        )) +
                 geom_line(color = line_colors[1]) + geom_point(color = line_colors[1])
         } else {
-            if (substr(bar_colors, 1, 1) == 'v')  {
+            if (substr(bar_colors[1], 1, 1) == 'v')  {
                 bar_colors = '#333333'
             }
             the_plot = ggplot2::ggplot(data = to_plot,
@@ -616,7 +618,7 @@ plot_neat = function(data_per_subject = NULL,
         colornum = length(unique(to_plot[[p_close]]))
         p_mid = fact_names[2]
         if (type == 'line') {
-            if (substr(line_colors, 1, 1) == 'v')  {
+            if (substr(line_colors[1], 1, 1) == 'v')  {
                 if (colornum == 2) {
                     palcolors = viridis::viridis(colornum, end = 0.5)
                 } else if (colornum == 3) {
@@ -643,7 +645,7 @@ plot_neat = function(data_per_subject = NULL,
                 scale_color_manual(values = palcolors,
                                    name = re_n(p_close, factor_names))
         } else {
-            if (substr(bar_colors, 1, 1) == 'v')  {
+            if (substr(bar_colors[1], 1, 1) == 'v')  {
                 if (colornum == 2) {
                     palcolors = viridis::viridis(colornum, end = 0.5)
                 } else if (colornum == 3) {
@@ -712,9 +714,11 @@ plot_neat = function(data_per_subject = NULL,
             panel.grid.minor.y = element_line(color = "#d5d5d5")
         )
     if (length(fact_names) == 3) {
-        the_plot = the_plot + facet_wrap(~ .data[[fact_names[3]]], nrow = row_number) +
-            theme(strip.background = element_blank(),
-                  strip.text = element_text(face = 'bold', size = 12))
+        the_plot = the_plot + facet_wrap( ~ .data[[fact_names[3]]], nrow = row_number) +
+            theme(
+                strip.background = element_blank(),
+                strip.text = element_text(face = 'bold', size = 12)
+            )
     }
     if (numerics != FALSE) {
         graphics::plot(the_plot)
@@ -725,9 +729,9 @@ plot_neat = function(data_per_subject = NULL,
 }
 
 neat_plot2 = function(values,
-                     binwidth = NULL,
-                     parts = c('h', 'b', 'n'),
-                     part_colors = NULL) {
+                      binwidth = NULL,
+                      parts = c('h', 'b', 'n'),
+                      part_colors = NULL) {
     # c('hc', 'ha', 'dc', 'da', 'nc', 'na', 'bc', 'ba')
     validate_args(match.call(),
                   list(
@@ -845,12 +849,13 @@ neat_plot2 = function(values,
         p_box_dat = layer_data(p_box)
         the_plot = the_plot +
             # manually plot flipped boxplot
-            geom_segment(data = p_box_dat, aes(
-                x = .data$ymin,
-                xend = .data$ymax,
-                y = box_y,
-                yend = box_y
-            )) +
+            geom_segment(data = p_box_dat,
+                         aes(
+                             x = .data$ymin,
+                             xend = .data$ymax,
+                             y = box_y,
+                             yend = box_y
+                         )) +
             geom_rect(
                 data = p_box_dat,
                 aes(
