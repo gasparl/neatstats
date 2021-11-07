@@ -549,7 +549,13 @@ t_neat = function(var1,
     } else {
         ci_disp = paste0(", ", ro(ci * 100, 0), "% CI")
     }
-    mean_dif = ro(mean(var1) - mean(var2), round_descr)
+    if (nonparametric == TRUE) {
+        titl = "Nonpar. difference estimate: "
+        m_dif = ro(ttest$estimate, round_descr)
+    } else {
+        titl = "Mean difference (var1CHAR_MINUSvar2): "
+        m_dif = ro(mean(var1) - mean(var2), round_descr)
+    }
     ci_r_low = ro(ttest$conf.int[1], round_descr)
     ci_r_upp = ro(ttest$conf.int[2], round_descr)
     if (greater == "1") {
@@ -575,18 +581,26 @@ t_neat = function(var1,
             cat(test_title, fill = TRUE)
         }
         prnt(
-            "Mean difference (var1CHAR_MINUSvar2): ",
-            mean_dif,
+            titl,
+            m_dif,
             ci_disp,
             " [",
             ci_r_low,
             ", ",
             ci_r_upp,
             "] ",
-            "(MCHAR_PLUSMINSD = ",
+            "(MeanCHAR_PLUSMINSD = ",
             descr_1,
             " vs. ",
             descr_2,
+            "; MedianCHAR_PLUSMINMAD = ",
+            paste0(ro(median(var1), round_descr),
+                   "CHAR_PLUSMIN",
+                   ro(stats::mad(var1), round_descr)),
+            " vs. ",
+            paste0(ro(median(var2), round_descr),
+                   "CHAR_PLUSMIN",
+                   ro(stats::mad(var2), round_descr)),
             "), ",
             paste0(
                 outbegin,

@@ -2,8 +2,7 @@
 % Please edit documentation in R/mean_ci.R
 \name{mean_ci}
 \alias{mean_ci}
-\title{Confidence Interval of Mean
-limits}
+\title{Confidence Interval of Mean}
 \usage{
 mean_ci(x, distance_only = TRUE, ci = 0.95)
 }
@@ -23,11 +22,12 @@ Distance of limit or confidence interval (as named vector).
 Calculates confidence interval of a vector of numbers.
 }
 \examples{
-mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE )
-mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE, ci = .80 )
-mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), ci = .80 )
+myvec = c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 )
+mean_ci( myvec, FALSE )
+mean_ci( myvec, FALSE, ci = .80 )
+mean_ci( myvec, ci = .80 )
 
 }
 \seealso{
-\code{\link{se}}, \code{\link{plot_neat}}
+\code{\link{se}}, \code{\link{plot_neat}}, \code{\link{sd_ci}}
 }

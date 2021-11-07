@@ -215,7 +215,7 @@ plot_roc = function(roc_list,
         lin_cols = viridis::viridis(rocnum, end = .85)
     }
     lin_a = 1
-    rocplot = ggplot(.data$roc_dat,
+    rocplot = ggplot(roc_dat,
                      aes(
                          x = .data$tn,
                          y = .data$tp,

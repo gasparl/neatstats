@@ -59,10 +59,10 @@ stats::fligner.test(len ~ interaction(supp, dose), ToothGrowth)
 
 }
 \references{
-Brown, M. B. & Forsythe, A. B. (1974), Journal of the American Statistical
-Association, 69, pp. 364-367.
+Brown, M. B. & Forsythe, A. B. (1974). Robust tests for the equality of
+variances. Journal of the American Statistical Association, 69, pp. 364-367.
 
-Conover W. J., Johnson M. E., & Johnson M. M. (1981) A comparative study of
+Conover W. J., Johnson M. E., & Johnson M. M. (1981). A comparative study of
 tests for homogeneity of variances, with applications to the outer continental
 shelf bidding data. Technometrics, 23, 351–361.
 

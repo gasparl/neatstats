@@ -1,5 +1,4 @@
 #'@title Confidence Interval of Mean
-#'limits
 #'@description Calculates confidence interval of a vector of numbers.
 #'@param x Numeric vector.
 #'@param distance_only Logical. If \code{TRUE} (default), the function returns
@@ -7,11 +6,12 @@
 #'  Otherwise returns the confidence interval (i.e., both limits).
 #'@param ci Numeric; confidence level for returned CI.
 #'@return Distance of limit or confidence interval (as named vector).
-#' @seealso \code{\link{se}}, \code{\link{plot_neat}}
+#' @seealso \code{\link{se}}, \code{\link{plot_neat}}, \code{\link{sd_ci}}
 #' @examples
-#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE )
-#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), FALSE, ci = .80 )
-#' mean_ci( c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 ), ci = .80 )
+#' myvec = c(11, 15, 19, 43, 53, -4, 34, 8, 33, -1, 54 )
+#' mean_ci( myvec, FALSE )
+#' mean_ci( myvec, FALSE, ci = .80 )
+#' mean_ci( myvec, ci = .80 )
 #'
 #' @export
 mean_ci = function(x,
@@ -26,6 +26,11 @@ mean_ci = function(x,
     if (distance_only == TRUE) {
         return(dist)
     } else {
-        return(c(lower = low, upper = upp))
+        return(c(
+            lower = low,
+            upper = upp,
+            mean = m_c,
+            se = se_c
+        ))
     }
 }

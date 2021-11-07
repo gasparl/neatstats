@@ -29,10 +29,10 @@
 #'
 #'@references
 #'
-#'Brown, M. B. & Forsythe, A. B. (1974), Journal of the American Statistical
-#'Association, 69, pp. 364-367.
+#'Brown, M. B. & Forsythe, A. B. (1974). Robust tests for the equality of
+#'variances. Journal of the American Statistical Association, 69, pp. 364-367.
 #'
-#'Conover W. J., Johnson M. E., & Johnson M. M. (1981) A comparative study of
+#'Conover W. J., Johnson M. E., & Johnson M. M. (1981). A comparative study of
 #'tests for homogeneity of variances, with applications to the outer continental
 #'shelf bidding data. Technometrics, 23, 351–361.
 #'
@@ -104,32 +104,43 @@ var_tests = function(xvar,
               n = length(stats::na.omit(x)))
         }
     )
-    sds_zip = paste(paste0(df_sds$aggr_group,
-                           ': n = ',
-                           ro(df_sds$x.n, 2, signi = TRUE),
-                           ', SD = ',
-                          ro(df_sds$x.sd, 2)), collapse = '; ')
+    sds_zip = paste(paste0(
+        df_sds$aggr_group,
+        ': n = ',
+        ro(df_sds$x.n, 2, signi = TRUE),
+        ', SD = ',
+        ro(df_sds$x.sd, 2)
+    ),
+    collapse = '; ')
     lev_med = car::leveneTest(y = xvar, group = group_by)
     fk_med = stats::fligner.test(x = xvar, g = group_by)
-    prnt(
-        "  ",
-        sds_zip,
-        ".\n  Brown-Forsythe: F(",
-        lev_med$Df[1],
-        ",",
-        lev_med$Df[2],
-        ")",
-        " = ",
-        ro(lev_med$`F value`[1], 2),
-        ", p = ",
-        ro(lev_med$`Pr(>F)`[1], 3),
-        "; Fligner-Killeen: X2(",
-        fk_med$parameter,
-        ")",
-        " = ",
-        ro(fk_med$statistic, 3),
-        ", p = ",
-        ro(fk_med$p.value, 3),
-        '.'
-    )
+    if (hush == FALSE) {
+        prnt(
+            "  ",
+            sds_zip,
+            ".\n  Brown-Forsythe: F(",
+            lev_med$Df[1],
+            ",",
+            lev_med$Df[2],
+            ")",
+            " = ",
+            ro(lev_med$`F value`[1], 2),
+            ", p = ",
+            ro(lev_med$`Pr(>F)`[1], 3),
+            "; Fligner-Killeen: X2(",
+            fk_med$parameter,
+            ")",
+            " = ",
+            ro(fk_med$statistic, 3),
+            ", p = ",
+            ro(fk_med$p.value, 3),
+            '.'
+        )
+    }
+
+    invisible(list(
+        df_sds = df_sds,
+        p_BF = lev_med$`Pr(>F)`[1],
+        p_FK = fk_med$p.value
+    ))
 }
