@@ -21,12 +21,16 @@
 #'@param plot_rocs Logical. If \code{TRUE}, plots and returns ROC curves.
 #'@param roc_labels Optional character vector to provide legend label texts (in
 #'  the order of the provided ROC objects) for the ROC plot.
-#'@param roc_cutoff Logical. If \code{TRUE} (default), indicates optimal cutoffs
-#'  on the ROC plots.
+#'@param cutoff_auto Logical. If \code{TRUE} (default), optimal cutoffs
+#'  on the ROC plots are displayed.
+#'@param cutoff_custom Custom cutoff to be indicated on the plot can be given
+#'  here in a \code{list}. The list index must exactly correspond to the index
+#'  of the list index of the AUC (given in \code{roc1}) for which the given
+#'  cutoff is intended.
 #'@return Prints DeLong's test results for the comparison of the two given AUCs
 #'  in APA style, as well as corresponding CI for the AUC difference.
 #'  Furthermore, when assigned, returns a list  with \code{stat} (D value),
-#'  \code{p} (p value), and, when plot is added, \code{roc_plot}.
+#'  \code{p} (p value), and, when plot is added, ROC plot.
 #'@note The main test statistics are calculated via
 #'  \code{\link[pROC:roc.test]{pROC::roc.test}} as DeLong's test (for both
 #'  paired and unpaired). The \code{roc_neat} function merely prints it in APA
@@ -66,6 +70,32 @@
 #'
 #' # one-sided comparison of the two AUCs
 #' roc_neat(results1$roc_obj, results2$roc_obj, greater = "1")
+#'
+#'
+#' # create a list of randomlz generated AUCs
+#' set.seed(1)
+#' aucs_list = list()
+#' for (i in 1:4) {
+#'     aucs_list[[i]] = t_neat(rnorm(50, (i-1)),
+#'                             rnorm(50),
+#'                             auc_added = TRUE,
+#'                             hush = TRUE)$roc_obj
+#' }
+#' # depict AUCs (recognized as list)
+#' roc_neat(aucs_list)
+#'
+#'\donttest{
+#' # with custom cutoffs depicted
+#' roc_neat(aucs_list,
+#'          cutoff_custom = list(0.2),
+#'          cutoff_auto = FALSE)
+#' roc_neat(aucs_list,
+#'          cutoff_custom = list(.1, c(-.5, 0), NULL, c(.7, 1.6)),
+#'          cutoff_auto = FALSE)
+#' roc_neat(aucs_list,
+#'          cutoff_custom = list(.6, NULL, NULL, 1.1))
+#'}
+#'
 #' @export
 
 roc_neat = function(roc1,
@@ -76,21 +106,27 @@ roc_neat = function(roc1,
                     hush = FALSE,
                     plot_rocs = FALSE,
                     roc_labels = "",
-                    roc_cutoff = TRUE) {
-    validate_args(match.call(),
-                  list(
-                      val_arg(pair, c('bool'), 1),
-                      val_arg(greater, c('null', 'char'), 1, c('1', '2')),
-                      val_arg(ci, c('null', 'num'), 1),
-                      val_arg(hush, c('bool'), 1),
-                      val_arg(roc_labels, c('char')),
-                      val_arg(roc_cutoff, c('bool'), 1)
-                  ))
+                    cutoff_auto = TRUE,
+                    cutoff_custom = NULL) {
+    validate_args(
+        match.call(),
+        list(
+            val_arg(pair, c('bool'), 1),
+            val_arg(greater, c('null', 'char'), 1, c('1', '2')),
+            val_arg(ci, c('null', 'num'), 1),
+            val_arg(hush, c('bool'), 1),
+            val_arg(roc_labels, c('char')),
+            val_arg(cutoff_auto, c('bool'), 1),
+            val_arg(cutoff_custom, c('null', 'list'))
+        )
+    )
     if (roc_labels == "") {
         roc_labels = NA
     }
     if (is.null(roc2)) {
-        return(plot_roc(roc1, roc_labels, roc_cutoff))
+        return(plot_roc(roc1, roc_labels,
+                        cutoff_auto,
+                        cutoff_custom))
     }
     greater = toString(greater)
     if (greater == "1") {
@@ -163,7 +199,10 @@ roc_neat = function(roc1,
         prnt(out)
     }
     if (plot_rocs == TRUE) {
-        plotted = plot_roc(list(roc1, roc2), roc_labels, roc_cutoff)
+        plotted = plot_roc(list(roc1, roc2),
+                           roc_labels,
+                           cutoff_auto,
+                           cutoff_custom)
         if (hush == FALSE) {
             graphics::plot(plotted)
         }
@@ -178,8 +217,11 @@ roc_neat = function(roc1,
 }
 
 plot_roc = function(roc_list,
-                    roc_labels = NA,
-                    roc_cutoff = TRUE) {
+                    roc_labels,
+                    cutoff_auto,
+                    cutoff_custom) {
+    cutoff_custom = cutoff_custom[1:min(length(roc_list),
+                                        length(cutoff_custom))]
     tps = c()
     tns = c()
     cases = c()
@@ -203,6 +245,17 @@ plot_roc = function(roc_list,
         }
         ths[[count]] =
             pROC::coords(rocx, pROC::coords(rocx, x = "best")$threshold[1])
+    }
+    if (!is.null(cutoff_custom)) {
+        ths_cust = list()
+        count2 = 0
+        for (rocx in roc_list[1:length(cutoff_custom)]) {
+            count2 = count2 + 1
+            if (is.numeric(cutoff_custom[[count2]])) {
+                ths_cust[[count2]] =
+                    pROC::coords(rocx, cutoff_custom[[count2]])
+            }
+        }
     }
     cases = factor(cases, levels = casenames, labels = casenames)
     roc_dat = data.frame(tp = tps,
@@ -233,7 +286,7 @@ plot_roc = function(roc_list,
             size = 0.7
         )
     count = 0
-    if (roc_cutoff == TRUE) {
+    if (cutoff_auto == TRUE) {
         for (thre in ths) {
             count = count + 1
             rocplot = rocplot +
@@ -259,6 +312,35 @@ plot_roc = function(roc_list,
                 )
         }
     }
+    count2 = 0
+    if (!is.null(cutoff_custom)) {
+        for (thre in ths_cust) {
+            if (!is.null(thre)) {
+                count2 = count2 + 1
+                rocplot = rocplot +
+                    annotate(
+                        'segment',
+                        x = 1,
+                        xend = thre$specificity,
+                        y = thre$sensitivity,
+                        yend = thre$sensitivity,
+                        alpha = lin_a,
+                        color = lin_cols[count2],
+                        linetype = 'dotted'
+                    ) +
+                    annotate(
+                        'segment',
+                        x = thre$specificity,
+                        xend = thre$specificity,
+                        y = 0,
+                        yend = thre$sensitivity,
+                        alpha = lin_a,
+                        color = lin_cols[count2],
+                        linetype = 'dotted'
+                    )
+            }
+        }
+    }
     rocplot = rocplot +
         scale_color_manual(values = lin_cols) + geom_path(size = 0.7) +
         scale_x_reverse() + theme_bw() +
@@ -270,7 +352,7 @@ plot_roc = function(roc_list,
     if (rocnum == 1) {
         rocplot = rocplot + theme(legend.position = "none")
     }
-    if (roc_cutoff == TRUE) {
+    if (cutoff_auto == TRUE) {
         for (thre in ths) {
             rocplot = rocplot +
                 annotate(
@@ -280,6 +362,21 @@ plot_roc = function(roc_list,
                     color = '#1a1a1a',
                     size = 1
                 )
+        }
+    }
+    if (!is.null(cutoff_custom)) {
+        for (thre in ths_cust) {
+            if (!is.null(thre)) {
+                rocplot = rocplot +
+                    annotate(
+                        'point',
+                        x = thre$specificity,
+                        y = thre$sensitivity,
+                        color = '#1a1a1a',
+                        size = 1.5,
+                        shape = 1
+                    )
+            }
         }
     }
     return(rocplot)

@@ -149,30 +149,30 @@ show_auc = function(theroc,
     best_tp = edges(best_tp, round_to)
     best_tn = edges(best_tn, round_to)
     if (thres == Inf | thres == -Inf) {
-      rates_optim = " (below chance level)"
+        rates_optim = " (below chance level)"
     } else {
-      rates_optim = paste0(" (TPR = ",
-                           best_tp,
-                           sd_tp,
-                           ", TNR = ",
-                           best_tn,
-                           sd_tn,
-                           ", with the optimal cutoff ",
-                           thres,
-                           sd_th,
-                           ")")
+        rates_optim = paste0(
+            " (TPR = ",
+            best_tp,
+            sd_tp,
+            ", TNR = ",
+            best_tn,
+            sd_tn,
+            ", with the optimal cutoff ",
+            thres,
+            sd_th,
+            ")"
+        )
     }
-    prnt(
-      "AUC = ",
-      auc_num,
-      ci_disp,
-      " [",
-      lower,
-      ", ",
-      upper,
-      "]",
-      rates_optim
-    )
+    prnt("AUC = ",
+         auc_num,
+         ci_disp,
+         " [",
+         lower,
+         ", ",
+         upper,
+         "]",
+         rates_optim)
 }
 
 edges = function(the_num, round_to, no_null = FALSE) {
@@ -235,7 +235,12 @@ get_e_corrs = function(mauchly, e_corrects, e_correction, shush) {
             m_corr = '.'
         }
         if (shush == FALSE) {
-            prnt(m_name, ': W = ', ro(m_w, 3), ', p = ',  ro(m_pval, 3), m_corr)
+            prnt(m_name,
+                 ': W = ',
+                 ro(m_w, 3),
+                 ', p = ',
+                 ro(m_pval, 3),
+                 m_corr)
         }
     }
     return(spher_real_corrs)
@@ -254,14 +259,14 @@ merge_cols = function(dat_aggred, sep) {
     g_names = names(dat_aggred)[startsWith(names(dat_aggred), 'Group.')]
     if (length(g_names) > 1) {
         dat_aggred = eval(parse(
-          text = paste0(
-            "within(dat_aggred, g_merged <-
+            text = paste0(
+                "within(dat_aggred, g_merged <-
                 paste(",
-            paste(g_names, collapse = ','),
-            ", sep = '",
-            sep,
-            "'))"
-          )
+                paste(g_names, collapse = ','),
+                ", sep = '",
+                sep,
+                "'))"
+            )
         ))
         dat_aggred[, 1] = dat_aggred$g_merged
         colnames(dat_aggred)[1] <- "aggr_group"
@@ -308,7 +313,7 @@ transp = function(to_transpose, headers) {
             merge(x, y, all = TRUE), to_transpose)
     }
     hnames = to_transpose[[headers]]
-    tdat = as.data.frame(t(to_transpose[, -1]))
+    tdat = as.data.frame(t(to_transpose[,-1]))
     colnames(tdat) = hnames
     return(tdat)
 }
@@ -328,7 +333,8 @@ get_row = function(..., nameless = FALSE) {
                 if (nameless == FALSE &
                     length(names(addee)[(names(addee) != "")]) != length(addee)) {
                     print(addee)
-                    stop("Missing vector names!\n",
+                    stop(
+                        "Missing vector names!\n",
                         'Each addition (... argument) must be one of the following: ',
                         'a data frame (either single row or two column); ',
                         'a list or a vector with single elements; ',
@@ -528,91 +534,91 @@ val_arg = function(arg_val,
 }
 
 val_wi_id = function(func_used, id_arg, val_cols) {
-  feedback = ''
-  dups = unique(val_cols[duplicated(val_cols)])
-  if (length(dups) > 0) {
-    feedback = paste0(
-      feedback,
-      '\nYou have duplicate column names for "values": ',
-      paste0(dups, collapse = ", "),
-      '.'
-    )
-  }
-  val_levels = c()
-  func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
-  if (is.list(id_arg)) {
-    vals_num = length(val_cols)
-    w_facts_num = length(id_arg)
-    if (2 ** w_facts_num > vals_num) {
-      feedback = paste0(
-        feedback,
-        '\nYou specified ',
-        w_facts_num,
-        ' within-subject factors for "within_ids". This means there must be at least ',
-        2 ** w_facts_num,
-        ' values columns specified, but you only specified ',
-        vals_num,
-        '.'
-      )
-    }
-    for (val_name in val_cols) {
-      val_levels[val_name] = ''
-      for (fact_name in names(id_arg)) {
-        fact_ids = id_arg[[fact_name]]
-        if (length(fact_ids) <= 1) {
-          feedback = paste0(
+    feedback = ''
+    dups = unique(val_cols[duplicated(val_cols)])
+    if (length(dups) > 0) {
+        feedback = paste0(
             feedback,
-            '\nAll within-subject factors must have at least two levels. (Check "',
-            fact_name,
-            '").'
-          )
-        } else {
-          id_count = 0
-          for (f_id in fact_ids) {
-            if (grepl(f_id, val_name, fixed = TRUE)) {
-              id_count = id_count + 1
-              val_levels[val_name] = paste0(val_levels[val_name], f_id)
-            }
-          }
-          if (id_count == 0) {
-            feedback = paste0(
-              feedback,
-              '\nNo matching level found for "',
-              val_name,
-              '" for factor "',
-              fact_name,
-              '".'
-            )
-          } else if (id_count > 1) {
-            feedback = paste0(
-              feedback,
-              '\nMore than one matching level found for "',
-              val_name,
-              '" for factor "',
-              fact_name,
-              '". (This means that the specified factor name text is ambiguous,',
-              ' see "within_ids" in documentation e.g. by entering ?anova_neat.',
-              ' Try different naming for level specification, ',
-              'or change column names.)'
-            )
-          }
-        }
-      }
+            '\nYou have duplicate column names for "values": ',
+            paste0(dups, collapse = ", "),
+            '.'
+        )
     }
-  }
-  if (feedback != '') {
-    feedback = paste0(
-      "Arguments are not correct in the '",
-      func_used,
-      "' function:",
-      feedback,
-      '\n... Hint: enter help(',
-      gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
-      ') for detailed function info.'
-    )
-    stop(feedback, call. = FALSE)
-  }
-  return(val_levels)
+    val_levels = c()
+    func_used = gsub("\\s+", " ", paste(deparse(func_used), collapse = " "))
+    if (is.list(id_arg)) {
+        vals_num = length(val_cols)
+        w_facts_num = length(id_arg)
+        if (2 ** w_facts_num > vals_num) {
+            feedback = paste0(
+                feedback,
+                '\nYou specified ',
+                w_facts_num,
+                ' within-subject factors for "within_ids". This means there must be at least ',
+                2 ** w_facts_num,
+                ' values columns specified, but you only specified ',
+                vals_num,
+                '.'
+            )
+        }
+        for (val_name in val_cols) {
+            val_levels[val_name] = ''
+            for (fact_name in names(id_arg)) {
+                fact_ids = id_arg[[fact_name]]
+                if (length(fact_ids) <= 1) {
+                    feedback = paste0(
+                        feedback,
+                        '\nAll within-subject factors must have at least two levels. (Check "',
+                        fact_name,
+                        '").'
+                    )
+                } else {
+                    id_count = 0
+                    for (f_id in fact_ids) {
+                        if (grepl(f_id, val_name, fixed = TRUE)) {
+                            id_count = id_count + 1
+                            val_levels[val_name] = paste0(val_levels[val_name], f_id)
+                        }
+                    }
+                    if (id_count == 0) {
+                        feedback = paste0(
+                            feedback,
+                            '\nNo matching level found for "',
+                            val_name,
+                            '" for factor "',
+                            fact_name,
+                            '".'
+                        )
+                    } else if (id_count > 1) {
+                        feedback = paste0(
+                            feedback,
+                            '\nMore than one matching level found for "',
+                            val_name,
+                            '" for factor "',
+                            fact_name,
+                            '". (This means that the specified factor name text is ambiguous,',
+                            ' see "within_ids" in documentation e.g. by entering ?anova_neat.',
+                            ' Try different naming for level specification, ',
+                            'or change column names.)'
+                        )
+                    }
+                }
+            }
+        }
+    }
+    if (feedback != '') {
+        feedback = paste0(
+            "Arguments are not correct in the '",
+            func_used,
+            "' function:",
+            feedback,
+            '\n... Hint: enter help(',
+            gsub('"', '', strsplit(func_used, "\\(")[[1]][1]),
+            ') for detailed function info.'
+        )
+        stop(feedback, call. = FALSE)
+    }
+    return(val_levels)
 }
 
 
@@ -621,557 +627,585 @@ val_wi_id = function(func_used, id_arg, val_cols) {
 # signRankSampler
 
 signRankGibbsSampler <-
-  function(xVals,
-           yVals = NULL,
-           nSamples = 1e3,
-           cauchyPriorParameter = 1 / sqrt(2),
-           testValue = 0,
-           progBar = TRUE,
-           nBurnin = 1,
-           nGibbsIterations = 10,
-           nChains = 5) {
-    if (progBar) {
-      myBar <-
-        utils::txtProgressBar(
-          min = 1,
-          max = nSamples * nChains,
-          initial = 1,
-          char = "*",
-          style = 3,
-          width = 50
-        )
-    }
-
-    n <- length(xVals)
-
-    if (!is.null(yVals)) {
-      differenceScores <- xVals - yVals
-    } else {
-      differenceScores <- xVals - testValue
-    }
-
-    differenceSigns <- (sign(differenceScores))
-    absDifferenceRanked <- rank(abs(differenceScores))
-    prodSignAbsRank <- differenceSigns * absDifferenceRanked
-
-    initDiffSamples <- sort(abs(stats::rnorm(n)))[absDifferenceRanked]
-    sampledDiffsAbs <- abs(initDiffSamples)
-    diffSamples <- numeric(n)
-
-
-    deltaSamples <- numeric(nSamples)
-    deltaSamplesMatrix <-
-      matrix(ncol = nChains, nrow = nSamples - nBurnin)
-    oldDeltaProp <- 0
-
-    for (thisChain in 1:nChains) {
-      for (j in 1:nSamples) {
-        for (i in sample(1:n)) {
-          currentRank <- absDifferenceRanked[i]
-
-          currentBounds <-
-            upperLowerTruncation(ranks = absDifferenceRanked,
-                                 values = sampledDiffsAbs,
-                                 currentRank = currentRank)
-          if (is.infinite(currentBounds[["under"]])) {
-            currentBounds[["under"]] <- 0
-          }
-
-          sampledDiffsAbs[i] <-
-            truncNormSample(
-              currentBounds[["under"]],
-              currentBounds[["upper"]],
-              mu = abs(oldDeltaProp),
-              sd = 1
-            )
-
+    function(xVals,
+             yVals = NULL,
+             nSamples = 1e3,
+             cauchyPriorParameter = 1 / sqrt(2),
+             testValue = 0,
+             progBar = TRUE,
+             nBurnin = 1,
+             nGibbsIterations = 10,
+             nChains = 5) {
+        if (progBar) {
+            myBar <-
+                utils::txtProgressBar(
+                    min = 1,
+                    max = nSamples * nChains,
+                    initial = 1,
+                    char = "*",
+                    style = 3,
+                    width = 50
+                )
         }
 
-        diffSamples <- sampledDiffsAbs * differenceSigns
+        n <- length(xVals)
 
-        if (any(differenceSigns == 0)) {
-          nullSamples <-
-            sampledDiffsAbs[differenceSigns == 0] * sample(c(-1, 1),
-                                                           size = sum(differenceSigns == 0),
-                                                           replace = TRUE)
-          diffSamples[which(differenceSigns == 0)] <- nullSamples
+        if (!is.null(yVals)) {
+            differenceScores <- xVals - yVals
+        } else {
+            differenceScores <- xVals - testValue
         }
 
-        sampledDiffsAbs <- abs(diffSamples)
+        differenceSigns <- (sign(differenceScores))
+        absDifferenceRanked <- rank(abs(differenceScores))
+        prodSignAbsRank <- differenceSigns * absDifferenceRanked
 
-        thisZ <-
-          decorrelateStepOneSample(diffSamples, oldDeltaProp, sigmaProp = 0.5)
-        diffSamples <- diffSamples + thisZ
+        initDiffSamples <-
+            sort(abs(stats::rnorm(n)))[absDifferenceRanked]
+        sampledDiffsAbs <- abs(initDiffSamples)
+        diffSamples <- numeric(n)
 
-        gibbsOutput <-
-          sampleGibbsOneSampleWilcoxon(diffScores = diffSamples,
-                                       nIter = nGibbsIterations,
-                                       rscale = cauchyPriorParameter)
 
-        deltaSamples[j] <- oldDeltaProp <- gibbsOutput
-        if (progBar)
-          utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+        deltaSamples <- numeric(nSamples)
+        deltaSamplesMatrix <-
+            matrix(ncol = nChains, nrow = nSamples - nBurnin)
+        oldDeltaProp <- 0
 
-      }
+        for (thisChain in 1:nChains) {
+            for (j in 1:nSamples) {
+                for (i in sample(1:n)) {
+                    currentRank <- absDifferenceRanked[i]
 
-      if (nBurnin > 0) {
-        deltaSamples <- deltaSamples[-(1:nBurnin)]
-      } else {
-        deltaSamples <- deltaSamples
-      }
-      deltaSamplesMatrix[, thisChain] <- deltaSamples
+                    currentBounds <-
+                        upperLowerTruncation(
+                            ranks = absDifferenceRanked,
+                            values = sampledDiffsAbs,
+                            currentRank = currentRank
+                        )
+                    if (is.infinite(currentBounds[["under"]])) {
+                        currentBounds[["under"]] <- 0
+                    }
+
+                    sampledDiffsAbs[i] <-
+                        truncNormSample(
+                            currentBounds[["under"]],
+                            currentBounds[["upper"]],
+                            mu = abs(oldDeltaProp),
+                            sd = 1
+                        )
+
+                }
+
+                diffSamples <- sampledDiffsAbs * differenceSigns
+
+                if (any(differenceSigns == 0)) {
+                    nullSamples <-
+                        sampledDiffsAbs[differenceSigns == 0] * sample(c(-1, 1),
+                                                                       size = sum(differenceSigns == 0),
+                                                                       replace = TRUE)
+                    diffSamples[which(differenceSigns == 0)] <- nullSamples
+                }
+
+                sampledDiffsAbs <- abs(diffSamples)
+
+                thisZ <-
+                    decorrelateStepOneSample(diffSamples, oldDeltaProp, sigmaProp = 0.5)
+                diffSamples <- diffSamples + thisZ
+
+                gibbsOutput <-
+                    sampleGibbsOneSampleWilcoxon(diffScores = diffSamples,
+                                                 nIter = nGibbsIterations,
+                                                 rscale = cauchyPriorParameter)
+
+                deltaSamples[j] <- oldDeltaProp <- gibbsOutput
+                if (progBar)
+                    utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+
+            }
+
+            if (nBurnin > 0) {
+                deltaSamples <- deltaSamples[-(1:nBurnin)]
+            } else {
+                deltaSamples <- deltaSamples
+            }
+            deltaSamplesMatrix[, thisChain] <- deltaSamples
+        }
+
+        betweenChainVar <-
+            ((nSamples / (nChains - 1)) * sum((
+                apply(deltaSamplesMatrix, 2, mean)  - mean(deltaSamplesMatrix)
+            ) ^ 2))
+        withinChainVar <-
+            (1 / nChains) * sum(apply(deltaSamplesMatrix, 2, stats::var))
+
+        fullVar <-
+            (((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples))
+        rHat <- sqrt(fullVar / withinChainVar)
+
+        return(list(
+            deltaSamples = as.vector(deltaSamplesMatrix),
+            rHat = rHat
+        ))
     }
-
-    betweenChainVar <-
-      ((nSamples / (nChains - 1)) * sum((
-        apply(deltaSamplesMatrix, 2, mean)  - mean(deltaSamplesMatrix)
-      ) ^ 2))
-    withinChainVar <-
-      (1 / nChains) * sum(apply(deltaSamplesMatrix, 2, stats::var))
-
-    fullVar <-
-      (((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples))
-    rHat <- sqrt(fullVar / withinChainVar)
-
-    return(list(
-      deltaSamples = as.vector(deltaSamplesMatrix),
-      rHat = rHat
-    ))
-  }
 
 sampleGibbsOneSampleWilcoxon <-
-  function(diffScores,
-           nIter = 10,
-           rscale = 1 / sqrt(2)) {
-    ybar <- mean(diffScores)
-    n <- length(diffScores)
-    sigmaSq <- 1
-    mu <- ybar
-    g <- ybar ^ 2 / sigmaSq + 1
+    function(diffScores,
+             nIter = 10,
+             rscale = 1 / sqrt(2)) {
+        ybar <- mean(diffScores)
+        n <- length(diffScores)
+        sigmaSq <- 1
+        mu <- ybar
+        g <- ybar ^ 2 / sigmaSq + 1
 
-    for (i in 1:nIter) {
-      #sample mu
-      varMu  <- sigmaSq / (n + (1 / g))
-      meanMu <- (n * ybar) / (n + (1 / g))
-      mu <- stats::rnorm(1, meanMu, sqrt(varMu))
+        for (i in 1:nIter) {
+            #sample mu
+            varMu  <- sigmaSq / (n + (1 / g))
+            meanMu <- (n * ybar) / (n + (1 / g))
+            mu <- stats::rnorm(1, meanMu, sqrt(varMu))
 
-      # sample g
-      scaleg <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
-      g = 1 / stats::rgamma(1, 1, scaleg)
+            # sample g
+            scaleg <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
+            g = 1 / stats::rgamma(1, 1, scaleg)
 
-      delta <- mu / sqrt(sigmaSq)
+            delta <- mu / sqrt(sigmaSq)
+        }
+        return(delta)
     }
-    return(delta)
-  }
 
 
 decorrelateStepOneSample <- function(d, muProp, sigmaProp = 0.5) {
-  thisZ <- stats::rnorm(1, 0, sigmaProp)
-  newD <- d + thisZ
+    thisZ <- stats::rnorm(1, 0, sigmaProp)
+    newD <- d + thisZ
 
-  denom <- sum(stats::dnorm(d, (muProp - thisZ), log = TRUE))
-  num <- sum(stats::dnorm(newD, muProp, log = TRUE))
+    denom <- sum(stats::dnorm(d, (muProp - thisZ), log = TRUE))
+    num <- sum(stats::dnorm(newD, muProp, log = TRUE))
 
-  if (stats::runif(1) < exp(num - denom)) {
-    return(thisZ)
-  } else {
-    return(0)
-  }
+    if (stats::runif(1) < exp(num - denom)) {
+        return(thisZ)
+    } else {
+        return(0)
+    }
 
 }
 
 # rankSumSampler
 
 rankSumGibbsSampler <-
-  function(xVals,
-           yVals,
-           nSamples = 1e3,
-           cauchyPriorParameter = 1 / sqrt(2),
-           progBar = TRUE,
-           nBurnin = 1,
-           nGibbsIterations = 10,
-           nChains = 5) {
-    if (progBar) {
-      myBar <-
-        utils::txtProgressBar(
-          min = 1,
-          max = nSamples * nChains,
-          initial = 1,
-          char = "*",
-          style = 3,
-          width = 50
-        )
-    }
-
-    n1 <- length(xVals)
-    n2 <- length(yVals)
-
-    allRanks <- rank(c(xVals, yVals))
-    xRanks <- allRanks[1:n1]
-    yRanks <- allRanks[(n1 + 1):(n1 + n2)]
-
-    deltaSamples <- numeric(nSamples)
-    deltaSamplesMatrix <-
-      matrix(ncol = nChains, nrow = nSamples - nBurnin)
-    totalIterCount <- 0
-
-    for (thisChain in 1:nChains) {
-      currentVals <- sort(stats::rnorm((n1 + n2)))[allRanks] # initial values
-
-      oldDeltaProp <- 0
-
-      for (j in 1:nSamples) {
-        for (i in sample(1:(n1 + n2))) {
-          currentRank <- allRanks[i]
-
-          currentBounds <-
-            upperLowerTruncation(ranks = allRanks,
-                                 values = currentVals,
-                                 currentRank = currentRank)
-          if (i <= n1) {
-            oldDeltaProp <- -0.5 * oldDeltaProp
-          } else {
-            oldDeltaProp <- 0.5 * oldDeltaProp
-          }
-
-          currentVals[i] <-
-            truncNormSample(currentBounds[["under"]],
-                            currentBounds[["upper"]],
-                            mu = oldDeltaProp,
-                            sd = 1)
-
-        }
-
-        decorStepResult <-
-          decorrelateStepTwoSample(currentVals[1:n1], currentVals[(n1 + 1):(n1 +
-                                                                              n2)], oldDeltaProp, sigmaProp = 0.5)
-        xVals <- decorStepResult[[1]]
-        yVals <- decorStepResult[[2]]
-
-        gibbsResult <-
-          sampleGibbsTwoSampleWilcoxon(
-            x = xVals,
-            y = yVals,
-            nIter = nGibbsIterations,
-            rscale = cauchyPriorParameter
-          )
-
-        deltaSamples[j] <- oldDeltaProp <- gibbsResult
+    function(xVals,
+             yVals,
+             nSamples = 1e3,
+             cauchyPriorParameter = 1 / sqrt(2),
+             progBar = TRUE,
+             nBurnin = 1,
+             nGibbsIterations = 10,
+             nChains = 5) {
         if (progBar) {
-          utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+            myBar <-
+                utils::txtProgressBar(
+                    min = 1,
+                    max = nSamples * nChains,
+                    initial = 1,
+                    char = "*",
+                    style = 3,
+                    width = 50
+                )
         }
 
-      }
+        n1 <- length(xVals)
+        n2 <- length(yVals)
 
-      if (nBurnin > 0) {
-        deltaSamples <- -deltaSamples[-(1:nBurnin)]
-      } else {
-        deltaSamples <- -deltaSamples
-      }
+        allRanks <- rank(c(xVals, yVals))
+        xRanks <- allRanks[1:n1]
+        yRanks <- allRanks[(n1 + 1):(n1 + n2)]
 
-      deltaSamplesMatrix[, thisChain] <- deltaSamples
+        deltaSamples <- numeric(nSamples)
+        deltaSamplesMatrix <-
+            matrix(ncol = nChains, nrow = nSamples - nBurnin)
+        totalIterCount <- 0
 
+        for (thisChain in 1:nChains) {
+            currentVals <-
+                sort(stats::rnorm((n1 + n2)))[allRanks] # initial values
+
+            oldDeltaProp <- 0
+
+            for (j in 1:nSamples) {
+                for (i in sample(1:(n1 + n2))) {
+                    currentRank <- allRanks[i]
+
+                    currentBounds <-
+                        upperLowerTruncation(
+                            ranks = allRanks,
+                            values = currentVals,
+                            currentRank = currentRank
+                        )
+                    if (i <= n1) {
+                        oldDeltaProp <- -0.5 * oldDeltaProp
+                    } else {
+                        oldDeltaProp <- 0.5 * oldDeltaProp
+                    }
+
+                    currentVals[i] <-
+                        truncNormSample(currentBounds[["under"]],
+                                        currentBounds[["upper"]],
+                                        mu = oldDeltaProp,
+                                        sd = 1)
+
+                }
+
+                decorStepResult <-
+                    decorrelateStepTwoSample(currentVals[1:n1],
+                                             currentVals[(n1 + 1):(n1 +
+                                                                       n2)],
+                                             oldDeltaProp,
+                                             sigmaProp = 0.5)
+                xVals <- decorStepResult[[1]]
+                yVals <- decorStepResult[[2]]
+
+                gibbsResult <-
+                    sampleGibbsTwoSampleWilcoxon(
+                        x = xVals,
+                        y = yVals,
+                        nIter = nGibbsIterations,
+                        rscale = cauchyPriorParameter
+                    )
+
+                deltaSamples[j] <- oldDeltaProp <- gibbsResult
+                if (progBar) {
+                    utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+                }
+
+            }
+
+            if (nBurnin > 0) {
+                deltaSamples <- -deltaSamples[-(1:nBurnin)]
+            } else {
+                deltaSamples <- -deltaSamples
+            }
+
+            deltaSamplesMatrix[, thisChain] <- deltaSamples
+
+        }
+
+        betweenChainVar <-
+            (nSamples / (nChains - 1)) * sum((
+                apply(deltaSamplesMatrix, 2, mean)  - mean(deltaSamplesMatrix)
+            ) ^ 2)
+        withinChainVar <-
+            (1 / nChains) * sum(apply(deltaSamplesMatrix, 2, stats::var))
+
+        fullVar <-
+            ((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples)
+        rHat <- sqrt(fullVar / withinChainVar)
+
+        return(list(
+            deltaSamples = as.vector(deltaSamplesMatrix),
+            rHat = rHat
+        ))
     }
-
-    betweenChainVar <-
-      (nSamples / (nChains - 1)) * sum((
-        apply(deltaSamplesMatrix, 2, mean)  - mean(deltaSamplesMatrix)
-      ) ^ 2)
-    withinChainVar <-
-      (1 / nChains) * sum(apply(deltaSamplesMatrix, 2, stats::var))
-
-    fullVar <-
-      ((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples)
-    rHat <- sqrt(fullVar / withinChainVar)
-
-    return(list(
-      deltaSamples = as.vector(deltaSamplesMatrix),
-      rHat = rHat
-    ))
-  }
 
 sampleGibbsTwoSampleWilcoxon <-
-  function(x,
-           y,
-           nIter = 10,
-           rscale = 1 / sqrt(2)) {
-    meanx <- mean(x)
-    meany <- mean(y)
-    n1 <- length(x)
-    n2 <- length(y)
-    sigmaSq <- 1 # Arbitrary number for sigma
-    g <- 1
-    for (i in 1:nIter) {
-      #sample mu
-      varMu <- ((4 * g * sigmaSq) / (4 + g * (n1 + n2)))
-      meanMu <-
-        ((2 * g * (n2 * meany - n1 * meanx)) / ((g * (n1 + n2) + 4)))
-      mu <- stats::rnorm(1, meanMu, sqrt(varMu))
-      # sample g
-      betaG <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
-      g <- 1 / stats::rgamma(1, 1, betaG)
-      # convert to delta
-      delta <- mu / sqrt(sigmaSq)
+    function(x,
+             y,
+             nIter = 10,
+             rscale = 1 / sqrt(2)) {
+        meanx <- mean(x)
+        meany <- mean(y)
+        n1 <- length(x)
+        n2 <- length(y)
+        sigmaSq <- 1 # Arbitrary number for sigma
+        g <- 1
+        for (i in 1:nIter) {
+            #sample mu
+            varMu <- ((4 * g * sigmaSq) / (4 + g * (n1 + n2)))
+            meanMu <-
+                ((2 * g * (n2 * meany - n1 * meanx)) / ((g * (n1 + n2) + 4)))
+            mu <- stats::rnorm(1, meanMu, sqrt(varMu))
+            # sample g
+            betaG <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
+            g <- 1 / stats::rgamma(1, 1, betaG)
+            # convert to delta
+            delta <- mu / sqrt(sigmaSq)
+        }
+        return(delta)
     }
-    return(delta)
-  }
 
 
 decorrelateStepTwoSample <- function(x, y, muProp, sigmaProp = 1) {
-  thisZ <- stats::rnorm(1, 0, sigmaProp)
+    thisZ <- stats::rnorm(1, 0, sigmaProp)
 
-  newX <- x + thisZ
-  newY <- y + thisZ
+    newX <- x + thisZ
+    newY <- y + thisZ
 
-  denom <-
-    sum(stats::dnorm(x, (muProp - thisZ) * -0.5, log = TRUE) + stats::dnorm(y, (muProp -
-                                                                                  thisZ) * 0.5, log = TRUE))
-  num <-
-    sum(stats::dnorm(newX, muProp * -0.5, log = TRUE) + stats::dnorm(newY, muProp * 0.5, log = TRUE))
+    denom <-
+        sum(stats::dnorm(x, (muProp - thisZ) * -0.5, log = TRUE) + stats::dnorm(y, (muProp -
+                                                                                        thisZ) * 0.5, log = TRUE))
+    num <-
+        sum(
+            stats::dnorm(newX, muProp * -0.5, log = TRUE) + stats::dnorm(newY, muProp * 0.5, log = TRUE)
+        )
 
-  if (stats::runif(1) < exp(num - denom)) {
-    return(list(x = newX, y = newY, accept = TRUE))
-  } else {
-    return(list(x = x, y = y, accept = FALSE))
-  }
+    if (stats::runif(1) < exp(num - denom)) {
+        return(list(
+            x = newX,
+            y = newY,
+            accept = TRUE
+        ))
+    } else {
+        return(list(
+            x = x,
+            y = y,
+            accept = FALSE
+        ))
+    }
 
 }
 
 # spearmanSampler
 
 spearmanGibbsSampler <-
-  function(xVals,
-           yVals,
-           nSamples = 1e3,
-           progBar = TRUE,
-           kappaPriorParameter = 1,
-           nBurnin = 1,
-           nChains = 5) {
-    if (progBar) {
-      myBar <-
-        utils::txtProgressBar(
-          min = 1,
-          max = nSamples * nChains,
-          initial = 1,
-          char = "*",
-          style = 3,
-          width = 50
-        )
-    }
-
-    n <- length(xVals)
-    xRanks <- rank(xVals)
-    yRanks <- rank(yVals)
-    mySigma <- diag(2)
-
-    # Target: posterior samples of rho
-    rhoSamples <- numeric(nSamples)
-    rhoSamplesMatrix <-
-      matrix(ncol = nChains, nrow = nSamples - nBurnin)
-
-    for (thisChain in 1:nChains) {
-      # intitialise latent variables
-      # intialise rho that is compatible with xVals, yVals
-      currentXVals <- sort(stats::rnorm((n)))[xRanks] # initial values
-      currentYVals <- sort(stats::rnorm((n)))[yRanks] # initial values
-
-      currentRho <- stats::cor(currentXVals, currentYVals)
-      chanceMechanism <- stats::runif(nSamples)
-
-      for (j in 1:nSamples) {
-        # Metropolis sampler:
-        # currentXVals and currentYVals first get realigned with the underlying current rho
-        #
-        for (i in sample(1:n)) {
-          # Gibbs step go through pairs of z^{x}, z^{y} with current rho fixed
-          #   Thus, current is respect to the Gibbs step. Furthermore,
-          #   here align latent variables to the rank
-          #
-          currentXRank <- xRanks[i]
-          currentYRank <- yRanks[i]
-
-          regressXOnY <- mean(currentYVals[yRanks == currentYRank])
-          regressYOnX <- mean(currentXVals[xRanks == currentXRank])
-
-          xBounds <-
-            upperLowerTruncation(ranks = xRanks,
-                                 values = currentXVals,
-                                 currentRank = currentXRank)
-          currentXVals[i] <-
-            truncNormSample(
-              xBounds[["under"]],
-              xBounds[["upper"]],
-              mu = (currentRho * regressXOnY),
-              sd = sqrt(1 - currentRho ^ 2)
-            )
-
-          yBounds <-
-            upperLowerTruncation(ranks = yRanks,
-                                 values = currentYVals,
-                                 currentRank = currentYRank)
-          currentYVals[i] <-
-            truncNormSample(
-              yBounds[["under"]],
-              yBounds[["upper"]],
-              mu = (currentRho * regressYOnX),
-              sd = sqrt(1 - currentRho ^ 2)
-            )
-        }
-
-        currentXVals <-
-          (currentXVals - mean(currentXVals)) / stats::sd(currentXVals)
-        currentYVals <-
-          (currentYVals - mean(currentYVals)) / stats::sd(currentYVals)
-
-        # This is the sufficient statistic to evaluate the likelihood part of the MH
-        rObs <- stats::cor(currentXVals, currentYVals)
-
-        # Do Metropolis step here
-        rhoNew <-
-          metropolisOneStep(
-            rhoCurrent = currentRho,
-            rObs = rObs,
-            n = n,
-            alpha = 1 / kappaPriorParameter,
-            chanceMechanism[j]
-          )
-
-        # Store MH update
-        rhoSamples[j] <- rhoNew # add proposal to samples if accepted
-        currentRho <- rhoNew # add proposal to samples if accepted
-
+    function(xVals,
+             yVals,
+             nSamples = 1e3,
+             progBar = TRUE,
+             kappaPriorParameter = 1,
+             nBurnin = 1,
+             nChains = 5) {
         if (progBar) {
-          utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+            myBar <-
+                utils::txtProgressBar(
+                    min = 1,
+                    max = nSamples * nChains,
+                    initial = 1,
+                    char = "*",
+                    style = 3,
+                    width = 50
+                )
         }
-      }
 
-      if (nBurnin > 0) {
-        rhoSamples <- rhoSamples[-(1:nBurnin)]
-      } else {
-        rhoSamples <- rhoSamples
-      }
+        n <- length(xVals)
+        xRanks <- rank(xVals)
+        yRanks <- rank(yVals)
+        mySigma <- diag(2)
 
-      rhoSamplesMatrix[, thisChain] <- rhoSamples
+        # Target: posterior samples of rho
+        rhoSamples <- numeric(nSamples)
+        rhoSamplesMatrix <-
+            matrix(ncol = nChains, nrow = nSamples - nBurnin)
 
+        for (thisChain in 1:nChains) {
+            # intitialise latent variables
+            # intialise rho that is compatible with xVals, yVals
+            currentXVals <-
+                sort(stats::rnorm((n)))[xRanks] # initial values
+            currentYVals <-
+                sort(stats::rnorm((n)))[yRanks] # initial values
+
+            currentRho <- stats::cor(currentXVals, currentYVals)
+            chanceMechanism <- stats::runif(nSamples)
+
+            for (j in 1:nSamples) {
+                # Metropolis sampler:
+                # currentXVals and currentYVals first get realigned with the underlying current rho
+                #
+                for (i in sample(1:n)) {
+                    # Gibbs step go through pairs of z^{x}, z^{y} with current rho fixed
+                    #   Thus, current is respect to the Gibbs step. Furthermore,
+                    #   here align latent variables to the rank
+                    #
+                    currentXRank <- xRanks[i]
+                    currentYRank <- yRanks[i]
+
+                    regressXOnY <- mean(currentYVals[yRanks == currentYRank])
+                    regressYOnX <- mean(currentXVals[xRanks == currentXRank])
+
+                    xBounds <-
+                        upperLowerTruncation(
+                            ranks = xRanks,
+                            values = currentXVals,
+                            currentRank = currentXRank
+                        )
+                    currentXVals[i] <-
+                        truncNormSample(
+                            xBounds[["under"]],
+                            xBounds[["upper"]],
+                            mu = (currentRho * regressXOnY),
+                            sd = sqrt(1 - currentRho ^ 2)
+                        )
+
+                    yBounds <-
+                        upperLowerTruncation(
+                            ranks = yRanks,
+                            values = currentYVals,
+                            currentRank = currentYRank
+                        )
+                    currentYVals[i] <-
+                        truncNormSample(
+                            yBounds[["under"]],
+                            yBounds[["upper"]],
+                            mu = (currentRho * regressYOnX),
+                            sd = sqrt(1 - currentRho ^ 2)
+                        )
+                }
+
+                currentXVals <-
+                    (currentXVals - mean(currentXVals)) / stats::sd(currentXVals)
+                currentYVals <-
+                    (currentYVals - mean(currentYVals)) / stats::sd(currentYVals)
+
+                # This is the sufficient statistic to evaluate the likelihood part of the MH
+                rObs <- stats::cor(currentXVals, currentYVals)
+
+                # Do Metropolis step here
+                rhoNew <-
+                    metropolisOneStep(
+                        rhoCurrent = currentRho,
+                        rObs = rObs,
+                        n = n,
+                        alpha = 1 / kappaPriorParameter,
+                        chanceMechanism[j]
+                    )
+
+                # Store MH update
+                rhoSamples[j] <-
+                    rhoNew # add proposal to samples if accepted
+                currentRho <- rhoNew # add proposal to samples if accepted
+
+                if (progBar) {
+                    utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))
+                }
+            }
+
+            if (nBurnin > 0) {
+                rhoSamples <- rhoSamples[-(1:nBurnin)]
+            } else {
+                rhoSamples <- rhoSamples
+            }
+
+            rhoSamplesMatrix[, thisChain] <- rhoSamples
+
+        }
+
+        betweenChainVar <-
+            ((nSamples / (nChains - 1)) * sum((
+                apply(rhoSamplesMatrix, 2, mean)  - mean(rhoSamplesMatrix)
+            ) ^ 2))
+        withinChainVar <-
+            ((1 / nChains) * sum(apply(rhoSamplesMatrix, 2, stats::var)))
+
+        fullVar <-
+            (((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples))
+        rHat <- sqrt(fullVar / withinChainVar)
+
+        rhoSamples <-
+            pearsonToSpearman(as.vector(rhoSamplesMatrix)) # Transform Pearson's rho to Spearman's rho
+
+        return(list(rhoSamples = rhoSamples, rHat = rHat))
     }
-
-    betweenChainVar <-
-      ((nSamples / (nChains - 1)) * sum((
-        apply(rhoSamplesMatrix, 2, mean)  - mean(rhoSamplesMatrix)
-      ) ^ 2))
-    withinChainVar <-
-      ((1 / nChains) * sum(apply(rhoSamplesMatrix, 2, stats::var)))
-
-    fullVar <-
-      (((nSamples - 1) / nSamples) * withinChainVar + (betweenChainVar / nSamples))
-    rHat <- sqrt(fullVar / withinChainVar)
-
-    rhoSamples <-
-      pearsonToSpearman(as.vector(rhoSamplesMatrix)) # Transform Pearson's rho to Spearman's rho
-
-    return(list(rhoSamples = rhoSamples, rHat = rHat))
-  }
 
 metropolisOneStep <-
-  function (rhoCurrent,
-            rObs,
-            n,
-            alpha = 1,
-            chanceMechanism) {
-    # chanceMechanism is stats::runif(1) vectorised
-    #
-    zCurrent <- atanh(rhoCurrent)
-    zCandidate <- stats::rnorm(1, mean = atanh(rhoCurrent), sd = 1 / sqrt(n - 3))
-    rhoCandidate <- tanh(zCandidate)
+    function (rhoCurrent,
+              rObs,
+              n,
+              alpha = 1,
+              chanceMechanism) {
+        # chanceMechanism is stats::runif(1) vectorised
+        #
+        zCurrent <- atanh(rhoCurrent)
+        zCandidate <-
+            stats::rnorm(1, mean = atanh(rhoCurrent), sd = 1 / sqrt(n - 3))
+        rhoCandidate <- tanh(zCandidate)
 
-    logAcceptance <-
-      ((alpha - n / 2) * (log(1 - rhoCandidate ^ 2) - log(1 - rhoCurrent ^ 2)) +
-         n * ((1 - rhoCurrent * rObs) / (1 - rhoCurrent ^ 2) - (1 - rhoCandidate *
-                                                                  rObs) / (1 - rhoCandidate ^ 2)
-         ))
+        logAcceptance <-
+            ((alpha - n / 2) * (log(1 - rhoCandidate ^ 2) - log(1 - rhoCurrent ^ 2)) +
+                 n * ((1 - rhoCurrent * rObs) / (1 - rhoCurrent ^ 2) - (1 - rhoCandidate *
+                                                                            rObs) / (1 - rhoCandidate ^ 2)
+                 ))
 
-    if (chanceMechanism <= exp(logAcceptance)) {
-      return(rhoCandidate)
-    } else {
-      return(rhoCurrent)
+        if (chanceMechanism <= exp(logAcceptance)) {
+            return(rhoCandidate)
+        } else {
+            return(rhoCurrent)
+        }
     }
-  }
 
 pearsonToSpearman <- function(rho) {
-  mySpear <- (6 / pi) * asin(rho / 2)
+    mySpear <- (6 / pi) * asin(rho / 2)
 
-  return(mySpear)
+    return(mySpear)
 }
 
 # rankBasedCommonFunctions
 
 truncNormSample <-
-  function(lBound = -Inf,
-           uBound = Inf,
-           mu = 0,
-           sd = 1) {
-    lBoundUni <- stats::pnorm(lBound, mean = mu, sd = sd)
-    uBoundUni <- stats::pnorm(uBound, mean = mu, sd = sd)
-    mySample <-
-      stats::qnorm(stats::runif(1, lBoundUni, uBoundUni),
-            mean = mu,
-            sd = sd)
-    return(mySample)
-  }
+    function(lBound = -Inf,
+             uBound = Inf,
+             mu = 0,
+             sd = 1) {
+        lBoundUni <- stats::pnorm(lBound, mean = mu, sd = sd)
+        uBoundUni <- stats::pnorm(uBound, mean = mu, sd = sd)
+        mySample <-
+            stats::qnorm(stats::runif(1, lBoundUni, uBoundUni),
+                         mean = mu,
+                         sd = sd)
+        return(mySample)
+    }
 
 upperLowerTruncation <- function(ranks, values, currentRank) {
-  if (currentRank == min(ranks)) {
-    under <- -Inf
-  } else {
-    under <- max(values[ranks < currentRank])
-  }
+    if (currentRank == min(ranks)) {
+        under <- -Inf
+    } else {
+        under <- max(values[ranks < currentRank])
+    }
 
-  if (currentRank == max(ranks)) {
-    upper <- Inf
-  } else {
-    upper <- min(values[ranks > currentRank])
-  }
+    if (currentRank == max(ranks)) {
+        upper <- Inf
+    } else {
+        upper <- min(values[ranks > currentRank])
+    }
 
-  return(list(under = under, upper = upper))
+    return(list(under = under, upper = upper))
 }
 
 
 computeBayesFactorOneZero <-
-  function(posteriorSamples,
-           priorParameter = 1,
-           oneSided = FALSE,
-           whichTest = "Wilcoxon") {
-    postDens <- logspline::logspline(posteriorSamples)
-    densZeroPoint <- logspline::dlogspline(0, postDens)
+    function(posteriorSamples,
+             priorParameter = 1,
+             oneSided = FALSE,
+             whichTest = "Wilcoxon") {
+        postDens <- logspline::logspline(posteriorSamples)
+        densZeroPoint <- logspline::dlogspline(0, postDens)
 
-    corFactorPosterior <- logspline::plogspline(0, postDens)
-    if (oneSided == "right")
-      corFactorPosterior <- 1 - corFactorPosterior
+        corFactorPosterior <- logspline::plogspline(0, postDens)
+        if (oneSided == "right")
+            corFactorPosterior <- 1 - corFactorPosterior
 
-    if (whichTest == "Wilcoxon") {
-      # priorParameter should be the Cauchy scale parameter
-      priorDensZeroPoint <- stats::dcauchy(0, scale = priorParameter)
-      corFactorPrior <-
-        stats::pcauchy(0,
-                scale = priorParameter,
-                lower.tail = (oneSided != "right"))
-    } else if (whichTest == "Spearman") {
-      # priorParameter should be kappa
-      priorDensZeroPoint <-
-        (stats::dbeta(0.5, 1 / priorParameter, 1 / priorParameter) / 2)
-      corFactorPrior <-
-        stats::pbeta(0.5,
-              1 / priorParameter,
-              1 / priorParameter,
-              lower.tail = (oneSided != "right"))
+        if (whichTest == "Wilcoxon") {
+            # priorParameter should be the Cauchy scale parameter
+            priorDensZeroPoint <-
+                stats::dcauchy(0, scale = priorParameter)
+            corFactorPrior <-
+                stats::pcauchy(0,
+                               scale = priorParameter,
+                               lower.tail = (oneSided != "right"))
+        } else if (whichTest == "Spearman") {
+            # priorParameter should be kappa
+            priorDensZeroPoint <-
+                (stats::dbeta(0.5, 1 / priorParameter, 1 / priorParameter) / 2)
+            corFactorPrior <-
+                stats::pbeta(0.5,
+                             1 / priorParameter,
+                             1 / priorParameter,
+                             lower.tail = (oneSided != "right"))
+        }
+
+        if (isFALSE(oneSided)) {
+            bf10 <- priorDensZeroPoint / densZeroPoint
+        } else {
+            bf10 <-
+                ((priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior))
+        }
+
+        return(bf10)
     }
-
-    if (isFALSE(oneSided)) {
-      bf10 <- priorDensZeroPoint / densZeroPoint
-    } else {
-      bf10 <-
-        ((priorDensZeroPoint / corFactorPrior) / (densZeroPoint / corFactorPosterior))
-    }
-
-    return(bf10)
-  }

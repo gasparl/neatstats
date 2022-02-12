@@ -17,6 +17,7 @@ t_neat(
   bf_rscale = sqrt(0.5),
   bf_sample = 1000,
   auc_added = FALSE,
+  cutoff = NULL,
   r_added = TRUE,
   for_table = FALSE,
   test_title = NULL,
@@ -83,13 +84,17 @@ stable BF.}
 
 \item{auc_added}{Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
 calculated and displayed. Includes TPR and TNR, i.e., true positive and true
-negative rates, i.e. sensitivity and specificity, using an optimal cutoff
+negative rates, i.e. sensitivity and specificity, using an optimal
 value, i.e. threshold, that provides maximal TPR and TNR. These values may
 be cross-validated: see \code{cv_rep}. (Note that what is designated as
 "positive" or "negative" depends on the scenario: this function always
 assumes \code{var1} as positive and \code{var2} as negative. If your
 scenario or preference differs, you can simply switch the names or values
 when reporting the results.)}
+
+\item{cutoff}{Numeric. Custom cutoff value for AUC TPR and TNR, also to be
+depicted in the plot. In case of multiple given, the first is used for
+calculations, but all will be depicted in the plot.}
 
 \item{r_added}{Logical. If \code{TRUE} (default), Pearson correlation is
 calculated and displayed in case of paired comparison.}
@@ -166,7 +171,7 @@ Prints t-test statistics (including Cohen's d with CI, BF, and AUC, as
  assigned, returns a list, that contains a named vector '\code{stats}' with
  the following elements: \code{t} (t value), \code{p} (p value), \code{d}
  (Cohen's d), \code{bf} (Bayes factor), \code{auc} (AUC), \code{accuracy}
- (overall accuracy using the most optimal classification threshold), and
+ (overall accuracy using the optimal classification threshold), and
  \code{youden} (Youden's index: \code{specificity + sensitivity - 1}). The
  latter three are \code{NULL} when \code{auc_added} is \code{FALSE}. When
  \code{auc_added} is \code{TRUE}, there are also two or three additional
@@ -188,8 +193,9 @@ Welch's \code{\link[stats:t.test]{t-test}} results including
  curve}} (AUC). For non-parametric version,
  \code{\link[stats:wilcox.test]{Wilcoxon test}} results (Mann–Whitney U test,
  aka "Wilcoxon rank-sum test", for independent samples; Wilcoxon signed-rank
- test for paired samples; along with corresponding rank-based BFs as per van
- Doorn et al., 2020).
+ test for paired samples; including nonparametric "location difference
+ estimate" (see \code{\link[stats:wilcox.test]{stats::wilcox.test}}); along
+ with corresponding rank-based BFs as per van Doorn et al., 2020).
 }
 \details{
 The Bayes factor (BF) supporting null hypothesis is denoted as BF01, while
@@ -252,9 +258,8 @@ The correlation and its CI are calculated via
 with 95 percent CI. For more, use \code{\link{corr_neat}}.
 
 The AUC and its CI are calculated via \code{\link[pROC:auc]{pROC::auc}}, and
-the accuracy at most optimal threshold via
-\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
-object \code{\link[pROC:roc]{pROC::roc}}.
+the accuracy at optimal threshold via \code{\link[pROC:coords]{pROC::coords}}
+(\code{x = "best"}); both using the object \code{\link[pROC:roc]{pROC::roc}}.
 }
 \examples{
 # assign two variables (numeric vectors)

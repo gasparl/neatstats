@@ -7,8 +7,9 @@
 #'  curve}} (AUC). For non-parametric version,
 #'  \code{\link[stats:wilcox.test]{Wilcoxon test}} results (Mann–Whitney U test,
 #'  aka "Wilcoxon rank-sum test", for independent samples; Wilcoxon signed-rank
-#'  test for paired samples; along with corresponding rank-based BFs as per van
-#'  Doorn et al., 2020).
+#'  test for paired samples; including nonparametric "location difference
+#'  estimate" (see \code{\link[stats:wilcox.test]{stats::wilcox.test}}); along
+#'  with corresponding rank-based BFs as per van Doorn et al., 2020).
 #'@param var1 Numeric vector; numbers of the first variable.
 #'@param var2 Numeric vector; numbers of the second variable.
 #'@param pair Logical. If \code{TRUE}, all tests (t, BF, AUC) are conducted for
@@ -44,13 +45,16 @@
 #'  stable BF.
 #'@param auc_added Logical (\code{FALSE} by default). If \code{TRUE}, AUC is
 #'  calculated and displayed. Includes TPR and TNR, i.e., true positive and true
-#'  negative rates, i.e. sensitivity and specificity, using an optimal cutoff
+#'  negative rates, i.e. sensitivity and specificity, using an optimal
 #'  value, i.e. threshold, that provides maximal TPR and TNR. These values may
 #'  be cross-validated: see \code{cv_rep}. (Note that what is designated as
 #'  "positive" or "negative" depends on the scenario: this function always
 #'  assumes \code{var1} as positive and \code{var2} as negative. If your
 #'  scenario or preference differs, you can simply switch the names or values
 #'  when reporting the results.)
+#'@param cutoff Numeric. Custom cutoff value for AUC TPR and TNR, also to be
+#'  depicted in the plot. In case of multiple given, the first is used for
+#'  calculations, but all will be depicted in the plot.
 #'@param r_added Logical. If \code{TRUE} (default), Pearson correlation is
 #'  calculated and displayed in case of paired comparison.
 #'@param for_table Logical. If \code{TRUE}, omits the confidence level display
@@ -144,7 +148,7 @@
 #'  assigned, returns a list, that contains a named vector '\code{stats}' with
 #'  the following elements: \code{t} (t value), \code{p} (p value), \code{d}
 #'  (Cohen's d), \code{bf} (Bayes factor), \code{auc} (AUC), \code{accuracy}
-#'  (overall accuracy using the most optimal classification threshold), and
+#'  (overall accuracy using the optimal classification threshold), and
 #'  \code{youden} (Youden's index: \code{specificity + sensitivity - 1}). The
 #'  latter three are \code{NULL} when \code{auc_added} is \code{FALSE}. When
 #'  \code{auc_added} is \code{TRUE}, there are also two or three additional
@@ -188,9 +192,8 @@
 #'with 95 percent CI. For more, use \code{\link{corr_neat}}.
 #'
 #'The AUC and its CI are calculated via \code{\link[pROC:auc]{pROC::auc}}, and
-#'the accuracy at most optimal threshold via
-#'\code{\link[pROC:coords]{pROC::coords}} (\code{x = "best"}); both using the
-#'object \code{\link[pROC:roc]{pROC::roc}}.
+#'the accuracy at optimal threshold via \code{\link[pROC:coords]{pROC::coords}}
+#'(\code{x = "best"}); both using the object \code{\link[pROC:roc]{pROC::roc}}.
 #'
 #'@references
 #'
@@ -254,6 +257,7 @@ t_neat = function(var1,
                   bf_rscale = sqrt(0.5),
                   bf_sample = 1000,
                   auc_added = FALSE,
+                  cutoff = NULL,
                   r_added = TRUE,
                   for_table = FALSE,
                   test_title = NULL,
@@ -286,6 +290,7 @@ t_neat = function(var1,
             val_arg(bf_rscale, c('num'), 1),
             val_arg(bf_sample, c('num'), 1),
             val_arg(auc_added, c('bool'), 1),
+            val_arg(cutoff, c('null', 'num')),
             val_arg(r_added, c('bool'), 1),
             val_arg(for_table, c('bool'), 1),
             val_arg(test_title, c('char', 'null'), 1),
@@ -385,24 +390,30 @@ t_neat = function(var1,
     if (pair == TRUE & r_added == TRUE & hush == FALSE) {
         if (nonparametric == TRUE) {
             cat("Spearman's rank correlation: ")
-            corr_neat(var1,
-                      var2,
-                      nonparametric = TRUE,
-                      ci = 0.95,
-                      bf_added = FALSE,
-                      hush = hush)
+            corr_neat(
+                var1,
+                var2,
+                nonparametric = TRUE,
+                ci = 0.95,
+                bf_added = FALSE,
+                hush = hush
+            )
         } else {
             cat("Pearson correlation: ")
-            corr_neat(var1,
-                      var2,
-                      ci = 0.95,
-                      bf_added = FALSE,
-                      hush = hush)
+            corr_neat(
+                var1,
+                var2,
+                ci = 0.95,
+                bf_added = FALSE,
+                hush = hush
+            )
         }
     }
     if (greater == "1") {
         if (hush == FALSE) {
-            message("One-sided t-test and BF (with 90% CI default)! H1: first is greater than second.")
+            message(
+                "One-sided t-test and BF (with 90% CI default)! H1: first is greater than second."
+            )
         }
         if (nonparametric == TRUE) {
             ttest = stats::wilcox.test(
@@ -429,19 +440,23 @@ t_neat = function(var1,
                                                oneSided = "right",
                                                priorParameter = bf_rscale)
             } else {
-                bf = as.vector(BayesFactor::ttestBF(
-                    var1,
-                    var2,
-                    paired = pair,
-                    iterations = bf_sample,
-                    rscale = bf_rscale,
-                    nullInterval = c(0, Inf)
-                )[1])
+                bf = as.vector(
+                    BayesFactor::ttestBF(
+                        var1,
+                        var2,
+                        paired = pair,
+                        iterations = bf_sample,
+                        rscale = bf_rscale,
+                        nullInterval = c(0, Inf)
+                    )[1]
+                )
             }
         }
     } else if (greater == "2") {
         if (hush == FALSE) {
-            message("One-sided t-test and BF (with 90% CI default)! H1: second is greater than first.")
+            message(
+                "One-sided t-test and BF (with 90% CI default)! H1: second is greater than first."
+            )
         }
         if (nonparametric == TRUE) {
             ttest = stats::wilcox.test(
@@ -468,14 +483,16 @@ t_neat = function(var1,
                                                oneSided = "left",
                                                priorParameter = bf_rscale)
             } else {
-                bf = as.vector(BayesFactor::ttestBF(
-                    var1,
-                    var2,
-                    paired = pair,
-                    iterations = bf_sample,
-                    rscale = bf_rscale,
-                    nullInterval = c(0, -Inf)
-                )[1])
+                bf = as.vector(
+                    BayesFactor::ttestBF(
+                        var1,
+                        var2,
+                        paired = pair,
+                        iterations = bf_sample,
+                        rscale = bf_rscale,
+                        nullInterval = c(0,-Inf)
+                    )[1]
+                )
             }
         }
     } else {
@@ -489,7 +506,10 @@ t_neat = function(var1,
                 exact = TRUE
             )
         } else {
-            ttest = stats::t.test(var1, var2, paired = pair, conf.level = ci)
+            ttest = stats::t.test(var1,
+                                  var2,
+                                  paired = pair,
+                                  conf.level = ci)
         }
         if (bf_added == TRUE) {
             if (nonparametric == TRUE) {
@@ -594,13 +614,17 @@ t_neat = function(var1,
             " vs. ",
             descr_2,
             "; MedianCHAR_PLUSMINMAD = ",
-            paste0(ro(median(var1), round_descr),
-                   "CHAR_PLUSMIN",
-                   ro(stats::mad(var1), round_descr)),
+            paste0(
+                ro(stats::median(var1), round_descr),
+                "CHAR_PLUSMIN",
+                ro(stats::mad(var1), round_descr)
+            ),
             " vs. ",
-            paste0(ro(median(var2), round_descr),
-                   "CHAR_PLUSMIN",
-                   ro(stats::mad(var2), round_descr)),
+            paste0(
+                ro(stats::median(var2), round_descr),
+                "CHAR_PLUSMIN",
+                ro(stats::mad(var2), round_descr)
+            ),
             "), ",
             paste0(
                 outbegin,
@@ -638,9 +662,9 @@ t_neat = function(var1,
         ) # v1 larger
         youdn = pROC::coords(the_roc, x = "best", ret = "youden")
         if (class(youdn) == "data.frame") {
-            maxyouden = as.numeric(youdn$youden[1])-1
+            maxyouden = as.numeric(youdn$youden[1]) - 1
         } else {
-            maxyouden = as.numeric(youdn[1])-1
+            maxyouden = as.numeric(youdn[1]) - 1
         }
         bestacc = pROC::coords(the_roc, x = "best", ret = "accuracy")
         if (class(bestacc) == "data.frame") {
@@ -669,24 +693,40 @@ t_neat = function(var1,
         }
         the_auc = pROC::auc(the_roc)
         if (hush == FALSE) {
-            if (is.null(cv_cdrs)) {
-                sd_tp = NULL
-                sd_tn = NULL
-                sd_th = NULL
+            if (!is.null(cutoff)) {
+                plot_thres = cutoff
+                cutoff = cutoff[1]
+                showthres = cutoff
             } else {
+                showthres = plot_thres
+            }
+            if (!is.null(cv_cdrs)) {
                 sd_tp = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$TPRs), round_auc))
                 sd_tn = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$TNRs), round_auc))
                 sd_th = paste0('CHAR_PLUSMIN', edges(stats::sd(cv_cdrs$thresholds), round_auc))
                 best_tp = mean(cv_cdrs$TPRs)
                 best_tn = mean(cv_cdrs$TNRs)
                 plot_thres = mean(cv_cdrs$thresholds)
+            } else {
+                sd_tp = NULL
+                sd_tn = NULL
+                sd_th = NULL
+                if (!is.null(cutoff)) {
+                    if (auc_greater == '1') {
+                        best_tp = mean(var1 > cutoff)
+                        best_tn = mean(var2 <= cutoff)
+                    } else {
+                        best_tp = mean(var1 < cutoff)
+                        best_tn = mean(var2 >= cutoff)
+                    }
+                }
             }
             show_auc(
                 theroc = the_roc,
                 ci = ci,
                 round_to = round_auc,
                 for_table = for_table,
-                thres = plot_thres,
+                thres = showthres,
                 best_tp = best_tp,
                 best_tn = best_tn,
                 sd_tp = sd_tp,
@@ -722,21 +762,23 @@ t_neat = function(var1,
     } else {
         the_plot = NULL
     }
-    invisible(list(
-        stats = c(
-            t = as.numeric(t),
-            p = pvalue,
-            d = as.numeric(d_orig),
-            bf = as.numeric(bf),
-            auc = the_auc,
-            accuracy = max_acc,
-            youden = maxyouden
-        ),
-        roc_obj = the_roc,
-        best_thresholds = best_coords,
-        cv_results = cv_cdrs,
-        t_plot = the_plot
-    ))
+    invisible(
+        list(
+            stats = c(
+                t = as.numeric(t),
+                p = pvalue,
+                d = as.numeric(d_orig),
+                bf = as.numeric(bf),
+                auc = the_auc,
+                accuracy = max_acc,
+                youden = maxyouden
+            ),
+            roc_obj = the_roc,
+            best_thresholds = best_coords,
+            cv_results = cv_cdrs,
+            t_plot = the_plot
+        )
+    )
 }
 
 ## density plot
@@ -812,7 +854,7 @@ plot_dens = function(v1,
     if (!is.null(thres)) {
         the_plot = the_plot +
             geom_vline(
-                xintercept = c(thres) ,
+                xintercept = c(thres),
                 color = "#8f8f8f",
                 linetype = "solid",
                 size = 0.5

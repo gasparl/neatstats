@@ -13,7 +13,8 @@ roc_neat(
   hush = FALSE,
   plot_rocs = FALSE,
   roc_labels = "",
-  roc_cutoff = TRUE
+  cutoff_auto = TRUE,
+  cutoff_custom = NULL
 )
 }
 \arguments{
@@ -43,14 +44,19 @@ one-sided test: either "1" (\code{roc1} AUC expected to be greater than
 \item{roc_labels}{Optional character vector to provide legend label texts (in
 the order of the provided ROC objects) for the ROC plot.}
 
-\item{roc_cutoff}{Logical. If \code{TRUE} (default), indicates optimal cutoffs
-on the ROC plots.}
+\item{cutoff_auto}{Logical. If \code{TRUE} (default), optimal cutoffs
+on the ROC plots are displayed.}
+
+\item{cutoff_custom}{Custom cutoff to be indicated on the plot can be given
+here in a \code{list}. The list index must exactly correspond to the index
+of the list index of the AUC (given in \code{roc1}) for which the given
+cutoff is intended.}
 }
 \value{
 Prints DeLong's test results for the comparison of the two given AUCs
  in APA style, as well as corresponding CI for the AUC difference.
  Furthermore, when assigned, returns a list  with \code{stat} (D value),
- \code{p} (p value), and, when plot is added, \code{roc_plot}.
+ \code{p} (p value), and, when plot is added, ROC plot.
 }
 \description{
 Comparison of two \code{\link[neatStats:t_neat]{areas under the
@@ -81,6 +87,32 @@ results2 = t_neat(v3, v4, auc_added = TRUE)
 
 # one-sided comparison of the two AUCs
 roc_neat(results1$roc_obj, results2$roc_obj, greater = "1")
+
+
+# create a list of randomlz generated AUCs
+set.seed(1)
+aucs_list = list()
+for (i in 1:4) {
+    aucs_list[[i]] = t_neat(rnorm(50, (i-1)),
+                            rnorm(50),
+                            auc_added = TRUE,
+                            hush = TRUE)$roc_obj
+}
+# depict AUCs (recognized as list)
+roc_neat(aucs_list)
+
+\donttest{
+# with custom cutoffs depicted
+roc_neat(aucs_list,
+         cutoff_custom = list(0.2),
+         cutoff_auto = FALSE)
+roc_neat(aucs_list,
+         cutoff_custom = list(.1, c(-.5, 0), NULL, c(.7, 1.6)),
+         cutoff_auto = FALSE)
+roc_neat(aucs_list,
+         cutoff_custom = list(.6, NULL, NULL, 1.1))
+}
+
 }
 \references{
 Altman, D. G., & Bland, J. M. (2011). How to obtain the confidence interval
