@@ -59,7 +59,7 @@ Performs normality tests and creates related plots (histogram,
  potential purposes.
 }
 \note{
-#'Normality tests are all calculated via
+Normality tests are all calculated via
 \code{\link[fBasics:NormalityTests]{fBasics::NormalityTests}}, selected based
 on the recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153):
 "If the distribution is symmetric with low kurtosis values (i.e. symmetric

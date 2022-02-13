@@ -25,7 +25,7 @@
 #'  is accepted (as a single string or a character vector; case-insensitive):
 #'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino), \code{"A2"}
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. Two other options
-#'  are \code{"all"} ((same as \code{TRUE}; to choose all four previous tests at
+#'  are \code{"all"} (same as \code{TRUE}; to choose all four previous tests at
 #'  the same time) or \code{"latent"} (default value; prints all tests only if
 #'  \code{nonparametric} is set to \code{FALSE} and any of the four tests gives
 #'  a p value below .05). Each normality test is performed for the difference
