@@ -23,7 +23,7 @@
 #'  two-sided.
 #'@param norm_tests Normality tests. Any or all of the following character input
 #'  is accepted (as a single string or a character vector; case-insensitive):
-#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
+#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino), \code{"A2"}
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. Two other options
 #'  are \code{"all"} ((same as \code{TRUE}; to choose all four previous tests at
 #'  the same time) or \code{"latent"} (default value; prints all tests only if
@@ -168,12 +168,12 @@
 #'\code{\link[stats:t.test]{stats::t.test}}.
 #'
 #'#'Normality tests are all calculated via
-#'\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
-#'recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
-#'distribution is symmetric with low kurtosis values (i.e. symmetric
-#'short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
-#'tests have good power. For symmetric distribution with high sample kurtosis
-#'(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
+#'\code{\link[fBasics:NormalityTests]{fBasics::NormalityTests}}, selected based
+#'on the recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153):
+#'"If the distribution is symmetric with low kurtosis values (i.e. symmetric
+#'short-tailed distribution), then the D'Agostino and Shapiro-Wilkes tests have
+#'good power. For symmetric distribution with high sample kurtosis (symmetric
+#'long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
 #'Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
 #'more details.
 #'
@@ -204,11 +204,6 @@
 #'Kelley, K. (2007). Methods for the behavioral, educational, and social
 #'sciences: An R package. Behavior Research Methods, 39(4), 979-984.
 #'\doi{https://doi.org/10.3758/BF03192993}
-#'
-#'Lafaye de Micheaux, P., & Tran, V. A. (2016). PoweR: A Reproducible Research
-#'Tool to Ease Monte Carlo Power Simulation Studies for Goodness-of-fit Tests in
-#'R. Journal of Statistical Software, 69(3).
-#'\doi{https://doi.org/10.18637/jss.v069.i03}
 #'
 #'Lakens, D. (2015). The perfect t-test (version 1.0.0). Retrieved from
 #'https://github.com/Lakens/perfect-t-test.

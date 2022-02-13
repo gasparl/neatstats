@@ -122,6 +122,7 @@ peek_neat = function(dat,
                       val_arg(group_n, c('bool'), 1)
                   ))
     name_taken('neat_unique_values', dat)
+    values = values[!values %in% group_by]
     if (length(values) > 1) {
         if (is.null(collapse)) {
             dat = stats::reshape(

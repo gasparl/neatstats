@@ -13,7 +13,7 @@
 #'  separately for each of the two variables for unpaired samples.
 #'@param norm_tests Normality tests. Any or all of the following character input
 #'  is accepted (as a single string or a character vector; case-insensitive):
-#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
+#'  \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino), \code{"A2"}
 #'  (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. The option
 #'  \code{"all"} (default value) selects all four previous tests at the same
 #'  time.
@@ -35,12 +35,12 @@
 #'@note
 #'
 #'#'Normality tests are all calculated via
-#'\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
-#'recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
-#'distribution is symmetric with low kurtosis values (i.e. symmetric
-#'short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
-#'tests have good power. For symmetric distribution with high sample kurtosis
-#'(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
+#'\code{\link[fBasics:NormalityTests]{fBasics::NormalityTests}}, selected based
+#'on the recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153):
+#'"If the distribution is symmetric with low kurtosis values (i.e. symmetric
+#'short-tailed distribution), then the D'Agostino and Shapiro-Wilkes tests have
+#'good power. For symmetric distribution with high sample kurtosis (symmetric
+#'long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
 #'Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
 #'more details.
 #'
@@ -54,7 +54,7 @@
 #'tests. Journal of Statistical Computation and Simulation, 81(12), 2141–2155.
 #'\doi{https://doi.org/10.1080/00949655.2010.520163}
 #'
-#' @seealso \code{\link{t_neat}}
+#'@seealso \code{\link{t_neat}}
 #' @examples
 #'
 #' norm_tests(stats::rnorm(100))
@@ -157,9 +157,11 @@ norm_tests_in = function(var1,
                 pv21q$layers[[1]]$aes_params$colour <- qqclrs[1]
                 pv21q$layers[[2]]$aes_params$colour <- qqclrs[2]
                 pv21q$layers[[3]]$aes_params$fill <- qqclrs[3]
-                pv21 = plot_neat(values = diff,
-                                 parts = parts,
-                                 part_colors = part_colors) +
+                pv21 = plot_neat(
+                    values = diff,
+                    parts = parts,
+                    part_colors = part_colors
+                ) +
                     xlab('Difference (Var 2 - Var 1)') +
                     theme(aspect.ratio = aspect_ratio)
                 var12 = data.frame(v1 = var1, v2 = var2)
@@ -204,64 +206,69 @@ norm_tests_in = function(var1,
             norm_tests = c("w", "k2", "a2", "jb")
         }
     }
+    if (length(var1) < 20 & 'k2' %in% norm_tests) {
+        norm_tests = norm_tests[norm_tests != 'k2']
+        warning("A sample size below 20 is not reasonable for normality testing;",
+                " D'Agostino test cannot be computed.")
+    }
     for (norm_abbr in norm_tests) {
-        statcomp_num = as.numeric(c(
-            'w' = 21,
-            'k2' = 6,
-            'a2' = 2,
-            'jb' = 7
-        )[norm_abbr])
+        ntest_fun = list(
+            'w' = fBasics::shapiroTest,
+            'k2' = fBasics::dagoTest,
+            'a2' = fBasics::adTest,
+            'jb' = fBasics::jarqueberaTest
+        )[[norm_abbr]]
         stat_title = as.character(
             c(
                 'w' = 'Shapiro-Wilk test: ',
-                'k2' = "D'Agostino-Pearson test: ",
+                'k2' = "D'Agostino test: ",
                 'a2' = "Anderson-Darling test: ",
                 'jb' = "Jarque-Bera test: "
             )[norm_abbr]
         )
         if (is.null(var2)) {
-            normres = PoweR::statcompute(statcomp_num, var1)
-            norm_ps = c(norm_ps, normres$pvalue)
+            normres = ntest_fun(var1)@test
+            norm_ps = c(norm_ps, normres$p.value[1])
             norm_outs = c(norm_outs,
                           paste0(
                               stat_title,
                               toupper(norm_abbr),
                               " = ",
-                              ro(normres$statistic, 2),
+                              ro(normres$statistic[1], 2),
                               ", p = ",
-                              ro(normres$pvalue, 3)
+                              ro(normres$p.value[1], 3)
                           ))
         } else if (pair == TRUE) {
-            normres = PoweR::statcompute(statcomp_num, diff)
-            norm_ps = c(norm_ps, normres$pvalue)
+            normres = ntest_fun(diff)@test
+            norm_ps = c(norm_ps, normres$p.value[1])
             norm_outs = c(norm_outs,
                           paste0(
                               stat_title,
                               toupper(norm_abbr),
                               " = ",
-                              ro(normres$statistic, 2),
+                              ro(normres$statistic[1], 2),
                               ", p = ",
-                              ro(normres$pvalue, 3)
+                              ro(normres$p.value[1], 3)
                           ))
         } else {
-            normres1 = PoweR::statcompute(statcomp_num, var1)
-            normres2 = PoweR::statcompute(statcomp_num, var2)
-            norm_ps = c(norm_ps, normres1$pvalue, normres2$pvalue)
+            normres1 = ntest_fun(var1)@test
+            normres2 = ntest_fun(var2)@test
+            norm_ps = c(norm_ps, normres1$p.value[1], normres2$p.value[1])
             norm_outs = c(
                 norm_outs,
                 paste0(
                     stat_title,
                     toupper(norm_abbr),
                     " = ",
-                    ro(normres1$statistic, 2),
+                    ro(normres1$statistic[1], 2),
                     ", p = ",
-                    ro(normres1$pvalue, 3),
+                    ro(normres1$p.value[1], 3),
                     ' (1st var.); ',
                     toupper(norm_abbr),
                     " = ",
-                    ro(normres2$statistic, 2),
+                    ro(normres2$statistic[1], 2),
                     ", p = ",
-                    ro(normres2$pvalue, 3),
+                    ro(normres2$p.value[1], 3),
                     ' (2nd var.)'
                 )
             )

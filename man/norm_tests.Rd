@@ -28,7 +28,7 @@ separately for each of the two variables for unpaired samples.}
 
 \item{norm_tests}{Normality tests. Any or all of the following character input
 is accepted (as a single string or a character vector; case-insensitive):
-\code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino-Pearson), \code{"A2"}
+\code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino), \code{"A2"}
 (Anderson-Darling), \code{"JB"} (Jarque-Bera); see Notes. The option
 \code{"all"} (default value) selects all four previous tests at the same
 time.}
@@ -60,12 +60,12 @@ Performs normality tests and creates related plots (histogram,
 }
 \note{
 #'Normality tests are all calculated via
-\code{\link[PoweR:statcompute]{PoweR::statcompute}}, selected based on the
-recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153): "If the
-distribution is symmetric with low kurtosis values (i.e. symmetric
-short-tailed distribution), then the D'Agostino-Pearson and Shapiro-Wilkes
-tests have good power. For symmetric distribution with high sample kurtosis
-(symmetric long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
+\code{\link[fBasics:NormalityTests]{fBasics::NormalityTests}}, selected based
+on the recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153):
+"If the distribution is symmetric with low kurtosis values (i.e. symmetric
+short-tailed distribution), then the D'Agostino and Shapiro-Wilkes tests have
+good power. For symmetric distribution with high sample kurtosis (symmetric
+long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
 Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
 more details.
 }
