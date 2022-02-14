@@ -6,7 +6,7 @@ One main point is that all functions use data frames with single row per subject
 
 ### Installation in R
 
-To install the stable version from [CRAN](https://cran.r-project.org/ "The Comprehensive R Archive Network"), just run:
+To install the stable version from [CRAN](https://cran.r-project.org/package=neatStats "The Comprehensive R Archive Network"), just run:
 
 ```R
 install.packages("neatStats")
