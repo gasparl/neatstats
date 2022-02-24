@@ -24,7 +24,7 @@ install_github("gasparl/neatstats")
 
 ### Usage
 
-See the [EXAMPLE.md](https://github.com/gasparl/neatstats/blob/master/EXAMPLE.md "EXAMPLE.md") for an example pipeline for every step from raw data to reportable statistics. For a much more detailed and extended version of the same example, see the [neatStats paper at TQMP](https://www.tqmp.org/RegularArticles/vol17-1/p007/p007.pdf "neatStats: An R package for a neat pipeline from raw data to reportable statistics in psychological science").
+See the [neatStats vignette](https://gasparl.github.io/neatstats/vignettes/example_pipeline.html "Example vignette") for an example pipeline for every step from raw data to reportable statistics. For a much more detailed and extended version of the same example, see the [neatStats paper at TQMP](https://www.tqmp.org/RegularArticles/vol17-1/p007/p007.pdf "neatStats: An R package for a neat pipeline from raw data to reportable statistics in psychological science").
 
 For details about each function, see [the manual](https://github.com/gasparl/neatstats/blob/master/neatStats.pdf "neatStats manual") (or enter `help(xy)` or `?xy` in R for any specific function).
 
