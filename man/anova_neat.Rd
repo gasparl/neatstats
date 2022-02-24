@@ -64,10 +64,10 @@ Lakens, 2014; Steiger, 2004.)}
 \item{norm_tests}{Normality tests for the pooled ANOVA residuals
 (\code{"none"} by default, giving no tests). Any or all of the following
 character input is accepted (as a single string or a character vector;
-case-insensitive): \code{"W"} (Shapiro-Wilk), \code{"K2"}
-(D'Agostino-Pearson), \code{"A2"} (Anderson-Darling), \code{"JB"}
-(Jarque-Bera); see \code{\link{norm_tests}}. The option \code{"all"} (or
-\code{TRUE}) selects all four previous tests at the same time.}
+case-insensitive): \code{"W"} (Shapiro-Wilk), \code{"K2"} (D'Agostino),
+\code{"A2"} (Anderson-Darling), \code{"JB"} (Jarque-Bera); see
+\code{\link{norm_tests}}. The option \code{"all"} (or \code{TRUE}) selects
+all four previous tests at the same time.}
 
 \item{norm_plots}{If \code{TRUE}, displays density, histogram, and Q-Q plots
 (and scatter plots for paired tests) for the pooled residuals.}

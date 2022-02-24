@@ -1,4 +1,12 @@
-## Usage example: pipeline from raw data to reportable statistics
+---
+title: "neatStats example use: pipeline from raw data to reportable statistics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example_pipeline}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+## 
 
 ### Material
 
@@ -20,7 +28,7 @@ In this simplified case, each file contains the following data columns:
 (The values for _subject_num_, _condition_, _age_, and _gender_ are of course constant for each participant, i.e., have same value in every row.)
 
 
-![Raw data.](example_images/example_fig_data1.png)
+![(Fig. 1) Raw data](example_fig_data1.png)
 
 The script that is below presented step by step and described in detail, is also available with only brief inline comments at https://osf.io/49sq5/ (as "example_analysis.R").
 
@@ -48,7 +56,7 @@ filenames = list.files(pattern = "^expsim_color_valence_.*txt$")
 
 Now that you have the list of all the file names (in the `filenames` variable), you can loop through it, and, for each file name, read in the data from the corresponding file and extract the data that you need. The data from the participants will be merged together in one data frame, named `subjects_merged`, which will contain in each of its row the extracted data of a single participant: namely, condition, age, gender, as well as the mean (aggregated) RTs and error rates for each stimulus type; as shown below.
 
-![Aggregated data.](example_images/example_fig_data2.png)
+![(Fig. 2) Aggregated data](example_fig_data2.png)
 
 
 Detailed explanation follows the code below.
@@ -235,11 +243,12 @@ anova_neat(
 The following plot is returned.
 
 
-![Mean+CI plot.](example_images/example_fig_factorial.png)
+![(Fig. 3) Mean and CI plot](example_fig_factorial.png)
 
 All seems as expected. The error bars show, by default, the 95% CIs of the means. Based on these CIs, the differences seem convincing. (Although, as a side note: in some cases such a plot can actually lead one to underestimate the certainty because it gives no information about the correlation of within-subject variables, which, e.g. in case of RTs, can be extremely high, _r_ > 0.9, hence potentially giving substantial evidence despite very small mean differences.) Note that the plots is implemented via the plot_neat function. Several features are customizable; see `?plot_neat` (to which arguments can also be passed via `anova_neat`). For example, to illustrate variation instead of certainty, we can display, with the error bars, the SDs of the means by adding the `eb_method = sd`. The main method could be replaced as well, for example, by setting `method = median`, to get medians instead of means, to control for outliers. (The corresponding error bars could be median absolute deviations; `eb_method = mad`.)
 
-Here I do not go into details of all output; suffices to say that neither normality nor equal variances tests are violates; though the former is better checked via plotting the residuals (set `norm_plots = TRUE`) and the latter via checking whether the sample sizes and SDs between the groups are similar within each within-subject level combination (as it is returned when setting `var_tests = TRUE`).
+Here I do not go into details of all output; suffices to say that neither normality nor equal variances tests are violates; though the former is better checked via plotting the residuals (set `norm_plots = TRUE`) and the latter via checking whether the sample sizes and SDs between the groups are similar within each within-subject level combination (as it is returned when setting `var_tests = TRUE
+`).
 
 The main ANOVA output is:
 
@@ -392,7 +401,7 @@ table_neat(
     to_clipboard = TRUE
 )
 ```
-| aggr_group | rt_green_negative | rt_green_positive | rt_red_negative | rt_red_positive | data_final$er_green_negative * 100 | data_final$er_green_positive * 100 | data_final$er_red_negative * 100 | data_final$er_red_positive * 100 |
+| aggr_group | rt_green_negative | rt_green_positive | rt_red_negative | rt_red_positive | data_final\$er_green_negative * 100 | data_final\$er_green_positive * 100 | data_final\$er_red_negative * 100 | data_final\$er_red_positive * 100 |
 |------------|-------------------|-------------------|-----------------|-----------------|------------------------------------|------------------------------------|----------------------------------|----------------------------------|
 | mixed      | 613±49            | 539±51            | 574±47          | 575±57          | 13.15±7.47                         | 8.69±6.15                          | 14.46±7.78                       | 14.87±7.06                       |
 | separate   | 564±58            | 522±55            | 556±56          | 523±50          | 14.09±6.82                         | 9.35±6.94                          | 15.94±9.32                       | 10.22±5.52                       |
