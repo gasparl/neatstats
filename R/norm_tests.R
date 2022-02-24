@@ -206,10 +206,19 @@ norm_tests_in = function(var1,
             norm_tests = c("w", "k2", "a2", "jb")
         }
     }
-    if (length(var1) < 20 & 'k2' %in% norm_tests) {
+    if (length(var1) < 8 &
+        ('k2' %in% norm_tests | 'a2' %in% norm_tests)) {
+        norm_tests = norm_tests[!norm_tests %in% c('k2', 'a2')]
+        warning(
+            "A sample size below 8 is not reasonable for normality testing;",
+            " D'Agostino and Anderson-Darling tests cannot be computed."
+        )
+    } else if (length(var1) < 21 & 'k2' %in% norm_tests) {
         norm_tests = norm_tests[norm_tests != 'k2']
-        warning("A sample size below 20 is not reasonable for normality testing;",
-                " D'Agostino test cannot be computed.")
+        warning(
+            "A sample size no greater than 20 is not reasonable for",
+            " normality testing; D'Agostino test cannot be computed."
+        )
     }
     for (norm_abbr in norm_tests) {
         ntest_fun = list(
