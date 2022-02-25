@@ -485,7 +485,7 @@ t_neat = function(var1,
                         paired = pair,
                         iterations = bf_sample,
                         rscale = bf_rscale,
-                        nullInterval = c(0,-Inf)
+                        nullInterval = c(0, -Inf)
                     )[1]
                 )
             }
@@ -868,7 +868,7 @@ plot_dens = function(v1,
                 guide = FALSE
             ) +
             geom_vline(
-                xintercept = c(xfunc(.data$v1), xfunc(.data$v2)),
+                xintercept = c(xfunc(dens_dat$v1), xfunc(dens_dat$v2)),
                 color = "#777777",
                 linetype = "dashed",
                 size = 0.5
