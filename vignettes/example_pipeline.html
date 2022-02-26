@@ -182,57 +182,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Detailed explanation follows the code below.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (file_name <span class="cf">in</span> <span class="fu">enum</span>(filenames)) {</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(file_name, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    subject_data <span class="ot">=</span> <span class="fu">read.table</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    subject_data <span class="ot">=</span> data.table<span class="sc">::</span><span class="fu">fread</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        file_name[<span class="dv">2</span>],</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">fill =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">header =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(subject_data) <span class="sc">!=</span> <span class="dv">100</span>) {</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;unexpected trial number: &quot;</span>, <span class="fu">nrow</span>(subject_data))</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    rts <span class="ot">=</span> <span class="fu">aggr_neat</span>(</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        subject_data,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        rt,</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">group_by =</span> <span class="fu">c</span>(<span class="st">&#39;color&#39;</span>, <span class="st">&#39;valence&#39;</span>),</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> mean,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">prefix =</span> <span class="st">&#39;rt&#39;</span>,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">filt =</span> (rt <span class="sc">&gt;</span> <span class="dv">150</span> <span class="sc">&amp;</span> response <span class="sc">==</span> <span class="st">&#39;correct&#39;</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    ers <span class="ot">=</span> <span class="fu">aggr_neat</span>(</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        subject_data,</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        response,</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">group_by =</span> <span class="fu">c</span>(<span class="st">&#39;color&#39;</span>, <span class="st">&#39;valence&#39;</span>),</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">&#39;incorrect&#39;</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">prefix =</span> <span class="st">&#39;er&#39;</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">filt =</span> (response <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;correct&#39;</span>, <span class="st">&#39;incorrect&#39;</span>))</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    er_overall <span class="ot">=</span> <span class="fu">aggr_neat</span>(subject_data,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                           response,</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">&#39;incorrect&#39;</span>,</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                           <span class="at">filt =</span> (response <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;correct&#39;</span>, <span class="st">&#39;incorrect&#39;</span>)))<span class="sc">$</span>aggr_value</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rbind_loop</span>(</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        subjects_merged,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">subject_id =</span> subject_data<span class="sc">$</span>subject_num[<span class="dv">1</span>],</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">condition =</span> subject_data<span class="sc">$</span>condition[<span class="dv">1</span>],</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">gender =</span> subject_data<span class="sc">$</span>gender[<span class="dv">1</span>],</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">age =</span> subject_data<span class="sc">$</span>age[<span class="dv">1</span>],</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">er_overall =</span> er_overall,</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        rts,</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        ers</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">fill =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(subject_data) <span class="sc">!=</span> <span class="dv">100</span>) {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;unexpected trial number: &quot;</span>, <span class="fu">nrow</span>(subject_data))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    rts <span class="ot">=</span> <span class="fu">aggr_neat</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        subject_data,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        rt,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">group_by =</span> <span class="fu">c</span>(<span class="st">&#39;color&#39;</span>, <span class="st">&#39;valence&#39;</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> mean,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">prefix =</span> <span class="st">&#39;rt&#39;</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">filt =</span> (rt <span class="sc">&gt;</span> <span class="dv">150</span> <span class="sc">&amp;</span> response <span class="sc">==</span> <span class="st">&#39;correct&#39;</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    ers <span class="ot">=</span> <span class="fu">aggr_neat</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        subject_data,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        response,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">group_by =</span> <span class="fu">c</span>(<span class="st">&#39;color&#39;</span>, <span class="st">&#39;valence&#39;</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">method =</span> <span class="st">&#39;incorrect&#39;</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">prefix =</span> <span class="st">&#39;er&#39;</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">filt =</span> (response <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;correct&#39;</span>, <span class="st">&#39;incorrect&#39;</span>))</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    er_overall <span class="ot">=</span> <span class="fu">aggr_neat</span>(subject_data,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                           response,</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">&#39;incorrect&#39;</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                           <span class="at">filt =</span> (response <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;correct&#39;</span>, <span class="st">&#39;incorrect&#39;</span>)))<span class="sc">$</span>aggr_value</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rbind_loop</span>(</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        subjects_merged,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">subject_id =</span> subject_data<span class="sc">$</span>subject_num[<span class="dv">1</span>],</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">condition =</span> subject_data<span class="sc">$</span>condition[<span class="dv">1</span>],</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">gender =</span> subject_data<span class="sc">$</span>gender[<span class="dv">1</span>],</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">age =</span> subject_data<span class="sc">$</span>age[<span class="dv">1</span>],</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">er_overall =</span> er_overall,</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        rts,</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        ers</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>The <code>enum()</code> function prepends numbering to the file names (<code>1</code> for first, <code>2</code> for second, etc.; this can be disabled via the enumerate parameter) merely for display, and, more importantly, it indicates a newly initiated loop for the rbind_loop function (see later).</p>
 <p>A preliminary note: to test the code within the loop in detail, we can assign a single file name to the <code>file_name</code> variable (e.g., as <code>file_name = c(0, &#39;expsim_color_valence_mixed_1.txt&#39;)</code>), and then proceed to execute the following lines one by one and check the corresponding results.</p>
 <p>The <code>cat(file_name, fill = TRUE)</code> line just prints the present file name to the console, to let you know which file is currently being processed. This is especially useful when the script is stopped due to an error: in that case you know which file caused the error.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(file_name, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>Then the <code>read.table()</code> function reads in the data of the current file. Since the data files contain headers, we have to specify <code>header = TRUE</code>, otherwise the returned data would contain the headers as the first row of data. I always set the <code>stringsAsFactors</code> and <code>fill</code> parameters to the given values as a precaution, although it should not matter in the present data; see <code>?read.table</code> for details.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>subject_data <span class="ot">=</span> <span class="fu">read.table</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    file_name,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">header =</span> <span class="cn">TRUE</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Then the <code>data.table::fread()</code> function reads in the data of the current file. (This is similar to but more convenient and probably faster than <code>read.table</code>.) I always set <code>fill = TRUE</code> as a precaution, although it should not matter in the present data; see <code>?data.table::fread</code> for details.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>subject_data <span class="ot">=</span> data.table<span class="sc">::</span><span class="fu">fread</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    file_name[<span class="dv">2</span>],</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>Next, as a quick check to ensure the basic integrity of the data, I always verify that the data contains the expected amount of rows (i.e., the number of trials in the experiment). Otherwise the script is stopped an the “unexpected trial number” (i.e., number of rows) is printed.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(subject_data) <span class="sc">!=</span> <span class="dv">100</span>) {</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;unexpected trial number: &quot;</span>, <span class="fu">nrow</span>(subject_data))</span>
@@ -526,7 +522,6 @@ t(86) = 7.33, p &lt; .001, d = 0.79, 95% CI [0.54, 1.02], BF10 = 8.06 × 10^7.</
 </tr>
 </tbody>
 </table>
-<hr />
 </div>
 <div id="thats-all" class="section level3">
 <h3>That’s all</h3>
