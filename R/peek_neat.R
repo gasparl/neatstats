@@ -200,7 +200,7 @@ peek_neat = function(dat,
         }
         valstemp = valstemp[!is.na(valstemp)]
         if (!is.null(f_plot) &&
-            length(valstemp) > 0 && (!inherits(f_plot, "character")) {
+            length(valstemp) > 0 && (!inherits(f_plot, "character"))) {
             if (group_n == TRUE) {
                 xtitl = paste0(grp, '\n(n = ',
                                length(valstemp), ')')
