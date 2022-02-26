@@ -194,13 +194,13 @@ peek_neat = function(dat,
         } else {
             to_merg = f_print(valstemp)
         }
-        if (class(to_merg) == 'data.frame' |
+        if (inherits(to_merg, "data.frame") |
             length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
             dat_merg = rbind(dat_merg, data.frame(as.list((to_merg))))
         }
         valstemp = valstemp[!is.na(valstemp)]
         if (!is.null(f_plot) &&
-            length(valstemp) > 0 && class(f_plot) != "character") {
+            length(valstemp) > 0 && (!inherits(f_plot, "character")) {
             if (group_n == TRUE) {
                 xtitl = paste0(grp, '\n(n = ',
                                length(valstemp), ')')
@@ -213,7 +213,7 @@ peek_neat = function(dat,
     }
     if (is.null(f_plot)) {
         graphics::plot(box_neat(vals, group_by, group_n = group_n))
-    } else if (class(f_plot) != "character") {
+    } else if (!inherits(f_plot, "character")) {
         graphics::plot(ggpubr::ggarrange(plotlist = plot_list))
     }
     invisible(dat_merg)

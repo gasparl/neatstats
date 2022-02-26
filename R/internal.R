@@ -286,7 +286,7 @@ transp = function(to_transpose, headers) {
     if (headers == TRUE) {
         headers = 'aggr_group'
     }
-    if (class(to_transpose) == "list") {
+    if (inherits(to_transpose, "list") {
         to_transpose = Reduce(function(x, y)
             merge(x, y, all = TRUE), to_transpose)
     }

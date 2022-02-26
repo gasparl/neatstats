@@ -656,19 +656,19 @@ t_neat = function(var1,
             direction =  auc_dir
         ) # v1 larger
         youdn = pROC::coords(the_roc, x = "best", ret = "youden")
-        if (class(youdn) == "data.frame") {
+        if (inherits(youdn, "data.frame")) {
             maxyouden = as.numeric(youdn$youden[1]) - 1
         } else {
             maxyouden = as.numeric(youdn[1]) - 1
         }
         bestacc = pROC::coords(the_roc, x = "best", ret = "accuracy")
-        if (class(bestacc) == "data.frame") {
+        if (inherits(bestacc, "data.frame")) {
             max_acc = as.numeric(bestacc$accuracy[1])
         } else {
             max_acc = as.numeric(bestacc[1])
         }
         best_coords = pROC::coords(the_roc, x = "best")
-        if (class(best_coords) == "data.frame") {
+        if (inherits(best_coords, "data.frame")) {
             plot_thres = as.numeric(best_coords$threshold)[1]
             best_tp = as.numeric(best_coords$sensitivity)[1]
             best_tn = as.numeric(best_coords$specificity)[1]
