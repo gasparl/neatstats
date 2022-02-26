@@ -121,7 +121,7 @@ peek_neat = function(dat,
                       val_arg(round_to, c('num'), 1),
                       val_arg(group_n, c('bool'), 1)
                   ))
-    name_taken('neat_unique_values', dat)
+    name_taken('..neat_values', dat)
     values = values[!values %in% group_by]
     if (length(values) > 1) {
         if (is.null(collapse)) {
@@ -130,7 +130,7 @@ peek_neat = function(dat,
                 direction = 'long',
                 varying = values,
                 timevar = "within_factor",
-                v.names = "neat_unique_values",
+                v.names = "..neat_values",
                 times = values
             )
             if (is.null(group_by)) {
@@ -139,11 +139,11 @@ peek_neat = function(dat,
                 group_by = c(group_by, "within_factor")
             }
         } else {
-            dat$neat_unique_values = apply(subset(dat, select = values),
+            dat$..neat_values = apply(subset(dat, select = values),
                                            1, collapse, na.rm = TRUE)
         }
     } else if (values %in% names(dat)) {
-        dat$neat_unique_values = dat[[values]]
+        dat$..neat_values = dat[[values]]
     } else {
         stop("Column name specified for values not found.")
     }
@@ -182,7 +182,7 @@ peek_neat = function(dat,
         group_by = as.factor(rep('0', nrow(dat)))
     }
     dat_merg = data.frame()
-    vals = dat$neat_unique_values
+    vals = dat$..neat_values
     plot_list = list()
     for (grp in unique(group_by)) {
         if (length(unique(group_by)) > 1) {

@@ -26,16 +26,18 @@ calculated. Should contain columns named as "\code{age}" and as
 columns can be specified via the \code{gender_col} and \code{age_col}
 parameters. The \code{age} column must contain only numbers or \code{NA},
 while \code{gender} column must contain only \code{1} (= male) or \code{2}
-(= female), either as numbers or as strings, or \code{NA}. Alternatively, different gender coding can be set via the parameters \code{male} and \code{female} (but \code{1}/\code{2} will be checked for first in any case).}
+(= female), either as numbers or as strings, or \code{NA}. Alternatively,
+different gender coding can be set via the parameters \code{male} and
+\code{female} (but \code{1}/\code{2} will be checked for first in any case).}
 
 \item{group_by}{Optionally the name(s) of column(s) from the data frame
 provided as \code{data_per_subject} to group by.}
 
-\item{gender_col}{Optionally the name of column from the data frame
-that contains the gender (sex) information.}
+\item{gender_col}{Optionally the name of column from the data frame that
+contains the gender (sex) information.}
 
-\item{age_col}{Optionally the name of column from the data frame
-that contains the age information.}
+\item{age_col}{Optionally the name of column from the data frame that contains
+the age information.}
 
 \item{male}{Alternative code for male: by default, it is the string
 \code{"male"}. Whatever string is given, its abbreviations will also be
@@ -46,8 +48,8 @@ accepted (e.g. \code{"m"}). (Lettercases do not matter, e.g. \code{Male} or
 \code{"female"}. Whatever string is given, its abbreviations will also be
 accepted (e.g. \code{"fem"}). (Lettercases do not matter.)}
 
-\item{percent}{Logical. If \code{TRUE}, gender ratios (and the
-"unknown" ratios based on \code{NA} values) are presented as percentage. If
+\item{percent}{Logical. If \code{TRUE}, gender ratios (and the "unknown"
+ratios based on \code{NA} values) are presented as percentage. If
 \code{FALSE}, they are presented as counts (i.e., numbers of subjects).}
 
 \item{round_perc}{Number \code{\link[=ro]{to round}} to, when using
@@ -69,8 +71,8 @@ number before any age calculation.#'}
 number before any age calculation.}
 }
 \description{
-Prints participant count, age mean and SD, and gender ratio,
-  from given dataset.
+Prints participant count, age mean and SD, and gender ratio, from
+ given dataset.
 }
 \details{
 If \code{gender_col} and/or \code{age_col} are not specified, the

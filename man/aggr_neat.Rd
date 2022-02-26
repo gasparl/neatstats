@@ -17,7 +17,8 @@ aggr_neat(
 )
 }
 \arguments{
-\item{dat}{Data frame (or name of data frame as string).}
+\item{dat}{A data frame (or a \code{\link{data.table}}, or the name of either
+as string).}
 
 \item{values}{The vector of numbers from which the statistics are to be
 calculated, or the name of the column in the \code{dat} data frame, that
@@ -69,8 +70,8 @@ input variable name is used).}
 using \code{"+sd"} in \code{method}.}
 }
 \value{
-A data frame with the statistics per group, with a single column
-  (\code{"aggr_group"}) indicating the grouping.
+A \code{\link{data.table}} with the statistics per group, with a
+  single column (\code{"aggr_group"}) indicating the grouping.
 }
 \description{
 Returns aggregated values per group for given variable. Serves
@@ -150,27 +151,6 @@ aggr_neat(
     filt = gear \%in\% c(3, 5)
 )
 
-# both mean and median
-aggr_neat(
-    mtcars,
-    gear,
-    group_by = 'cyl',
-    method = function(v) {
-        c(my_mean = mean(v), my_median = median(v))
-    }
-)
-
-# mean, median, and count
-aggr_neat(
-    mtcars,
-    gear,
-    group_by = 'cyl',
-    method = function(v) {
-        c(mean = mean(v),
-          median = median(v),
-          count = length(v))
-    }
-)
 }
 \seealso{
 \code{\link{table_neat}} to create full tables using multiple

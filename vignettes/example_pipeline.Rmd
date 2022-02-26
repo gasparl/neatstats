@@ -64,11 +64,9 @@ Detailed explanation follows the code below.
 ```R
 for (file_name in enum(filenames)) {
     cat(file_name, fill = TRUE)
-    subject_data = read.table(
+    subject_data = data.table::fread(
         file_name[2],
-        stringsAsFactors = FALSE,
-        fill = TRUE,
-        header = TRUE
+        fill = TRUE
     )
     if (nrow(subject_data) != 100) {
         stop("unexpected trial number: ", nrow(subject_data))
@@ -116,14 +114,12 @@ The `cat(file_name, fill = TRUE)` line just prints the present file name to the 
 cat(file_name, fill = TRUE)
 ```
 
-Then the `read.table()` function reads in the data of the current file. Since the data files contain headers, we have to specify `header = TRUE`, otherwise the returned data would contain the headers as the first row of data. I always set the `stringsAsFactors` and `fill` parameters to the given values as a precaution, although it should not matter in the present data; see `?read.table` for details.
+Then the `data.table::fread()` function reads in the data of the current file. (This is similar to but more convenient and probably faster than `read.table`.) I always set `fill = TRUE` as a precaution, although it should not matter in the present data; see `?data.table::fread` for details.
 
 ```R
-subject_data = read.table(
-    file_name,
-    stringsAsFactors = FALSE,
-    fill = TRUE,
-    header = TRUE
+subject_data = data.table::fread(
+    file_name[2],
+    fill = TRUE
 )
 ```
 

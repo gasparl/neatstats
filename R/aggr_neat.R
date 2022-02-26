@@ -2,7 +2,8 @@
 #'
 #' @description Returns aggregated values per group for given variable. Serves
 #'   as argument in the \code{\link{table_neat}} function.
-#' @param dat Data frame (or name of data frame as string).
+#' @param dat A data frame (or a \code{\link{data.table}}, or the name of either
+#'   as string).
 #' @param values The vector of numbers from which the statistics are to be
 #'   calculated, or the name of the column in the \code{dat} data frame, that
 #'   contains the vector.
@@ -44,8 +45,8 @@
 #'   input variable name is used).
 #' @param round_to Number of digits after the decimal point to round to, when
 #'   using \code{"+sd"} in \code{method}.
-#' @return A data frame with the statistics per group, with a single column
-#'   (\code{"aggr_group"}) indicating the grouping.
+#' @return A \code{\link{data.table}} with the statistics per group, with a
+#'   single column (\code{"aggr_group"}) indicating the grouping.
 #' @seealso \code{\link{table_neat}} to create full tables using multiple
 #'   variables
 #' @examples
@@ -122,27 +123,6 @@
 #'     filt = gear %in% c(3, 5)
 #' )
 #'
-#' # both mean and median
-#' aggr_neat(
-#'     mtcars,
-#'     gear,
-#'     group_by = 'cyl',
-#'     method = function(v) {
-#'         c(my_mean = mean(v), my_median = median(v))
-#'     }
-#' )
-#'
-#' # mean, median, and count
-#' aggr_neat(
-#'     mtcars,
-#'     gear,
-#'     group_by = 'cyl',
-#'     method = function(v) {
-#'         c(mean = mean(v),
-#'           median = median(v),
-#'           count = length(v))
-#'     }
-#' )
 #' @export
 
 aggr_neat = function(dat,
@@ -166,25 +146,29 @@ aggr_neat = function(dat,
                       val_arg(new_name, c('char', 'null'), 1),
                       val_arg(round_to, c('num'), 1)
                   ))
-    name_taken('neat_unique_values', dat)
+    name_taken('..neat_values', dat)
+    name_taken('..temp_name', dat)
+    ..neat_values = NULL
+    aggr_group = NULL
+    setDT(dat)
     values = paste(deparse(substitute(values)), collapse = "")
     values = trimws(values, whitespace = "['\"]")
     if (values %in% names(dat)) {
-        dat$neat_unique_values = dat[[values]]
+        dat$..neat_values = dat[[values]]
     } else {
-        dat$neat_unique_values = eval(parse(text = values))
+        dat$..neat_values = eval(parse(text = values))
     }
-    if (anyNA(dat$neat_unique_values)) {
-        dat = dat[!is.na(dat$neat_unique_values),]
+    if (anyNA(dat$..neat_values)) {
+        dat = dat[!is.na(..neat_values)]
     }
     filt = paste(deparse(substitute(filt)), collapse = "")
     if (filt != "NULL") {
         if (startsWith(filt, "'") | startsWith(filt, '"')) {
             stop('The argument "filt" must be an expression (not string).')
         }
-        filt_vec = eval(parse(text = paste0('with(data = dat, ',
+        filt_vec = eval(parse(text = paste0('dat[,',
                                             filt,
-                                            ')')))
+                                            ']')))
         na_sum = sum(is.na(filt_vec))
         if (na_sum > 0) {
             message(
@@ -195,7 +179,7 @@ aggr_neat = function(dat,
             )
             filt_vec[is.na(filt_vec)] = FALSE
         }
-        dat = dat[filt_vec,]
+        dat = dat[filt_vec]
     }
     if (!is.null(pkg.globals$my_unique_method)) {
         method = pkg.globals$my_unique_method
@@ -217,49 +201,33 @@ aggr_neat = function(dat,
             val_name = new_name
         }
     }
-    if (!is.null(group_by)) {
-        group_by = paste(group_by, collapse = ',')
-        group_by = eval(parse(text = paste0(
-            'with(data = dat, list(',
-            group_by,
-            '))'
-        )))
-    } else {
-        group_by = list(rep(0, nrow(dat)))
-    }
+
     if (is.function(method) == TRUE) {
-        aggred = do.call(data.frame,
-                         stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method))
+        aggred = dat[, list(..temp_name =  method(..neat_values)), by = group_by]
     } else if (endsWith(method, '+sd') == TRUE) {
         func_name = strsplit(method, '+', fixed = TRUE)[[1]][1]
-        method = eval(parse(text = func_name))
-        aggred = stats::aggregate(dat$neat_unique_values, by = group_by, FUN = method)
-
-        aggred = do.call(data.frame,
-                         stats::aggregate(
-                             dat$neat_unique_values,
-                             by = group_by,
-                             FUN = function(x) {
-                                 stats::setNames(c(ro(method(x), round_to), ro(stats::sd(x), round_to)), c(func_name, 'sd'))
-                             }
-                         ))
-        aggred[val_name] = paste(aggred[[paste0('x.', func_name)]], aggred$x.sd, sep =
-                                     "\u00b1")
-        aggred = aggred[, setdiff(names(aggred), c(paste0('x.', func_name), 'x.sd'))]
+        main_fun = eval(parse(text = func_name))
+        full_fun = function(x) {
+            paste(ro(main_fun(x), round_to),
+                  ro(stats::sd(x), round_to),
+                  sep = '\u00b1')
+        }
+        aggred = dat[, list(..temp_name = full_fun(..neat_values)), by = group_by]
     } else {
         nume = to_c(method)
-        aggred = stats::aggregate(
-            dat$neat_unique_values,
-            by = group_by,
-            FUN = function(x) {
-                sum(x %in% nume) / length(x)
-            }
-        )
+        ratfun = function(x) {
+            sum(x %in% nume) / length(x)
+        }
+        aggred = dat[, list(..temp_name = ratfun(..neat_values)), by = group_by]
     }
-    aggred = merge_cols(aggred, sep)
-    colnames(aggred)[colnames(aggred) == 'x'] <- val_name
+    if (is.null(group_by)) {
+        aggred[, aggr_group := NA]
+    } else {
+        aggred[, aggr_group := do.call(paste, c(.SD, sep = "_")), .SDcols = group_by]
+    }
+    setnames(aggred, "..temp_name", val_name)
     if (is.null(prefix) != TRUE) {
         aggred$aggr_group = paste(prefix, aggred$aggr_group, sep = sep)
     }
-    return(aggred)
+    return(as.data.frame(aggred[, .SD, .SDcols = c('aggr_group', val_name)]))
 }

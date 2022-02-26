@@ -4,37 +4,34 @@
 \alias{rbind_loop}
 \title{Merge by Columns in Loops}
 \usage{
-rbind_loop(merged, ..., hush = FALSE, nameless = FALSE)
+rbind_loop(merged, ..., hush = FALSE)
 }
 \arguments{
-\item{merged}{The name of the data frame for the merged data (without
-quotes).}
+\item{merged}{The name of the \code{\link{data.table}} for the merged data
+(without quotes).}
 
 \item{...}{Any number of data to be merged. Each argument must be one of the
-following: a data frame with either single row or two column; a named
-vector or a named list (with single elements); or a single value with
-parameter name (e.g. date = 1989 or id = "jdoe"). Data with two columns
-will be transposed using first column as column names and second column as
-corresponding values. See Details, Examples.}
+following: a \code{\link{data.frame}} (or \code{\link{data.table}}) with
+either single row or two column; a named vector or a named list (with single
+elements); or a single value with parameter name (e.g. date = 1989 or id =
+"jdoe"). Data with two columns will be transposed using first column as
+column names and second column as corresponding values. See Details,
+Examples.}
 
 \item{hush}{Logical. If \code{TRUE} (default), prints message when the data
 frame for merging is initiated.}
-
-\item{nameless}{Logical. If \code{FALSE} (default), unnamed vectors or list
-elements are not allowed. If set to \code{TRUE}, unnamed elements will be
-named automatically (e.g. \code{X.value.}).}
 }
 \description{
 Merges rows by columns in a loop using the \code{\link{enum}}
-  function. On first iteration, indicated by \code{\link{enum}}, initiates a
-  new data frame with the data to merge as first row. On all following
-  iterations, adds data to merge as subsequent rows (using
-  \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}).
+ function. On first iteration, indicated by \code{\link{enum}}, initiates a
+ new \code{\link{data.table}} with the data to merge as first row. On all
+ following iterations, adds data to merge as subsequent rows (using
+ \code{\link[data.table:rbindlist]{data.table::rbindlist}}).
 }
 \details{
 In each call, all data passed to the function (via \code{...}) will
  be merged into a single row, and that single row will be added to the
- \code{merged} data frame.
+ "\code{merged}" data table.
 
  See an extensive example via https://github.com/gasparl/neatstats.
 }
@@ -103,6 +100,25 @@ for (elem in enum(my_vector)) {
 
 # merged_data contains all new merged rows
 # with NAs where sqr was not added
+print(merged_data)
+
+# example with data.table added
+library('data.table')
+for (elem in enum(my_vector)) {
+    cat(elem, fill = TRUE)
+    dframe = data.frame(item = elem[2],
+                        number = elem[1])
+    asnum = as.numeric(elem[1])
+    dtable = data.table(item2 = paste('DT', elem[2]),
+                        number2 = asnum + 9)
+    if (asnum \%\% 2 == 0) {
+        dframe$sqr = asnum ** 2
+    }
+    rbind_loop(merged_data,
+               dframe,
+               dtable)
+}
+
 print(merged_data)
 
 # an extensive example to show how to collect and aggregate raw data is

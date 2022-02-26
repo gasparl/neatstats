@@ -475,9 +475,9 @@ plot_neat = function(data_per_subject = NULL,
         }
     }
     # end collapsing
-    name_taken('neat_unique_values', data_wide)
-    name_taken('neat_unique_id', data_wide)
-    id_col = 'neat_unique_id'
+    name_taken('..neat_values', data_wide)
+    name_taken('..neat_id', data_wide)
+    id_col = '..neat_id'
     data_wide[[id_col]] = as.character(seq.int(nrow(data_wide)))
     if (length(values) > 1) {
         data_reshaped = stats::reshape(
@@ -486,7 +486,7 @@ plot_neat = function(data_per_subject = NULL,
             varying = values,
             idvar = id_col,
             timevar = "within_factor",
-            v.names = "neat_unique_values",
+            v.names = "..neat_values",
             times = values
         )
         if (length(within_ids) > 1) {
@@ -512,7 +512,7 @@ plot_neat = function(data_per_subject = NULL,
         this_data = data_reshaped
     } else {
         this_data = data_wide
-        colnames(this_data)[colnames(this_data) == values] = 'neat_unique_values'
+        colnames(this_data)[colnames(this_data) == values] = '..neat_values'
         within_vars = NULL
     }
     this_data[, id_col] = to_fact(this_data[[id_col]])

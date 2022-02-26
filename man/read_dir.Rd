@@ -7,7 +7,7 @@
 read_dir(
   pattern = "*[.]",
   path = ".",
-  reader_function = utils::read.table,
+  reader_function = data.table::fread,
   ...,
   subdirs = FALSE,
   filt = NULL,
@@ -35,7 +35,7 @@ enter relative or full paths (e.g. \code{"C:/research"} or
 \code{"/home/projects"}, etc.).}
 
 \item{reader_function}{A function to be used for reading the files,
-\code{\link[utils:read.table]{utils::read.table}} by default.}
+\code{\link[data.table:fread]{data.table::fread}} by default.}
 
 \item{...}{Any arguments to be passed on to the chosen \code{reader_function}.}
 
@@ -51,16 +51,17 @@ names as they are being read (along with related warnings).}
 }
 \description{
 Reads data files from any given directory as data frames and
-  merges them into a single data frame (using
-  \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}).
+ merges them into a single data frame (using
+ \code{\link[data.table:rbindlist]{data.table::rbindlist}}).
 }
 \note{
 This function is very similar to the \code{readbulk::read_bulk}
- function. One important difference however is the possibility of
- pre-filtering by file (see \code{filt}). Data files could include
- significant amount of unnecessary data, and filtering prevents these to be
- merged. Another important difference is the possibility of file selection
- based on any regex \code{pattern}.
+ function. One important difference however is the \code{\link{data.table}}
+ use, which greatly speeds up the process. Another important difference is
+ the possibility of file selection based on any regex \code{pattern}.
+ Furthermore, this function allows pre-filtering by file (see \code{filt}).
+ Data files could include significant amount of unnecessary data, and
+ filtering prevents these to be merged.
 }
 \examples{
 \donttest{
@@ -72,9 +73,11 @@ This function is very similar to the \code{readbulk::read_bulk}
 merged_df = read_dir("\\\\.txt$")
 # merged_df now has all data
 
-# some advisable options passed to read.table
+# to use utils::read.table for reading (slower than fread)
+# (with some advisable options passed to it)
 merged_df = read_dir(
     '\\\\.txt$',
+    reader_function = read.table,
     header = TRUE,
     fill = TRUE,
     quote = "\"",
@@ -84,5 +87,5 @@ merged_df = read_dir(
 
 }
 \seealso{
-\code{\link[plyr:rbind.fill]{plyr:rbind.fill}}
+\code{\link[data.table:rbindlist]{data.table::rbindlist}}
 }

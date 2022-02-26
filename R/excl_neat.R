@@ -77,8 +77,8 @@ excl_neat = function(dat,
                       val_arg(sort_by, c('char'), 1),
                       val_arg(hush, c('bool'), 1)
                   ))
-    name_taken('neat_unique_ids', dat)
-    dat$neat_unique_ids = paste0('id', seq.int(nrow(dat)))
+    name_taken('..neat_ids', dat)
+    dat$..neat_ids = paste0('id', seq.int(nrow(dat)))
     filt = paste(deparse(substitute(filt)), collapse = "")
     if (filt != "NULL") {
         if (startsWith(filt, "'") | startsWith(filt, '"')) {
@@ -99,7 +99,7 @@ excl_neat = function(dat,
         }
         dat_filted = dat[filt_vec,]
     }
-    dat$remaining = ifelse(dat$neat_unique_ids %in% dat_filted$neat_unique_ids,
+    dat$remaining = ifelse(dat$..neat_ids %in% dat_filted$..neat_ids,
                            'remained',
                            'excluded')
     if (hush == FALSE) {
@@ -111,7 +111,7 @@ excl_neat = function(dat,
         print(
             aggr_neat(
                 dat = dat,
-                values = 'neat_unique_ids',
+                values = '..neat_ids',
                 group_by = grouppin,
                 method = length,
                 new_name = 'count'
@@ -121,11 +121,11 @@ excl_neat = function(dat,
     if (excluded == TRUE) {
         dat_excl = dat[dat$remaining == 'excluded',]
         dat_excl$remaining = NULL
-        dat_excl$neat_unique_ids = NULL
-        dat_filted$neat_unique_ids = NULL
+        dat_excl$..neat_ids = NULL
+        dat_filted$..neat_ids = NULL
         invisible(list(filtered = dat_filted, excluded = dat_excl))
     } else {
-        dat_filted$neat_unique_ids = NULL
+        dat_filted$..neat_ids = NULL
         invisible(dat_filted)
     }
 }

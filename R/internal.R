@@ -255,28 +255,6 @@ to_c = function(var) {
     return(strsplit(var, ",")[[1]])
 }
 
-merge_cols = function(dat_aggred, sep) {
-    g_names = names(dat_aggred)[startsWith(names(dat_aggred), 'Group.')]
-    if (length(g_names) > 1) {
-        dat_aggred = eval(parse(
-            text = paste0(
-                "within(dat_aggred, g_merged <-
-                paste(",
-                paste(g_names, collapse = ','),
-                ", sep = '",
-                sep,
-                "'))"
-            )
-        ))
-        dat_aggred[, 1] = dat_aggred$g_merged
-        colnames(dat_aggred)[1] <- "aggr_group"
-        dat_aggred = dat_aggred[, setdiff(names(dat_aggred), c('g_merged', g_names))]
-    } else {
-        colnames(dat_aggred)[1] <- "aggr_group"
-    }
-    return(dat_aggred)
-}
-
 checkcol = function(df_names, thecols) {
     cols_notfound = c()
     for (colname in thecols) {
@@ -313,25 +291,27 @@ transp = function(to_transpose, headers) {
             merge(x, y, all = TRUE), to_transpose)
     }
     hnames = to_transpose[[headers]]
-    tdat = as.data.frame(t(to_transpose[,-1]))
+    tdat = as.data.frame(t(to_transpose[, -1]))
     colnames(tdat) = hnames
     return(tdat)
 }
 
 
-get_row = function(..., nameless = FALSE) {
+get_row = function(...) {
     dotdot = c(as.list(environment()), list(...))
-    dotdot$nameless = NULL
-    newrow = data.frame(row.names = 1)
+    dotnames = names(dotdot)
+    if (is.null(dotnames)) {
+        dotnames = ''
+    }
+    newrow = data.table(....temPR = 1)
     for (itnum in seq_along(dotdot)) {
-        itname = names(dotdot)[itnum]
+        itname = dotnames[itnum]
         addee = dotdot[[itnum]]
         if (itname != "" & is.atomic(addee) & length(addee) == 1) {
-            newrow[itname] = addee
+            newrow[[itname]] = addee
         } else {
             if (is.atomic(addee) | inherits(addee, "list")) {
-                if (nameless == FALSE &
-                    length(names(addee)[(names(addee) != "")]) != length(addee)) {
+                if (length(names(addee)[(names(addee) != "")]) != length(addee)) {
                     print(addee)
                     stop(
                         "Missing vector names!\n",
@@ -342,7 +322,7 @@ get_row = function(..., nameless = FALSE) {
                         '(e.g. date = 1989 or id = "jdoe").'
                     )
                 }
-                addee = as.list(addee)
+                newrow = data.table(newrow, as.data.table(as.list(addee)))
             } else if (inherits(addee, "data.frame")) {
                 if (nrow(addee) == 0) {
                     print(addee)
@@ -350,13 +330,14 @@ get_row = function(..., nameless = FALSE) {
                 } else if (nrow(addee) > 1) {
                     if (ncol(addee) == 2) {
                         hnames = as.character(addee[, 1])
-                        addee = as.data.frame(t(as.vector(addee[, 2])))
+                        addee = as.data.table(t(as.vector(addee[, 2])))
                         colnames(addee) = hnames
                     } else {
                         print(names(addee))
                         stop('Data frame with multiple rows must have two columns.')
                     }
                 }
+                newrow = data.table(newrow, addee)
             } else {
                 print(addee)
                 stop(
@@ -367,9 +348,9 @@ get_row = function(..., nameless = FALSE) {
                     '(e.g. date = 1989 or id = "jdoe").'
                 )
             }
-            newrow = data.frame(newrow, addee)
         }
     }
+    newrow$....temPR = NULL
     return(newrow)
 }
 
@@ -387,7 +368,7 @@ mains_ebs = function(data_long, method, eb_method, g_by) {
     to_plot = do.call(
         data.frame,
         stats::aggregate(
-            data_long$neat_unique_values,
+            data_long$..neat_values,
             by = group_by,
             FUN = function(x) {
                 c(main = method(x), eb = eb_method2(x))
@@ -703,7 +684,8 @@ signRankGibbsSampler <-
                         sampledDiffsAbs[differenceSigns == 0] * sample(c(-1, 1),
                                                                        size = sum(differenceSigns == 0),
                                                                        replace = TRUE)
-                    diffSamples[which(differenceSigns == 0)] <- nullSamples
+                    diffSamples[which(differenceSigns == 0)] <-
+                        nullSamples
                 }
 
                 sampledDiffsAbs <- abs(diffSamples)
@@ -765,7 +747,8 @@ sampleGibbsOneSampleWilcoxon <-
             mu <- stats::rnorm(1, meanMu, sqrt(varMu))
 
             # sample g
-            scaleg <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
+            scaleg <-
+                ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
             g = 1 / stats::rgamma(1, 1, scaleg)
 
             delta <- mu / sqrt(sigmaSq)
@@ -923,7 +906,8 @@ sampleGibbsTwoSampleWilcoxon <-
                 ((2 * g * (n2 * meany - n1 * meanx)) / ((g * (n1 + n2) + 4)))
             mu <- stats::rnorm(1, meanMu, sqrt(varMu))
             # sample g
-            betaG <- ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
+            betaG <-
+                ((mu ^ 2 + sigmaSq * rscale ^ 2) / (2 * sigmaSq))
             g <- 1 / stats::rgamma(1, 1, betaG)
             # convert to delta
             delta <- mu / sqrt(sigmaSq)
@@ -1017,8 +1001,10 @@ spearmanGibbsSampler <-
                     currentXRank <- xRanks[i]
                     currentYRank <- yRanks[i]
 
-                    regressXOnY <- mean(currentYVals[yRanks == currentYRank])
-                    regressYOnX <- mean(currentXVals[xRanks == currentXRank])
+                    regressXOnY <-
+                        mean(currentYVals[yRanks == currentYRank])
+                    regressYOnX <-
+                        mean(currentXVals[xRanks == currentXRank])
 
                     xBounds <-
                         upperLowerTruncation(
@@ -1070,7 +1056,8 @@ spearmanGibbsSampler <-
                 # Store MH update
                 rhoSamples[j] <-
                     rhoNew # add proposal to samples if accepted
-                currentRho <- rhoNew # add proposal to samples if accepted
+                currentRho <-
+                    rhoNew # add proposal to samples if accepted
 
                 if (progBar) {
                     utils::setTxtProgressBar(myBar, j + ((thisChain - 1) * nSamples))

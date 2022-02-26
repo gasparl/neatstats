@@ -1,8 +1,8 @@
 #' @title Read and Merge Files from Directory
 #'
-#' @description Reads data files from any given directory as data frames and
-#'   merges them into a single data frame (using
-#'   \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}).
+#'@description Reads data files from any given directory as data frames and
+#'  merges them into a single data frame (using
+#'  \code{\link[data.table:rbindlist]{data.table::rbindlist}}).
 #'
 #'@param pattern Regular expression ("regex"; as string or \code{NULL}) for
 #'  selecting files (passed to the \code{\link{list.files}} function). The
@@ -22,7 +22,7 @@
 #'  enter relative or full paths (e.g. \code{"C:/research"} or
 #'  \code{"/home/projects"}, etc.).
 #'@param reader_function A function to be used for reading the files,
-#'  \code{\link[utils:read.table]{utils::read.table}} by default.
+#'  \code{\link[data.table:fread]{data.table::fread}} by default.
 #'@param ... Any arguments to be passed on to the chosen \code{reader_function}.
 #'@param subdirs Logical (\code{FALSE} by default). If \code{TRUE}, searches
 #'  files in subdirectories as well (relative to the given \code{path}).
@@ -32,13 +32,14 @@
 #'@param hush Logical. If \code{FALSE} (default), prints lists all data file
 #'  names as they are being read (along with related warnings).
 #'@note This function is very similar to the \code{readbulk::read_bulk}
-#'  function. One important difference however is the possibility of
-#'  pre-filtering by file (see \code{filt}). Data files could include
-#'  significant amount of unnecessary data, and filtering prevents these to be
-#'  merged. Another important difference is the possibility of file selection
-#'  based on any regex \code{pattern}.
+#'  function. One important difference however is the \code{\link{data.table}}
+#'  use, which greatly speeds up the process. Another important difference is
+#'  the possibility of file selection based on any regex \code{pattern}.
+#'  Furthermore, this function allows pre-filtering by file (see \code{filt}).
+#'  Data files could include significant amount of unnecessary data, and
+#'  filtering prevents these to be merged.
 #'
-#'@seealso \code{\link[plyr:rbind.fill]{plyr:rbind.fill}}
+#'@seealso \code{\link[data.table:rbindlist]{data.table::rbindlist}}
 #' @examples
 #'\donttest{
 #'
@@ -49,9 +50,11 @@
 #' merged_df = read_dir("\\.txt$")
 #' # merged_df now has all data
 #'
-#'# some advisable options passed to read.table
+#'# to use utils::read.table for reading (slower than fread)
+#'# (with some advisable options passed to it)
 #' merged_df = read_dir(
 #'     '\\.txt$',
+#'     reader_function = read.table,
 #'     header = TRUE,
 #'     fill = TRUE,
 #'     quote = "\"",
@@ -62,7 +65,7 @@
 #' @export
 read_dir = function(pattern = "*[.]",
                     path = ".",
-                    reader_function = utils::read.table,
+                    reader_function = data.table::fread,
                     ...,
                     subdirs = FALSE,
                     filt = NULL,
@@ -92,24 +95,26 @@ read_dir = function(pattern = "*[.]",
     if (length(f_names) == 0) {
         warning('No files found with these specifications.')
     }
-    merged = data.frame()
+    merged = data.table()
     for (f_nam in enum(f_names, hush = TRUE)) {
         if (hush == FALSE) {
             if (f_nam[1] == "1") {
                 message('Began reading ',
                         length(f_names),
                         ' files at path "',
-                        path, '".')
+                        path,
+                        '".')
             } else {
                 cat("; ")
             }
             cat('(', f_nam[1], ') ', f_nam[2], sep = '')
         }
         new_dat = reader_function(paste(path, f_nam[2], sep = "/"), ...)
+        setDT(new_dat)
         if (filt != "NULL") {
-            filt_vec = eval(parse(text = paste0('with(data = new_dat, ',
+            filt_vec = eval(parse(text = paste0('new_dat[',
                                                 filt,
-                                                ')')))
+                                                ']')))
             na_sum = sum(is.na(filt_vec))
             if (na_sum > 0) {
                 if (hush != TRUE) {
@@ -117,12 +122,12 @@ read_dir = function(pattern = "*[.]",
                 }
                 filt_vec[is.na(filt_vec)] = FALSE
             }
-            new_dat = new_dat[filt_vec,]
+            new_dat = new_dat[filt_vec, ]
         }
         if (hush != TRUE && nrow(new_dat) == 0) {
             cat(" (0 row!)")
         }
-        merged = plyr::rbind.fill(merged, new_dat)
+        merged = rbindlist(list(merged, new_dat), fill = TRUE)
     }
     if (hush == FALSE && length(f_names) != 0) {
         cat(
@@ -134,5 +139,5 @@ read_dir = function(pattern = "*[.]",
             fill = TRUE
         )
     }
-    invisible(merged)
+    invisible(as.data.frame(merged))
 }

@@ -1,2 +1,2 @@
-#' @import ggplot2
+#' @import ggplot2 data.table
 NULL

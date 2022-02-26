@@ -1,7 +1,7 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.9.0
-Date: 2022-02-13
+Version: 1.10.0
+Date: 2022-02-26
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
   "Kleinberg", email = "bennettkleinberg@gmail.com", role = c("ctb"), comment =
@@ -15,8 +15,8 @@ Description: User-friendly, clear and simple statistics, primarily for
   experimental designs.
 URL: https://github.com/gasparl/neatstats
 Depends: R (>= 3.6.0)
-Imports: viridis, fBasics, plyr, bayestestR, pROC, MBESS, car, ez, BayesFactor,
-   Exact, ggplot2, ggpubr, logspline, grDevices, stats, graphics
+Imports: viridis, fBasics, data.table, bayestestR, pROC, MBESS, car, ez, Exact,
+   BayesFactor, ggplot2, ggpubr, logspline, grDevices, stats, graphics
 Suggests: 
     rmarkdown,
     knitr,
