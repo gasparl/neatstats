@@ -79,4 +79,4 @@ When you use neatStats in a publication, you can either cite the specific versio
 Lukács, G. (2021). neatStats: An R package for a neat pipeline from raw data to reportable statistics in psychological science. _The Quantitative Methods for Psychology, 17_(1), 7–23. https://doi.org/10.20982/tqmp.17.1.p007
 
 
-[![DOI](https://zenodo.org/badge/187226036.svg)](https://zenodo.org/badge/latestdoi/187226036) ![](https://cranlogs.r-pkg.org/badges/grand-total/neatStats "neatStats CRAN total download count") ![](http://cranlogs.r-pkg.org/badges/neatStats?color=8585ad "neatStats CRAN monthly download count")
+[![DOI](https://zenodo.org/badge/187226036.svg)](https://zenodo.org/badge/latestdoi/187226036) ![](https://cranlogs.r-pkg.org/badges/grand-total/neatStats "neatStats CRAN total download count") ![](http://cranlogs.r-pkg.org/badges/neatStats?color=8585ad "neatStats CRAN monthly download count") [![R-CMD-check](https://github.com/gasparl/neatstats/workflows/R-CMD-check/badge.svg)](https://github.com/gasparl/neatstats/actions)

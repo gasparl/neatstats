@@ -4,3 +4,4 @@
 ^neatStats\.pdf$
 .RData
 .Rhistory
+^\.github$
