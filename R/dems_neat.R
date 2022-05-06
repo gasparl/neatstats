@@ -288,6 +288,12 @@ dems_neat = function(data_per_subject,
                                              ' unknown]')
         }
         age_gend$age_missing = paste0(age_gend$age_missing)
+        age_gend$age_missing = ifelse(startsWith(age_gend$age_missing, ' [0'),
+                                      '',
+                                      age_gend$age_missing)
+        age_gend$gender_missing = ifelse(startsWith(age_gend$gender_missing, ' [0'),
+                                         '',
+                                         age_gend$gender_missing)
     } else {
         if (is.null(show_fem)) {
             show_fem = FALSE

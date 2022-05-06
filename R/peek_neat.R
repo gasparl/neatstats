@@ -1,46 +1,47 @@
-#' @title Cursory Summaries and Plots per Group
+#'@title Cursory Summaries and Plots per Group
 #'
-#' @description Cursory summaries and plots per group.
-#' @param dat Data frame (or name of data frame as string).
-#' @param values String, or vector of strings: the name(s) of the column(s) in
-#'   the \code{dat} data frame, containing the vector(s) of values.
-#' @param group_by String, or vector of strings: the name(s) of the column(s) in
-#'   the \code{dat} data frame, containing the vector(s) of factors by which the
-#'   statistics are grouped.
-#' @param filt An expression to filter, by column values, the entire \code{dat}
-#'   data frame before performing the aggregation. The expression should use
-#'   column names alone; see Examples.
-#' @param sep String (comma by default) for separating group names.
-#' @param collapse Decides how to handle multiple columns of \code{values}. If
-#'   \code{NULL} (default), displays each column of values as separate groups.
-#'   Alternatively, any function can be given using which the columns are
-#'   collapsed into a single column. For example, if \code{mean} is given for
-#'   this parameter, a single column will be calculated based on the means of
-#'   all given values columns. (\code{NA} is always ignored.)
-#' @param f_print Printing function; see details.
-#' @param f_plot Plotting function; see details. (Provide string to skip
-#'   plotting.)
-#' @param iqr_times The multiplication of IQR to calculate Tukey's fences, when
-#'   using default \code{f_print} (\code{NULL}); see Details. The default is
-#'   \code{3} to spot Tukey's "far outliers" (e.g. by comparing the fences with
-#'   min and max values). (Note that the usual fences, e.g. for box plots, use
-#'   \code{1.5}).
-#' @param round_to Number of \code{\link[neatStats:ro]{significant fractional
-#'   digits to round to}}, when using default \code{f_print} (\code{NULL}).
-#' @param group_n Logical. If \code{TRUE}, adds sample sizes (\code{n}) per
-#'   group to plots when using default \code{f_plot} (\code{NULL}).
-#' @param ... Any arguments to be passed to the \code{f_plot} function.
+#'@description Cursory summaries and plots per group.
+#'@param dat Data frame (or name of data frame as string).
+#'@param values String, or vector of strings: the name(s) of the column(s) in
+#'  the \code{dat} data frame, containing the vector(s) of values.
+#'@param group_by String, or vector of strings: the name(s) of the column(s) in
+#'  the \code{dat} data frame, containing the vector(s) of factors by which the
+#'  statistics are grouped.
+#'@param filt An expression to filter, by column values, the entire \code{dat}
+#'  data frame before performing the aggregation. The expression should use
+#'  column names alone; see Examples.
+#'@param sep String (comma by default) for separating group names.
+#'@param collapse Decides how to handle multiple columns of \code{values}. If
+#'  \code{NULL} (default), displays each column of values as separate groups.
+#'  Alternatively, any function can be given using which the columns are
+#'  collapsed into a single column. For example, if \code{mean} is given for
+#'  this parameter, a single column will be calculated based on the means of all
+#'  given values columns. (\code{NA} is always ignored.)
+#'@param f_print Printing function; see details.
+#'@param f_plot Plotting function; see details. (Provide string to skip
+#'  plotting.)
+#'@param iqr_times The multiplication of IQR to calculate Tukey's fences, when
+#'  using default \code{f_print} function (set to \code{TRUE}); see Details. The
+#'  default is \code{3} to spot Tukey's "far outliers" (e.g. by comparing the
+#'  fences with min and max values). (Note that the usual fences, e.g. for box
+#'  plots, use \code{1.5}).
+#'@param round_to Number of \code{\link[neatStats:ro]{significant fractional
+#'  digits to round to}}, when using default \code{f_print} function (set to
+#'  \code{TRUE}).
+#'@param group_n Logical. If \code{TRUE}, adds sample sizes (\code{n}) per group
+#'  to plots when using default \code{f_plot} (\code{NULL}).
+#'@param ... Any arguments to be passed to the \code{f_plot} function.
 #'
 #'@details
 #'
-#'Prints, by default, the following data (per group): \code{mean}; 95% CI of the
-#'mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
-#'\code{quantile_1st} and \code{quantile_3rd} (first and third quantiles);
-#'"Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum and maximum
-#'values (\code{min}, \code{max}); number of \code{NA}s (\code{na}). Tukey's
-#'fences are the upper and lower limits with distances of \code{X} times the
-#'\code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
-#'the \code{iqr_times} parameter. Returns (invisibly) the same values,
+#'If set to \code{TRUE}, prints to console the following data (per group):
+#'\code{mean}; 95% CI of the mean as \code{ci_low} and \code{ci_upp}; \code{sd};
+#'\code{median}; \code{quantile_1st} and \code{quantile_3rd} (first and third
+#'quantiles); "Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum
+#'and maximum values (\code{min}, \code{max}); number of \code{NA}s (\code{na}).
+#'Tukey's fences are the upper and lower limits with distances of \code{X} times
+#'the \code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified
+#'via the \code{iqr_times} parameter. Returns (invisibly) the same values,
 #'unrounded, via a data frame. If alternative \code{f_print} is given, prints
 #'whatever value is returned from the given function (and attempts, if possible,
 #'to create a data frame).
@@ -52,34 +53,42 @@
 #'and displayed together. To skip plotting, just give any character as argument
 #'(e.g. \code{"none"} or just \code{""}).
 #'
-#' @return Data frame with the printed values (if possible).
+#'@return Data frame with the printed values (if possible).
 #'
 #' @examples
 #'
 #' data("mtcars") # load base R example dataset
 #'
 #' # overall info for wt (Weight)
-#' peek_neat(mtcars, 'wt')
-#'#'
+#' peek_neat(mtcars, 'wt', f_print = TRUE)
+#' #'
 #' # now groupped by cyl (Number of cylinders)
 #' peek_neat(mtcars, 'wt', group_by = 'cyl')
 #'
 #' # grouped by cyl and gear
-#' peek_neat(mtcars, 'wt', group_by = c('cyl', 'gear'))
+#' peek_neat(mtcars,
+#'           'wt',
+#'           group_by = c('cyl', 'gear'),
+#'           f_print = TRUE)
 #'
 #' # filter to only have cyl larger than  4
 #' peek_neat(mtcars, 'wt', group_by = 'cyl', filt = cyl > 4)
 #'
 #' # without plots
-#' peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = "")
+#' peek_neat(mtcars,
+#'           'wt',
+#'           group_by = 'cyl',
+#'           f_plot = "",
+#'           f_print = TRUE)
 #'
 #' # with histogramms etc, using plot_neat
 #' peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = plot_neat)
 #'
 #' # with Q-Q plots, via ggpubr
-#' peek_neat(mtcars, 'wt', group_by = 'cyl',
+#' peek_neat(mtcars,
+#'           'wt',
+#'           group_by = 'cyl',
 #'           f_plot = ggpubr::ggqqplot)
-#'
 #'
 #' # skewness and kurtosis data via psych
 #' \dontrun{
@@ -100,7 +109,7 @@ peek_neat = function(dat,
                      filt = NULL,
                      sep = ", ",
                      collapse = NULL,
-                     f_print = NULL,
+                     f_print = FALSE,
                      f_plot = NULL,
                      iqr_times = 3,
                      round_to = 4,
@@ -109,18 +118,20 @@ peek_neat = function(dat,
     if (typeof(dat) == "character") {
         dat = eval(parse(text = dat))
     }
-    validate_args(match.call(),
-                  list(
-                      val_arg(dat, c('df')),
-                      val_arg(group_by, c('null', 'char')),
-                      val_arg(sep, c('char')),
-                      val_arg(collapse, c('function', 'null')),
-                      val_arg(f_print, c('function', 'null')),
-                      val_arg(f_plot, c('function', 'null', 'char')),
-                      val_arg(iqr_times, c('num'), 1),
-                      val_arg(round_to, c('num'), 1),
-                      val_arg(group_n, c('bool'), 1)
-                  ))
+    validate_args(
+        match.call(),
+        list(
+            val_arg(dat, c('df')),
+            val_arg(group_by, c('null', 'char')),
+            val_arg(sep, c('char')),
+            val_arg(collapse, c('function', 'null')),
+            val_arg(f_print, c('function', 'bool')),
+            val_arg(f_plot, c('function', 'null', 'char')),
+            val_arg(iqr_times, c('num'), 1),
+            val_arg(round_to, c('num'), 1),
+            val_arg(group_n, c('bool'), 1)
+        )
+    )
     name_taken('..neat_values', dat)
     values = values[!values %in% group_by]
     if (length(values) > 1) {
@@ -140,7 +151,7 @@ peek_neat = function(dat,
             }
         } else {
             dat$..neat_values = apply(subset(dat, select = values),
-                                           1, collapse, na.rm = TRUE)
+                                      1, collapse, na.rm = TRUE)
         }
     } else if (values %in% names(dat)) {
         dat$..neat_values = dat[[values]]
@@ -185,22 +196,32 @@ peek_neat = function(dat,
     vals = dat$..neat_values
     plot_list = list()
     for (grp in unique(group_by)) {
-        if (length(unique(group_by)) > 1) {
-            cat(grp, ':', fill = TRUE, sep = '')
-        }
         valstemp = vals[group_by == grp]
-        if (is.null(f_print)) {
-            to_merg = sum_neat(valstemp, iqr_times = iqr_times, round_to = round_to)
+        if (!isFALSE(f_print)) {
+            if (length(unique(group_by)) > 1) {
+                cat(grp, ':', fill = TRUE, sep = '')
+            }
+            if (isTRUE(f_print)) {
+                to_merg = sum_neat(valstemp,
+                                   iqr_times = iqr_times,
+                                   round_to = round_to)
+            } else {
+                to_merg = f_print(valstemp)
+                print(to_merg)
+            }
+            if (inherits(to_merg, "data.frame") |
+                length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
+                dat_merg = rbind(dat_merg, data.frame(as.list((
+                    to_merg
+                ))))
+            }
         } else {
-            to_merg = f_print(valstemp)
-        }
-        if (inherits(to_merg, "data.frame") |
-            length(names(to_merg)[(names(to_merg) != "")]) == length(to_merg)) {
-            dat_merg = rbind(dat_merg, data.frame(as.list((to_merg))))
+            dat_merg = NULL
         }
         valstemp = valstemp[!is.na(valstemp)]
         if (!is.null(f_plot) &&
-            length(valstemp) > 0 && (!inherits(f_plot, "character"))) {
+            length(valstemp) > 0 &&
+            (!inherits(f_plot, "character"))) {
             if (group_n == TRUE) {
                 xtitl = paste0(grp, '\n(n = ',
                                length(valstemp), ')')

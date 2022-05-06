@@ -11,7 +11,7 @@ peek_neat(
   filt = NULL,
   sep = ", ",
   collapse = NULL,
-  f_print = NULL,
+  f_print = FALSE,
   f_plot = NULL,
   iqr_times = 3,
   round_to = 4,
@@ -39,8 +39,8 @@ column names alone; see Examples.}
 \code{NULL} (default), displays each column of values as separate groups.
 Alternatively, any function can be given using which the columns are
 collapsed into a single column. For example, if \code{mean} is given for
-this parameter, a single column will be calculated based on the means of
-all given values columns. (\code{NA} is always ignored.)}
+this parameter, a single column will be calculated based on the means of all
+given values columns. (\code{NA} is always ignored.)}
 
 \item{f_print}{Printing function; see details.}
 
@@ -48,16 +48,17 @@ all given values columns. (\code{NA} is always ignored.)}
 plotting.)}
 
 \item{iqr_times}{The multiplication of IQR to calculate Tukey's fences, when
-using default \code{f_print} (\code{NULL}); see Details. The default is
-\code{3} to spot Tukey's "far outliers" (e.g. by comparing the fences with
-min and max values). (Note that the usual fences, e.g. for box plots, use
-\code{1.5}).}
+using default \code{f_print} function (set to \code{TRUE}); see Details. The
+default is \code{3} to spot Tukey's "far outliers" (e.g. by comparing the
+fences with min and max values). (Note that the usual fences, e.g. for box
+plots, use \code{1.5}).}
 
 \item{round_to}{Number of \code{\link[neatStats:ro]{significant fractional
-digits to round to}}, when using default \code{f_print} (\code{NULL}).}
+digits to round to}}, when using default \code{f_print} function (set to
+\code{TRUE}).}
 
-\item{group_n}{Logical. If \code{TRUE}, adds sample sizes (\code{n}) per
-group to plots when using default \code{f_plot} (\code{NULL}).}
+\item{group_n}{Logical. If \code{TRUE}, adds sample sizes (\code{n}) per group
+to plots when using default \code{f_plot} (\code{NULL}).}
 
 \item{...}{Any arguments to be passed to the \code{f_plot} function.}
 }
@@ -68,14 +69,14 @@ Data frame with the printed values (if possible).
 Cursory summaries and plots per group.
 }
 \details{
-Prints, by default, the following data (per group): \code{mean}; 95% CI of the
-mean as \code{ci_low} and \code{ci_upp}; \code{sd}; \code{median};
-\code{quantile_1st} and \code{quantile_3rd} (first and third quantiles);
-"Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum and maximum
-values (\code{min}, \code{max}); number of \code{NA}s (\code{na}). Tukey's
-fences are the upper and lower limits with distances of \code{X} times the
-\code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified via
-the \code{iqr_times} parameter. Returns (invisibly) the same values,
+If set to \code{TRUE}, prints to console the following data (per group):
+\code{mean}; 95% CI of the mean as \code{ci_low} and \code{ci_upp}; \code{sd};
+\code{median}; \code{quantile_1st} and \code{quantile_3rd} (first and third
+quantiles); "Tukey's fences" as \code{fence_low} and \code{fence_upp}; minimum
+and maximum values (\code{min}, \code{max}); number of \code{NA}s (\code{na}).
+Tukey's fences are the upper and lower limits with distances of \code{X} times
+the \code{\link[stats]{IQR}} from the actual IQR, where \code{X} is specified
+via the \code{iqr_times} parameter. Returns (invisibly) the same values,
 unrounded, via a data frame. If alternative \code{f_print} is given, prints
 whatever value is returned from the given function (and attempts, if possible,
 to create a data frame).
@@ -92,27 +93,35 @@ and displayed together. To skip plotting, just give any character as argument
 data("mtcars") # load base R example dataset
 
 # overall info for wt (Weight)
-peek_neat(mtcars, 'wt')
+peek_neat(mtcars, 'wt', f_print = TRUE)
 #'
 # now groupped by cyl (Number of cylinders)
 peek_neat(mtcars, 'wt', group_by = 'cyl')
 
 # grouped by cyl and gear
-peek_neat(mtcars, 'wt', group_by = c('cyl', 'gear'))
+peek_neat(mtcars,
+          'wt',
+          group_by = c('cyl', 'gear'),
+          f_print = TRUE)
 
 # filter to only have cyl larger than  4
 peek_neat(mtcars, 'wt', group_by = 'cyl', filt = cyl > 4)
 
 # without plots
-peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = "")
+peek_neat(mtcars,
+          'wt',
+          group_by = 'cyl',
+          f_plot = "",
+          f_print = TRUE)
 
 # with histogramms etc, using plot_neat
 peek_neat(mtcars, 'wt', group_by = 'cyl', f_plot = plot_neat)
 
 # with Q-Q plots, via ggpubr
-peek_neat(mtcars, 'wt', group_by = 'cyl',
+peek_neat(mtcars,
+          'wt',
+          group_by = 'cyl',
           f_plot = ggpubr::ggqqplot)
-
 
 # skewness and kurtosis data via psych
 \dontrun{

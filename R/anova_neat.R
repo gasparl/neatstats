@@ -840,5 +840,6 @@ anova_apa = function(ezANOVA_out,
                   totals = dat_tot,
                   residuals = resids,
                   fitted = fitt)
+    class(stat_list) = c("neats_aov", class(stat_list))
     invisible(stat_list)
 }
