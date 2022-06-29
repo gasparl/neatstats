@@ -201,6 +201,9 @@ get_e_corrs = function(mauchly, e_corrects, e_correction, shush) {
         )
     }
     spher_real_corrs = list()
+    Wval_list = list()
+    pval_list = list()
+    correction_type_list = list()
     for (indx in 1:length(mauchly$Effect)) {
         m_name = mauchly$Effect[indx]
         m_name = sort(strsplit(m_name, ":")[[1]])
@@ -234,6 +237,18 @@ get_e_corrs = function(mauchly, e_corrects, e_correction, shush) {
         } else {
             m_corr = '.'
         }
+        x_name = gsub(" CHAR_X ", "_x_", m_name)
+        Wval_list[[x_name]] = m_w
+        pval_list[[x_name]] = m_pval
+        correction_type_list[[x_name]] = ifelse(
+            grepl('Huynh', m_corr, fixed = TRUE),
+            "Huynh-Feldt",
+            ifelse(
+                grepl('Greenhouse', m_corr, fixed = TRUE),
+                "Greenhouse-Geisser",
+                "none"
+            )
+        )
         if (shush == FALSE) {
             prnt(m_name,
                  ': W = ',
@@ -243,7 +258,14 @@ get_e_corrs = function(mauchly, e_corrects, e_correction, shush) {
                  m_corr)
         }
     }
-    return(spher_real_corrs)
+    return(
+        list(
+            Wval = Wval_list,
+            pval = pval_list,
+            correction_type = correction_type_list,
+            eps_p_corrs = spher_real_corrs
+        )
+    )
 }
 
 to_fact = function(var) {

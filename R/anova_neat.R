@@ -711,6 +711,7 @@ anova_neat = function(data_per_subject,
         resids = resids,
         fitt = fitt
     )
+    class(to_return) = c("anova_neat", class(to_return))
     invisible(to_return)
 }
 
@@ -735,13 +736,23 @@ anova_apa = function(ezANOVA_out,
         if (hush == FALSE) {
             prnt("--- Mauchly's Sphericity Test ---")
         }
-        eps_p_corrs = get_e_corrs(mauchly,
-                                  ezANOVA_out$"Sphericity Corrections",
-                                  e_correction, hush)
+        mauchly_info = get_e_corrs(mauchly,
+                                   ezANOVA_out$"Sphericity Corrections",
+                                   e_correction,
+                                   hush)
+        eps_p_corrs = mauchly_info$eps_p_corrs
+        mauchly_info$eps_p_corrs = NULL
+        mauchly_info = tryCatch({
+            as.data.frame(do.call(cbind, mauchly_info))
+        }, error = function(e) {
+            warning("Mauchly effects' lists not identical, returning as lists instead of a data frame.")
+            mauchly_info
+        })
         if (hush == FALSE) {
             prnt("--- ANOVA ---")
         }
     } else {
+        mauchly_info = NULL
         eps_p_corrs = NULL
     }
     stat_list = list()
@@ -760,6 +771,7 @@ anova_apa = function(ezANOVA_out,
         F_val = ezANOVA_out$ANOVA$F[indx]
         df_n = ezANOVA_out$ANOVA$DFn[indx]
         df_d = ezANOVA_out$ANOVA$DFd[indx]
+        df_d_val = df_d
         pvalue = ezANOVA_out$ANOVA$p[indx]
         limits = MBESS::conf.limits.ncf(
             F.value = F_val,
@@ -772,25 +784,37 @@ anova_apa = function(ezANOVA_out,
         if (!is.null(welch)) {
             F_val = as.numeric(welch$statistic)
             df_n = as.numeric(welch$parameter['num df'])
+            df_d_val = as.numeric(welch$parameter['denom df'])
             df_d = ro(as.numeric(welch$parameter['denom df']), 1)
             pvalue = as.numeric(welch$p.value)
         }
         if (!is.null(eps_p_corrs[[f_name]])) {
             pvalue = as.numeric(eps_p_corrs[[f_name]]['pval'])
-            eps_num = ro(as.numeric(eps_p_corrs[[f_name]]['eps']), 3)
-            eps_added = paste0(', CHAR_EPS = ', eps_num)
+            eps_num = as.numeric(eps_p_corrs[[f_name]]['eps'])
+            eps_val = eps_num
+            eps_added = paste0(', CHAR_EPS = ', ro(eps_num, 3))
         } else {
+            if (is.null(mauchly_info)) {
+                eps_val = NULL
+            } else {
+                eps_val = NA
+            }
+            eps_num = NULL
             eps_added = NULL
         }
         petas = ezANOVA_out$ANOVA$pes[indx]
         if (is.na(lower)) {
+            lower_val = 0
             lower = "0"
         } else {
+            lower_val = lower
             lower = sub('.', '', ro(lower, 3))
         }
         if (is.na(upper)) {
+            upper_val = "< .001"
             upper = "< .001"
         } else {
+            upper_val = upper
             upper = sub('.', '', ro(upper, 3))
         }
         np2 = sub('.', '', ro(petas, 3))
@@ -807,7 +831,7 @@ anova_apa = function(ezANOVA_out,
             ro(F_val, 2),
             ", p = ",
             ro(pvalue, 3),
-            epsilon = eps_added,
+            eps_added,
             ", CHAR_ETAp2 = ",
             np2,
             the_ci,
@@ -824,22 +848,35 @@ anova_apa = function(ezANOVA_out,
         if (hush == FALSE) {
             prnt(out)
         }
-        s_name = gsub(" CHAR_X ", "_", f_name)
+        s_name = gsub(" CHAR_X ", "_x_", f_name)
         stat_list[[s_name]] = c(
-            F = as.numeric(F_val),
-            p = pvalue,
-            epsilon = eps_added,
+            Fval = as.numeric(F_val),
+            df_1 = df_n,
+            df_2 = df_d_val,
+            pval = pvalue,
+            epsilon = eps_val,
             petas = as.numeric(petas),
+            ci_lower = lower_val,
+            ci_upper = upper_val,
             getas = as.numeric(getas),
             bf = as.numeric(bf_val)
         )
     }
-    stat_list = list(effects = stat_list,
-                  ez_anova = ezANOVA_out,
-                  bf_models = bf_models,
-                  totals = dat_tot,
-                  residuals = resids,
-                  fitted = fitt)
-    class(stat_list) = c("neats_aov", class(stat_list))
+    stat_list = list(
+        effects =
+            tryCatch({
+                as.data.frame(do.call(rbind, stat_list))
+            }, error = function(e) {
+                warning("Effects' vectors not identical, returning as list instead of a data frame.")
+                stat_list
+            }),
+        mauchly = mauchly_info,
+        ci_level = ci,
+        ez_anova = ezANOVA_out,
+        bf_models = bf_models,
+        totals = dat_tot,
+        residuals = resids,
+        fitted = fitt
+    )
     invisible(stat_list)
 }
