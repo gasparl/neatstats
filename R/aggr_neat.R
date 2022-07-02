@@ -203,7 +203,7 @@ aggr_neat = function(dat,
     }
 
     if (is.function(method) == TRUE) {
-        aggred = dat[, list(..temp_name =  method(..neat_values)), by = group_by]
+        aggred = dat[, list(..temp_name = method(..neat_values)), by = group_by]
     } else if (endsWith(method, '+sd') == TRUE) {
         func_name = strsplit(method, '+', fixed = TRUE)[[1]][1]
         main_fun = eval(parse(text = func_name))

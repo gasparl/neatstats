@@ -128,18 +128,8 @@ plots of means by factor, by passing data and factor information to
 Prints ANOVA statistics (including, for each model, F-test with
  partial eta squared and its CI, generalized eta squared, and BF, as
  specified via the corresponding parameters) in APA style. Furthermore, when
- assigned, returns a list with up to four elements. First,
- '\code{stat_list}', a list of named vectors per each effect (main or
- interaction). Each vector contains the following elements: \code{F} (F
- value), \code{p} (p value), \code{petas} (partial eta squared), \code{getas}
- (generalized eta squared), \code{epsilon} (epsilon used for correction), and
- \code{bf} (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second,
- a dataframe with mean and SD per each condition (i.e., per each level per
- each factor). Third, the \code{\link[ez]{ezANOVA}} object, named
- \code{ez_anova} (calculated even when \code{\link[stats]{oneway.test}} is
- printed). Fourth, when \code{bf_added} is not \code{FALSE}, the
- \code{\link[BayesFactor]{anovaBF}} object, named \code{bf_models}; including
- all models on which the inclusion BFs are based.
+ assigned, returns all calculated information details for each effect (as
+ \code{stat_list}), normality and variance tests (if any), etc.
 }
 \description{
 \code{\link[ez:ezANOVA]{Analysis of variance}} (ANOVA) F-test

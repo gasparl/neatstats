@@ -126,18 +126,8 @@
 #'@return Prints ANOVA statistics (including, for each model, F-test with
 #'  partial eta squared and its CI, generalized eta squared, and BF, as
 #'  specified via the corresponding parameters) in APA style. Furthermore, when
-#'  assigned, returns a list with up to four elements. First,
-#'  '\code{stat_list}', a list of named vectors per each effect (main or
-#'  interaction). Each vector contains the following elements: \code{F} (F
-#'  value), \code{p} (p value), \code{petas} (partial eta squared), \code{getas}
-#'  (generalized eta squared), \code{epsilon} (epsilon used for correction), and
-#'  \code{bf} (inclusion BF; when \code{bf_added} is not \code{FALSE}). Second,
-#'  a dataframe with mean and SD per each condition (i.e., per each level per
-#'  each factor). Third, the \code{\link[ez]{ezANOVA}} object, named
-#'  \code{ez_anova} (calculated even when \code{\link[stats]{oneway.test}} is
-#'  printed). Fourth, when \code{bf_added} is not \code{FALSE}, the
-#'  \code{\link[BayesFactor]{anovaBF}} object, named \code{bf_models}; including
-#'  all models on which the inclusion BFs are based.
+#'  assigned, returns all calculated information details for each effect (as
+#'  \code{stat_list}), normality and variance tests (if any), etc.
 #'
 #'@note The F-tests are calculated via \code{\link[ez:ezANOVA]{ez::ezANOVA}},
 #'  including Mauchly's sphericity test. (But Welch's ANOVA is
@@ -484,7 +474,7 @@ anova_neat = function(data_per_subject,
                 '" were collapsed (averaged) into one column.'
             )
             data_per_subject[[dup]] = rowMeans(data_per_subject[, to_collapse], na.rm =
-                                                      TRUE)
+                                                   TRUE)
             values = values[!(values %in% to_collapse)]
             values = c(values, dup)
         }
@@ -513,7 +503,7 @@ anova_neat = function(data_per_subject,
         eb_method = stats::sd,
         numerics = TRUE
     )
-    if (is.null(e_correction)){
+    if (is.null(e_correction)) {
         e_correction = ''
     }
     data_wide = data_per_subject
@@ -639,7 +629,8 @@ anova_neat = function(data_per_subject,
                     ', whichModels = "withmain")'
                 )
         ))
-        if (is.null(within_vars) && length(to_c(between_vars)) == 1) {
+        if (is.null(within_vars) &&
+            length(to_c(between_vars)) == 1) {
             bf_inc = as.vector(bf)
         } else {
             bf_inc = bayestestR::bayesfactor_inclusion(bf, match_models = TRUE)
@@ -684,17 +675,28 @@ anova_neat = function(data_per_subject,
             anov = TRUE
         )
     }
-    if (var_tests == TRUE && !is.null(bv_copy) &
-        hush == FALSE
-    ) {
-        prnt('--- Equality of Variances ---')
+    norm_info = all_norm_tests(resids)
+    var_info = NULL
+    if (!is.null(bv_copy)) {
+        if (var_tests == TRUE && hush == FALSE) {
+            var_hush = FALSE
+            prnt('--- Equality of Variances ---')
+        } else {
+            var_hush = TRUE
+        }
         if (is.null(within_vars)) {
-            neatStats::var_tests(value_col, bv_copy, this_data)
+            var_info = neatStats::var_tests(value_col, bv_copy, this_data, hush = var_hush)
         } else {
             for (fact in unique(this_data[[withname]])) {
-                cat(fact, ': ', sep = '', fill = TRUE)
-                neatStats::var_tests(value_col, bv_copy,
-                          this_data[this_data[[withname]] == fact, ])
+                if (isFALSE(var_hush)) {
+                    cat(fact,
+                        ': ',
+                        sep = '',
+                        fill = TRUE)
+                }
+                var_info[[fact]] = neatStats::var_tests(value_col, bv_copy,
+                                                        this_data[this_data[[withname]] == fact,],
+                                                        hush = var_hush)
             }
         }
     }
@@ -711,6 +713,8 @@ anova_neat = function(data_per_subject,
         resids = resids,
         fitt = fitt
     )
+    to_return$normality_tests = norm_info
+    to_return$variance_tests = var_info
     class(to_return) = c("anova_neat", class(to_return))
     invisible(to_return)
 }
@@ -745,7 +749,9 @@ anova_apa = function(ezANOVA_out,
         mauchly_info = tryCatch({
             as.data.frame(do.call(cbind, mauchly_info))
         }, error = function(e) {
-            warning("Mauchly effects' lists not identical, returning as lists instead of a data frame.")
+            warning(
+                "Mauchly effects' lists not identical, returning as lists instead of a data frame."
+            )
             mauchly_info
         })
         if (hush == FALSE) {
@@ -879,4 +885,32 @@ anova_apa = function(ezANOVA_out,
         fitted = fitt
     )
     invisible(stat_list)
+}
+
+all_norm_tests = function(var_to_norm) {
+    norm_tests = list()
+    norm_tests[['W']] = fBasics::shapiroTest(var_to_norm)@test
+    if (length(var_to_norm) >= 8) {
+        if (length(var_to_norm) >= 21) {
+            norm_tests[['K2']] = fBasics::dagoTest(var_to_norm)@test
+        }
+        norm_tests[['A2']] = fBasics::adTest(var_to_norm)@test
+    }
+    norm_tests[['JB']] = fBasics::jarqueberaTest(var_to_norm)@test
+    norms_out = list()
+    for (norm_stat in names(norm_tests)) {
+        norms_out[[norm_stat]] = list(
+            title = as.character(
+                c(
+                    'W' = 'Shapiro-Wilk test',
+                    'K2' = "D'Agostino test",
+                    'A2' = "Anderson-Darling test",
+                    'JB' = "Jarque-Bera test"
+                )[norm_stat]
+            ),
+            statistic = norm_tests[[norm_stat]]$statistic[[1]],
+            pval = norm_tests[[norm_stat]]$p.value[[1]]
+        )
+    }
+    return(as.data.frame(do.call(cbind, norms_out)))
 }

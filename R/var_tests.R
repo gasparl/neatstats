@@ -99,17 +99,25 @@ var_tests = function(xvar,
         df_mes,
         'xvar',
         group_by = 'group_by',
+        new_name = 'sd',
         method = function(x) {
-            c(sd = stats::sd(x, na.rm = TRUE),
-              n = length(stats::na.omit(x)))
+            stats::sd(x, na.rm = TRUE)
         }
     )
+    df_sds$n = aggr_neat(
+        df_mes,
+        'xvar',
+        group_by = 'group_by',
+        method = function(x) {
+            length(stats::na.omit(x))
+        }
+    )$aggr_value
     sds_zip = paste(paste0(
         df_sds$aggr_group,
         ': n = ',
-        ro(df_sds$x.n, 2, signi = TRUE),
+        ro(df_sds$n, 2, signi = TRUE),
         ', SD = ',
-        ro(df_sds$x.sd, 2)
+        ro(df_sds$sd, 2)
     ),
     collapse = '; ')
     lev_med = car::leveneTest(y = xvar, group = group_by)
@@ -140,7 +148,19 @@ var_tests = function(xvar,
 
     invisible(list(
         df_sds = df_sds,
-        p_BF = lev_med$`Pr(>F)`[1],
-        p_FK = fk_med$p.value
+        Brown = list(
+            title = "Brown-Forsythe",
+            Fval = lev_med$`F value`[1],
+            df1 = lev_med$Df[1],
+            df2 = lev_med$Df[2],
+            pval = lev_med$`Pr(>F)`[1]
+        ),
+        Fligner = list(
+            title = "Fligner-Killeen",
+            X2 = fk_med$statistic[[1]],
+            df = fk_med$parameter[[1]],
+            pval = fk_med$p.value
+        )
     ))
 }
+
