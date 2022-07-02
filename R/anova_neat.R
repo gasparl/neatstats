@@ -715,7 +715,7 @@ anova_neat = function(data_per_subject,
     )
     to_return$normality_tests = norm_info
     to_return$variance_tests = var_info
-    class(to_return) = c("anova_neat", class(to_return))
+    class(to_return) = "anova_neat"
     invisible(to_return)
 }
 
