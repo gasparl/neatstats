@@ -38,13 +38,13 @@ elements will be calculated. Multiple elements can by given as a vector of
 strings. The number of occurrences of these elements will be the numerator
 (dividend), while the entire column length (i.e., number of all elements)
 will be the denominator (divisor). For example, if a column contains
-elements \code{"correct"}, \code{"incorrent"}, \code{"tooslow"}, the ratio
+elements \code{"correct"}, \code{"incorrect"}, \code{"tooslow"}, the ratio
 of \code{"correct"} to all other elements (i.e., including elements
-\code{"correct"}, \code{"incorrent"}, and \code{"tooslow"}) can be written
+\code{"correct"}, \code{"incorrect"}, and \code{"tooslow"}) can be written
 simply as \code{method = "correct"}. The complementary ratio, of
-\code{"incorrent"} and \code{"tooslow"}, can be written as \code{method =
-"incorrent, tooslow"}. (Hint: filter to get ratios of subgroups, e.g. to
-include only \code{"correct"} and \code{"incorrent"} elements, and
+\code{"incorrect"} and \code{"tooslow"}, can be written as \code{method =
+"incorrect, tooslow"}. (Hint: filter to get ratios of subgroups, e.g. to
+include only \code{"correct"} and \code{"incorrect"} elements, and
 calculate their ratio; see below.)}
 
 \item{group_by}{String, or vector of strings: the name(s) of the column(s) in
