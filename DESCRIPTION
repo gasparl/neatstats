@@ -1,7 +1,7 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.13.2
-Date: 2022-07-02
+Version: 1.13.3
+Date: 2022-12-07
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
   "Kleinberg", email = "bennettkleinberg@gmail.com", role = c("ctb"), comment =
@@ -24,5 +24,5 @@ Suggests:
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 VignetteBuilder: knitr

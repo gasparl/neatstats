@@ -205,9 +205,9 @@ corr_neat = function(var1,
         upp_raw = the_cor$conf.int[2]
     }
     if (sb_correction == TRUE) {
-        r_raw = (2 * r_raw) / (1 + r_raw)
-        low_raw = (2 * low_raw) / (1 + low_raw)
-        upp_raw = (2 * upp_raw) / (1 + upp_raw)
+        r_raw = (2 * r_raw) / (1 + abs(r_raw))
+        low_raw = (2 * low_raw) / (1 + abs(low_raw))
+        upp_raw = (2 * upp_raw) / (1 + abs(upp_raw))
     }
     r = edges(r_raw, round_r, no_null = TRUE)
     lower = tryCatch({
