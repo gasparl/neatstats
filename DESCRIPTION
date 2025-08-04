@@ -1,6 +1,6 @@
 Package: neatStats
 Title: Neat and Painless Statistical Reporting
-Version: 1.13.3
+Version: 1.13.5
 Date: 2022-12-07
 Authors@R: c(person("Gáspár", "Lukács", email = "lkcsgaspar@gmail.com", role =
   c("aut", "cre"), comment = c(ORCID = "0000-0001-9401-4830")), person("Bennett",
