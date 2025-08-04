@@ -66,7 +66,7 @@ on the recommendation of Lakens (2015), quoting Yap and Sim (2011, p. 2153):
 short-tailed distribution), then the D'Agostino and Shapiro-Wilkes tests have
 good power. For symmetric distribution with high sample kurtosis (symmetric
 long-tailed), the researcher can use the JB, Shapiro-Wilkes, or
-Anderson-Darling test." See url{https://github.com/Lakens/perfect-t-test} for
+Anderson-Darling test." See \url{https://github.com/Lakens/perfect-t-test} for
 more details.
 }
 \examples{

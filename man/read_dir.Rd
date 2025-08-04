@@ -56,7 +56,7 @@ Reads data files from any given directory as data frames and
 }
 \note{
 This function is very similar to the \code{readbulk::read_bulk}
- function. One important difference however is the \code{\link{data.table}}
+ function. One important difference however is the \code{\link[data.table]{data.table}}
  use, which greatly speeds up the process. Another important difference is
  the possibility of file selection based on any regex \code{pattern}.
  Furthermore, this function allows pre-filtering by file (see \code{filt}).

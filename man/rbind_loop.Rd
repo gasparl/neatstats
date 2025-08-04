@@ -7,11 +7,11 @@
 rbind_loop(merged, ..., hush = FALSE)
 }
 \arguments{
-\item{merged}{The name of the \code{\link{data.table}} for the merged data
+\item{merged}{The name of the \code{\link[data.table]{data.table}} for the merged data
 (without quotes).}
 
 \item{...}{Any number of data to be merged. Each argument must be one of the
-following: a \code{\link{data.frame}} (or \code{\link{data.table}}) with
+following: a \code{\link{data.frame}} (or \code{\link[data.table]{data.table}}) with
 either single row or two column; a named vector or a named list (with single
 elements); or a single value with parameter name (e.g. date = 1989 or id =
 "jdoe"). Data with two columns will be transposed using first column as
@@ -24,7 +24,7 @@ frame for merging is initiated.}
 \description{
 Merges rows by columns in a loop using the \code{\link{enum}}
  function. On first iteration, indicated by \code{\link{enum}}, initiates a
- new \code{\link{data.table}} with the data to merge as first row. On all
+ new \code{\link[data.table]{data.table}} with the data to merge as first row. On all
  following iterations, adds data to merge as subsequent rows (using
  \code{\link[data.table:rbindlist]{data.table::rbindlist}}).
 }

@@ -2,7 +2,7 @@
 #'
 #' @description Returns aggregated values per group for given variable. Serves
 #'   as argument in the \code{\link{table_neat}} function.
-#' @param dat A data frame (or a \code{\link{data.table}}, or the name of either
+#' @param dat A data frame (or a \code{\link[data.table]{data.table}}, or the name of either
 #'   as string).
 #' @param values The vector of numbers from which the statistics are to be
 #'   calculated, or the name of the column in the \code{dat} data frame, that
@@ -45,7 +45,7 @@
 #'   input variable name is used).
 #' @param round_to Number of digits after the decimal point to round to, when
 #'   using \code{"+sd"} in \code{method}.
-#' @return A \code{\link{data.table}} with the statistics per group, with a
+#' @return A \code{\link[data.table]{data.table}} with the statistics per group, with a
 #'   single column (\code{"aggr_group"}) indicating the grouping.
 #' @seealso \code{\link{table_neat}} to create full tables using multiple
 #'   variables

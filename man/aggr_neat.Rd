@@ -17,7 +17,7 @@ aggr_neat(
 )
 }
 \arguments{
-\item{dat}{A data frame (or a \code{\link{data.table}}, or the name of either
+\item{dat}{A data frame (or a \code{\link[data.table]{data.table}}, or the name of either
 as string).}
 
 \item{values}{The vector of numbers from which the statistics are to be
@@ -70,7 +70,7 @@ input variable name is used).}
 using \code{"+sd"} in \code{method}.}
 }
 \value{
-A \code{\link{data.table}} with the statistics per group, with a
+A \code{\link[data.table]{data.table}} with the statistics per group, with a
   single column (\code{"aggr_group"}) indicating the grouping.
 }
 \description{
