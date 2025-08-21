@@ -34,7 +34,7 @@ For details about each function, see [the manual](https://github.com/gasparl/nea
 General introduction to R:
 
 - Comprehensive and yet relatively concise and readable official R documentation (requires time and patience; prior programming knowledge advised): https://cran.r-project.org/doc/manuals/r-release/R-intro.html
-- Succinct "to the point" intro (best for those with prior programming knowledge; the entire site is very useful): http://www.sthda.com/english/wiki/r-basics-quick-and-easy
+- Succinct "to the point" intro (best for those with prior programming knowledge; the entire site is very useful): https://www.sthda.com/english/wiki/r-basics-quick-and-easy
 - Another short and nice intro: https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf
 - Verbose, step by step intro: https://www.statmethods.net/r-tutorial/index.html
 - Shortcuts in Rstudio: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
@@ -49,10 +49,10 @@ General introduction to R:
 Data visualization:
 
 - ggplot2: https://datacarpentry.org/R-ecology-lesson/04-visualization-ggplot2.html
-- ggpubr: http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/
+- ggpubr: https://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/
 - Shiny R (online interactive sites): https://shiny.rstudio.com/tutorial/
 - plotly for making ggplots interactive: https://plotly.com/ggplot2/
-- Principles: http://biostat.mc.vanderbilt.edu/wiki/pub/Main/StatGraphCourse/graphscourse.pdf
+- Principles: https://biostat.mc.vanderbilt.edu/wiki/pub/Main/StatGraphCourse/graphscourse.pdf
 
 Significance tests:
 
@@ -61,8 +61,8 @@ Significance tests:
 - Equal variances: https://uc-r.github.io/assumptions_homogeneity
 - Equal variances discussion: https://stats.stackexchange.com/a/185368/237231
 - More ANOVA diagnostics (residuals vs. fitted values): https://arc.lib.montana.edu/book/statistics-with-r-textbook/item/57
-- ANOVA multiple-testing issue: http://daniellakens.blogspot.com/2016/01/error-control-in-exploratory-anovas-how.html
-- Pairwise comparisons (and corrections) in R: http://www.sthda.com/english/wiki/two-way-anova-test-in-r#multiple-pairwise-comparison-between-the-means-of-groups
+- ANOVA multiple-testing issue: https://daniellakens.blogspot.com/2016/01/error-control-in-exploratory-anovas-how.html
+- Pairwise comparisons (and corrections) in R: https://www.sthda.com/english/wiki/two-way-anova-test-in-r#multiple-pairwise-comparison-between-the-means-of-groups
 - Linear modelling R tutorial (lme4): https://cran.r-project.org/web/packages/lme4/vignettes/lmer.pdf
 - "The perfect t-test": https://github.com/Lakens/perfect-t-test
 - Various robust statistics: https://cran.r-project.org/web/views/Robust.html
@@ -79,4 +79,4 @@ When you use neatStats in a publication, you can either cite the specific versio
 Lukács, G. (2021). neatStats: An R package for a neat pipeline from raw data to reportable statistics in psychological science. _The Quantitative Methods for Psychology, 17_(1), 7–23. https://doi.org/10.20982/tqmp.17.1.p007
 
 
-[![DOI](https://zenodo.org/badge/187226036.svg)](https://zenodo.org/badge/latestdoi/187226036) ![](https://www.r-pkg.org/badges/version-last-release/neatStats "neatStats CRAN last version") ![](https://cranlogs.r-pkg.org/badges/grand-total/neatStats "neatStats CRAN total download count") ![](http://cranlogs.r-pkg.org/badges/neatStats?color=8585ad "neatStats CRAN monthly download count") [![R-CMD-check](https://github.com/gasparl/neatstats/workflows/R-CMD-check/badge.svg)](https://github.com/gasparl/neatstats/actions)
+[![DOI](https://zenodo.org/badge/187226036.svg)](https://zenodo.org/badge/latestdoi/187226036) ![](https://www.r-pkg.org/badges/version-last-release/neatStats "neatStats CRAN last version") ![](https://cranlogs.r-pkg.org/badges/grand-total/neatStats "neatStats CRAN total download count") ![](https://cranlogs.r-pkg.org/badges/neatStats?color=8585ad "neatStats CRAN monthly download count") [![R-CMD-check](https://github.com/gasparl/neatstats/workflows/R-CMD-check/badge.svg)](https://github.com/gasparl/neatstats/actions)

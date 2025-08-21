@@ -176,7 +176,7 @@ props_neat(var1 = outcomes_A,
 
 # unpaired chi test for the same data (two independent samples assumed)
 # Yates correction applied
-# cf. http://www.sthda.com/english/wiki/two-proportions-z-test-in-r
+# cf. https://www.sthda.com/english/wiki/two-proportions-z-test-in-r
 props_neat(
     var1 = outcomes_A,
     var2 = outcomes_B,

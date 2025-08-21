@@ -280,7 +280,7 @@ results$stats['bf'] # get precise BF value
 \references{
 Delacre, M., Lakens, D., & Leys, C. (2017). Why psychologists should by
 default use Welch's t-test instead of Student's t-test. International Review
-of Social Psychology, 30(1). \doi{http://doi.org/10.5334/irsp.82}
+of Social Psychology, 30(1). \doi{https://doi.org/10.5334/irsp.82}
 
 Kelley, K. (2007). Methods for the behavioral, educational, and social
 sciences: An R package. Behavior Research Methods, 39(4), 979-984.

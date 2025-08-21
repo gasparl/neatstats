@@ -402,7 +402,7 @@ Psychology, 4. https://doi.org/10.3389/fpsyg.2013.00863
 
 Lakens, D. (2014). Calculating confidence intervals for Cohen's d and
 eta-squared using SPSS, R, and Stata [Blog post]. Retrieved from
-\url{http://daniellakens.blogspot.com/2014/06/calculating-confidence-intervals-for.html}
+\url{https://daniellakens.blogspot.com/2014/06/calculating-confidence-intervals-for.html}
 
 Mathot. S. (2017). Bayes like a Baws: Interpreting Bayesian Repeated Measures
 in JASP [Blog post]. Retrieved from
@@ -410,7 +410,7 @@ in JASP [Blog post]. Retrieved from
 
 McDonald, J. H. 2015. Handbook of Biological Statistics (3rd ed.). Sparky
 House Publishing, Baltimore, Maryland. Retrieved from
-\url{http://www.biostathandbook.com}
+\url{https://www.biostathandbook.com}
 
 Moder, K. (2010). Alternatives to F-test in one way ANOVA in case of
 heterogeneity of variances (a simulation study). Psychological Test and
